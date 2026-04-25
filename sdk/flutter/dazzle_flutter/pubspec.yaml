@@ -3,14 +3,29 @@
 
 name:        dazzle_flutter
 description: >
-  Dazzle SDK for Flutter. Embedded in-process database + vector search +
-  ChatAgent runtime for on-device LLM agents. Links the same
-  libdazzle.so / Dazzle.xcframework the native Android and iOS SDKs
-  ship — zero behaviour drift across platforms.
-version:     1.0.0-beta.3
-homepage:    https://github.com/IvanAliaga/dazzle
-repository:  https://github.com/IvanAliaga/dazzle
-issue_tracker: https://github.com/IvanAliaga/dazzle/issues
+  Dazzle SDK for Flutter. Embedded in-process database with HNSW vector
+  search and a ChatAgent runtime for on-device LLM agents. Links the
+  same libdazzle.so / Dazzle.xcframework the native Android and iOS
+  SDKs ship — zero behaviour drift across platforms. Includes five
+  swappable LLMClient adapters: LlamaCpp (GGUF), LiteRT-LM,
+  FoundationModels (iOS 26+), OpenAI-compatible, and Anthropic.
+version:     1.0.0-beta.4
+homepage:    https://github.com/IvanAliaga/dazzle-sdk
+repository:  https://github.com/IvanAliaga/dazzle-sdk
+issue_tracker: https://github.com/IvanAliaga/dazzle-sdk/issues
+documentation: https://github.com/IvanAliaga/dazzle-sdk/tree/main/docs/sdk
+
+# Topics surface this package on pub.dev category pages — at most 5.
+topics:
+  - llm
+  - agent
+  - embedded-database
+  - vector-search
+  - on-device-ai
+
+# Funding (optional) — remove this block if you don't use sponsors.
+# funding:
+#   - https://github.com/sponsors/IvanAliaga
 
 environment:
   sdk:     ">=3.3.0 <4.0.0"

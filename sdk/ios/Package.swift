@@ -4,17 +4,27 @@
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 //
-// This Swift Package exists so `swift test` can run the XCTest suite against
-// the Dazzle SDK primitives. The canonical iOS build path is still the
-// experiment apps (which include Sources/*.swift + core/platform/dazzle_ios.c
-// directly via xcodegen) — this manifest does not replace that.
+// Public Swift Package for the Dazzle SDK. Consumers add this with:
+//
+//     dependencies: [
+//         .package(url: "https://github.com/IvanAliaga/dazzle-sdk.git",
+//                  exact: "1.0.0-beta.4"),
+//     ]
+//
+// And then either:
+//
+//     // Core SDK (zero ML deps).
+//     .product(name: "Dazzle", package: "dazzle-sdk"),
+//     // Opt-in LiteRT-LM adapter (~80 MB extra).
+//     .product(name: "DazzleLiteRTLM", package: "dazzle-sdk"),
 //
 // Structure:
-//   - `DazzleC` module comes from the xcframework's modulemap (binary target)
-//     and supplies the function declarations + libvalkey-server.a.
-//   - `DazzleSupport` is a source C target that compiles dazzle_ios.c so the
-//     wrapper `dazzle_ios_*` symbols resolve at link time. Its generated
-//     module is never imported — it's a link-only supplier.
+//   - `DazzleC` module comes from the xcframework's modulemap (binary
+//     target downloaded from the matching GitHub Release) and supplies
+//     the function declarations + libvalkey-server.a.
+//   - `DazzleSupport` is a source C target that compiles dazzle_ios.c
+//     so the wrapper `dazzle_ios_*` symbols resolve at link time. Its
+//     generated module is never imported — it's a link-only supplier.
 //   - `Dazzle` is the Swift module users of the package import.
 
 import PackageDescription
@@ -42,10 +52,25 @@ let package = Package(
     ],
     targets: [
         // Prebuilt Valkey server + DazzleC modulemap (provides dazzle_ios.h
-        // declarations). Built by sdk/ios/build.sh.
+        // declarations). The xcframework is uploaded as an asset on each
+        // tagged GitHub Release; SwiftPM verifies it against the SHA256
+        // checksum below before linking.
+        //
+        // To rebuild for a new tag:
+        //     bash sdk/ios/build.sh
+        //     cd sdk/ios && zip -r Dazzle.xcframework.zip Dazzle.xcframework
+        //     swift package compute-checksum Dazzle.xcframework.zip
+        // then upload the zip to the release page and paste the checksum
+        // below before tagging.
+        //
+        // Local development (working from a sibling clone of the repo)
+        // can swap in the `path:` form temporarily — keep the URL form
+        // as the committed default so external consumers always get a
+        // verifiable download.
         .binaryTarget(
             name: "DazzleBinary",
-            path: "Dazzle.xcframework"
+            url: "https://github.com/IvanAliaga/dazzle-sdk/releases/download/v1.0.0-beta.4/Dazzle.xcframework.zip",
+            checksum: "REPLACE_WITH_SWIFT_PACKAGE_COMPUTE_CHECKSUM_OUTPUT"
         ),
 
         // Compiles core/platform/dazzle_ios.c (via symlinks under cshim/) so

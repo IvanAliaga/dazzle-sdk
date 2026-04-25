@@ -51,7 +51,7 @@ repositories {
 }
 
 dependencies {
-    implementation "dev.dazzle:dazzle-sdk:$version"
+    implementation "com.ivanaliaga:dazzle-sdk:$version"
 
     // LiteRT-LM runtime. `compileOnly` on the upstream SDK; consumers
     // that instantiate LiteRtLmClient need to add it to their app's

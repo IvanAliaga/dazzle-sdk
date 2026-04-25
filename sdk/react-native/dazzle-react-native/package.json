@@ -1,18 +1,29 @@
 {
   "name": "dazzle-react-native",
-  "version": "1.0.0-beta.3",
-  "description": "Dazzle SDK for React Native — embedded Valkey DB + HNSW vector search + ChatAgent runtime for on-device LLM agents. Same libdazzle.so / Dazzle.xcframework the native Android / iOS SDKs ship.",
+  "version": "1.0.0-beta.4",
+  "description": "Dazzle SDK for React Native — embedded in-process database with HNSW vector search and a ChatAgent runtime for on-device LLM agents. Includes five swappable LLMClient adapters (LlamaCpp, LiteRT-LM, FoundationModels, OpenAI-compatible, Anthropic). Same libdazzle.so / Dazzle.xcframework the native Android / iOS SDKs ship — zero behaviour drift across platforms.",
   "main": "src/index.ts",
   "source": "src/index.ts",
   "types": "src/index.ts",
   "files": [
     "src",
     "lib",
-    "android",
+    "android/build.gradle",
+    "android/src",
+    "android/AndroidManifest.xml",
     "ios",
+    "cpp",
     "dazzle-react-native.podspec",
+    "react-native.config.js",
+    "tsconfig.json",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "!**/*.tsbuildinfo",
+    "!android/build/",
+    "!android/.gradle/",
+    "!ios/build/",
+    "!ios/Pods/",
+    "!**/.DS_Store"
   ],
   "scripts": {
     "build": "tsc -p .",
@@ -20,17 +31,41 @@
   },
   "keywords": [
     "react-native",
+    "ios",
+    "android",
     "dazzle",
     "valkey",
     "redis",
     "vector-search",
     "hnsw",
+    "embedding",
     "llm",
+    "agent",
+    "chat-agent",
     "on-device",
-    "embedded-db"
+    "edge-ai",
+    "embedded-database",
+    "anthropic",
+    "claude",
+    "openai",
+    "llama-cpp",
+    "litert-lm",
+    "foundation-models"
   ],
-  "repository": "https://github.com/IvanAliaga/dazzle",
-  "author": "Ivan Aliaga <ivan.aliaga@urp.edu.pe>",
+  "homepage": "https://github.com/IvanAliaga/dazzle-sdk",
+  "bugs": {
+    "url": "https://github.com/IvanAliaga/dazzle-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IvanAliaga/dazzle-sdk.git",
+    "directory": "sdk/react-native/dazzle-react-native"
+  },
+  "author": {
+    "name": "Ivan Aliaga",
+    "email": "ivanaliaga22@gmail.com",
+    "url": "https://github.com/IvanAliaga"
+  },
   "license": "Apache-2.0",
   "peerDependencies": {
     "react": ">=18.0.0",
@@ -42,5 +77,12 @@
     "react": "^19.0.0",
     "react-native": "^0.79.0",
     "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

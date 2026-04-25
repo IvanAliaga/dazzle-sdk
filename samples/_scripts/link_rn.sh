@@ -6,7 +6,7 @@
 # Mirror of samples/_scripts/link_flutter.sh:
 #   - Android: publish the Dazzle AAR to the in-tree file-URL maven repo
 #     (sdk/android/build/maven-repo) so the RN plugin's
-#     `implementation "dev.dazzle:dazzle-sdk:<version>"` resolves.
+#     `implementation "com.ivanaliaga:dazzle-sdk:<version>"` resolves.
 #   - iOS: rsync sdk/ios/Sources + cshim + xcframework's
 #     libvalkey-server.a into ios/vendored/ so CocoaPods' source_files
 #     can reach them (pods only look inside the pod dir).
@@ -43,7 +43,7 @@ link_android() {
         err "Maven artefacts not found under $MAVEN_REPO after publish"
         exit 1
     fi
-    ok "published dev.dazzle:dazzle-sdk:* to $MAVEN_REPO"
+    ok "published com.ivanaliaga:dazzle-sdk:* to $MAVEN_REPO"
 }
 
 link_ios() {

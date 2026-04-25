@@ -40,7 +40,7 @@ link_android() {
         err "Maven artefacts not found under $MAVEN_REPO after publish"
         exit 1
     fi
-    ok "published dev.dazzle:dazzle-sdk:* to $MAVEN_REPO"
+    ok "published com.ivanaliaga:dazzle-sdk:* to $MAVEN_REPO"
 }
 
 link_ios() {

@@ -14,7 +14,7 @@ populated by:
 
 ```bash
 # From the repo root
-samples/_scripts/link_flutter.sh android   # publishes dev.dazzle:dazzle-sdk:* into sdk/android/build/maven-repo/
+samples/_scripts/link_flutter.sh android   # publishes com.ivanaliaga:dazzle-sdk:* into sdk/android/build/maven-repo/
 ```
 
 Then in your app's `build.gradle.kts`:
@@ -24,7 +24,7 @@ repositories {
     maven { url = uri("$rootDir/path/to/sdk/android/build/maven-repo") }
 }
 dependencies {
-    implementation("dev.dazzle:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
     // Only if you use the bundled LiteRT-LM adapter:
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
 }
@@ -39,7 +39,7 @@ includeBuild("../path/to/sdk/android")
 
 // build.gradle.kts
 dependencies {
-    implementation("dev.dazzle:dazzle-sdk")
+    implementation("com.ivanaliaga:dazzle-sdk")
 }
 ```
 

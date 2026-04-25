@@ -60,7 +60,7 @@ dependencies {
     // Dazzle SDK — same local file-URL maven repo as the Flutter plugin.
     // samples/_scripts/link_rn.sh publishes here before the consumer
     // app builds.
-    implementation 'dev.dazzle:dazzle-sdk:1.0.0-beta.3'
+    implementation 'com.ivanaliaga:dazzle-sdk:1.0.0-beta.4'
 
     // The RN plugin's Kotlin source doesn't reference
     // com.google.ai.edge.litertlm directly — the LiteRtLmClient decode

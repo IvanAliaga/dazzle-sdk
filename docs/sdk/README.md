@@ -108,7 +108,7 @@ released alongside the paper.
 ```kotlin
 // 1. Add to app/build.gradle.kts
 dependencies {
-    implementation("dev.dazzle:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
 }
 
 // 2. Boot + use

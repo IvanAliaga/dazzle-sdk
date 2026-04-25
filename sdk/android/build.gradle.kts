@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import com.vanniktech.maven.publish.SonatypeHost
+
 buildscript {
     dependencies {
         classpath("io.objectbox:objectbox-gradle-plugin:5.4.1")
@@ -23,7 +26,26 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.2.21"
     id("com.android.application") version "8.7.3" apply false
     `maven-publish`
+    // Vanniktech's plugin wraps Sonatype Central Portal upload + GPG
+    // signing + POM generation. The legacy `nexus-publish` flow no
+    // longer works with the new Central Portal endpoint introduced
+    // in 2024. See https://vanniktech.github.io/gradle-maven-publish-plugin/
+    id("com.vanniktech.maven.publish") version "0.30.0"
 }
+
+// Library coordinates — these are the strings users put into their
+// `build.gradle.kts`:
+//
+//     implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+//
+// `com.ivanaliaga` is the reverse-DNS of the maintainer's domain
+// (verified via DNS TXT record on Sonatype Central Portal).
+val dazzleGroupId = "com.ivanaliaga"
+val dazzleArtifactId = "dazzle-sdk"
+val dazzleVersion = "1.0.0-beta.4"
+
+group = dazzleGroupId
+version = dazzleVersion
 
 android {
     namespace = "dev.dazzle.sdk"
@@ -68,30 +90,111 @@ android {
         jvmTarget = "17"
     }
 
-    // Expose the debug + release variants to the local Maven repo so
-    // the Flutter plugin (which is itself an AAR and therefore can't
-    // consume another AAR as a direct file dep) can reference us via
-    // `implementation "dev.dazzle:dazzle-sdk:<version>"`.
+    // Used by the Vanniktech plugin to know which AGP variant gets
+    // packaged into the AAR. Sources jar is always attached.
     publishing {
-        singleVariant("debug") { withSourcesJar() }
         singleVariant("release") { withSourcesJar() }
     }
 }
 
+// ── Maven Central publishing — Vanniktech plugin ────────────────────
+//
+// This block configures the artefacts that `./gradlew
+// publishToMavenCentral` will produce + upload to the Sonatype
+// Central Portal. The plugin handles:
+//   1. Generating sourcesJar + javadocJar.
+//   2. Generating a POM with all the metadata Maven Central requires
+//      (license, developers, SCM, description, URL).
+//   3. Signing every artefact with the configured GPG key.
+//   4. Bundling the result and POSTing it to the Central Portal.
+//
+// Credentials come from `~/.gradle/gradle.properties` (NEVER commit):
+//
+//     mavenCentralUsername=<sonatype-token-username>
+//     mavenCentralPassword=<sonatype-token-password>
+//     signing.keyId=<last 8 chars of GPG key ID>
+//     signing.password=<GPG key passphrase>
+//     signing.secretKeyRingFile=/Users/.../secring.gpg
+//
+// First-time setup walkthrough lives in `samples/_scripts/CHECKLIST.md`.
+
+mavenPublishing {
+    // Sonatype Central Portal — the new endpoint (replaces s01.oss.sonatype.org).
+    // `automaticRelease = false` means each push lands in a manual-review
+    // staging area; flip to `true` once the first publish has been validated
+    // and you trust the CI pipeline.
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = false)
+    signAllPublications()
+
+    coordinates(dazzleGroupId, dazzleArtifactId, dazzleVersion)
+
+    configure(AndroidSingleVariantLibrary(
+        variant = "release",
+        sourcesJar = true,
+        publishJavadocJar = true,
+    ))
+
+    pom {
+        name.set("Dazzle SDK")
+        description.set(
+            "Embedded, in-process database for on-device LLM agents on " +
+            "Android. Forks Valkey 9 and runs the server inside the app " +
+            "process — no TCP loopback, no daemon. Includes typed " +
+            "primitives, snapshot cache, HNSW vector search, ChatAgent " +
+            "runtime, and five swappable LLMClient adapters."
+        )
+        inceptionYear.set("2026")
+        url.set("https://github.com/IvanAliaga/dazzle-sdk")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        developers {
+            developer {
+                id.set("IvanAliaga")
+                name.set("Ivan Aliaga")
+                email.set("ivanaliaga22@gmail.com")
+                url.set("https://github.com/IvanAliaga")
+            }
+        }
+        scm {
+            url.set("https://github.com/IvanAliaga/dazzle-sdk")
+            connection.set("scm:git:git://github.com/IvanAliaga/dazzle-sdk.git")
+            developerConnection.set("scm:git:ssh://git@github.com/IvanAliaga/dazzle-sdk.git")
+        }
+        issueManagement {
+            system.set("GitHub Issues")
+            url.set("https://github.com/IvanAliaga/dazzle-sdk/issues")
+        }
+    }
+}
+
+// ── Local-file Maven repo (for the Flutter plugin + RN package) ─────
+//
+// These plugins consume the AAR via `implementation
+// "com.ivanaliaga:dazzle-sdk:<version>"` resolved from a repo-local
+// file:// Maven mirror. Run:
+//
+//     ./gradlew publishToLocalFileRepoRepository
+//
+// to populate `sdk/android/build/maven-repo/` so a sibling Flutter /
+// RN build can resolve us without the Central Portal round-trip.
+
 afterEvaluate {
     publishing {
         publications {
-            register<MavenPublication>("debug") {
-                from(components["debug"])
-                groupId    = "dev.dazzle"
-                artifactId = "dazzle-sdk"
-                version    = "1.0.0-beta.3"
-            }
-            register<MavenPublication>("release") {
+            // Mirror the same release publication as the Central one,
+            // keyed by the Vanniktech plugin under the same groupId so
+            // local consumers see the artefact at exactly the same
+            // coordinate as Maven Central does.
+            register<MavenPublication>("localRelease") {
                 from(components["release"])
-                groupId    = "dev.dazzle"
-                artifactId = "dazzle-sdk"
-                version    = "1.0.0-beta.3"
+                groupId    = dazzleGroupId
+                artifactId = dazzleArtifactId
+                version    = dazzleVersion
             }
         }
         repositories {

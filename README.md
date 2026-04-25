@@ -192,7 +192,7 @@ PASS — see [`samples/PROVIDERS.md`](samples/PROVIDERS.md).
 ```kotlin
 // build.gradle.kts (app)
 dependencies {
-    implementation("dev.dazzle:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
     // Only if you use the bundled LiteRT-LM adapter:
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
 }
