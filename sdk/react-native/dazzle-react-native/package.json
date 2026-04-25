@@ -17,6 +17,7 @@
     "react-native.config.js",
     "tsconfig.json",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE",
     "!**/*.tsbuildinfo",
     "!android/build/",
