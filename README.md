@@ -187,7 +187,21 @@ behind the same `ChatAgent` API across the four stacks:
 Live verification matrix against `api.anthropic.com`: 4/4 stacks
 PASS — see [`samples/PROVIDERS.md`](samples/PROVIDERS.md).
 
+### Distribution / Distribución
+
+| Stack        | Registry                                                | Status                              |
+|--------------|---------------------------------------------------------|-------------------------------------|
+| iOS          | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.4` |
+| Flutter      | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.4` |
+| React Native | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.4` |
+| Android      | Maven Central (`com.ivanaliaga:dazzle-sdk`)             | 🟡 pending namespace verification — coming shortly |
+
 ### Android — one-liner agent / Agente en una línea
+
+> ⏳ **Coming soon.** The Maven Central publish is held by the
+> Sonatype Central Portal namespace verification (`com.ivanaliaga`).
+> Once it lands the snippet below resolves; until then build the
+> Android SDK from source — see `sdk/android/README.md`.
 
 ```kotlin
 // build.gradle.kts (app)
@@ -226,11 +240,11 @@ lifecycleScope.launch {
 
 ```swift
 // Package.swift (your app)
-.package(url: "https://github.com/IvanAliaga/dazzle.git", .exact("1.0.0-beta.4")),
+.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.4"),
 
 // Target dependencies
-.product(name: "Dazzle", package: "dazzle"),
-.product(name: "DazzleLiteRTLM", package: "dazzle"),  // opt-in LLM runtime
+.product(name: "Dazzle", package: "dazzle-sdk"),
+.product(name: "DazzleLiteRTLM", package: "dazzle-sdk"),  // opt-in LLM runtime
 ```
 
 ```swift
@@ -256,9 +270,7 @@ agent.send("¿qué temperatura hay ahora?")
 ```yaml
 # pubspec.yaml
 dependencies:
-  dazzle_flutter:
-    path: ../path/to/sdk/flutter/dazzle_flutter   # dev flow
-    # pub.dev version lands after GA
+  dazzle_flutter: ^1.0.0-beta.4
 ```
 
 ```dart
@@ -283,11 +295,9 @@ Future<void> main() async {
 
 ### React Native — same shape / mismo shape
 
-```json
-// package.json
-"dependencies": {
-  "dazzle-react-native": "file:../path/to/sdk/react-native/dazzle-react-native"
-}
+```bash
+npm install dazzle-react-native@^1.0.0-beta.4
+# or: yarn add dazzle-react-native@^1.0.0-beta.4
 ```
 
 ```ts
