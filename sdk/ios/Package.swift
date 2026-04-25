@@ -70,7 +70,7 @@ let package = Package(
         .binaryTarget(
             name: "DazzleBinary",
             url: "https://github.com/IvanAliaga/dazzle-sdk/releases/download/v1.0.0-beta.4/Dazzle.xcframework.zip",
-            checksum: "REPLACE_WITH_SWIFT_PACKAGE_COMPUTE_CHECKSUM_OUTPUT"
+            checksum: "ffc1d82854b03dabd8e5e6dcdb5ce04a978e159fa30001ba8daff6914359ce7f"
         ),
 
         // Compiles core/platform/dazzle_ios.c (via symlinks under cshim/) so
