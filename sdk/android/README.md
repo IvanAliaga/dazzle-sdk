@@ -8,14 +8,7 @@ Latest: **v1.0.0-beta.4** — see
 
 ## Install
 
-> ⏳ **Maven Central publish is landing.** The
-> [`com.ivanaliaga`](https://central.sonatype.com/namespace/com.ivanaliaga)
-> namespace is currently in DNS verification with the Sonatype Central
-> Portal — once it flips to ✅ Verified, the gradle snippet below
-> resolves directly. Until then, fall back to the local Maven repo
-> flow (also documented).
-
-### Maven Central (planned)
+### Maven Central
 
 ```kotlin
 // build.gradle.kts (app)
@@ -26,10 +19,10 @@ dependencies {
 }
 ```
 
-### Local Maven repo (today, while Central verifies)
+### Local Maven repo (SDK contributors)
 
 ```bash
-# From the repo root
+# From the repo root — for working from the source tree
 samples/_scripts/link_flutter.sh android   # publishes com.ivanaliaga:dazzle-sdk:* into sdk/android/build/maven-repo/
 ```
 

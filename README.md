@@ -194,14 +194,9 @@ PASS — see [`samples/PROVIDERS.md`](samples/PROVIDERS.md).
 | iOS          | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.4` |
 | Flutter      | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.4` |
 | React Native | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.4` |
-| Android      | Maven Central (`com.ivanaliaga:dazzle-sdk`)             | 🟡 pending namespace verification — coming shortly |
+| Android      | [Maven Central (`com.ivanaliaga:dazzle-sdk`)](https://central.sonatype.com/artifact/com.ivanaliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.4` |
 
 ### Android — one-liner agent / Agente en una línea
-
-> ⏳ **Coming soon.** The Maven Central publish is held by the
-> Sonatype Central Portal namespace verification (`com.ivanaliaga`).
-> Once it lands the snippet below resolves; until then build the
-> Android SDK from source — see `sdk/android/README.md`.
 
 ```kotlin
 // build.gradle.kts (app)
