@@ -17,8 +17,14 @@ Thumbs.db
 
 # iOS generated artifacts (rebuild with: sdk/ios/build.sh ; xcodegen generate)
 sdk/ios/Dazzle.xcframework/
+sdk/ios/Dazzle.xcframework.zip
 sdk/ios/demo/DazzleDemo.xcodeproj/
 sdk/ios/demo/build/
+
+# RN package — npm install output and tsc build output. The published
+# tarball includes lib/ (built on prepublishOnly) but the repo doesn't.
+sdk/react-native/dazzle-react-native/lib/
+sdk/react-native/dazzle-react-native/package-lock.json
 
 # Android gradle build artifacts
 sdk/android/.gradle/

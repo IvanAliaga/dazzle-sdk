@@ -111,14 +111,23 @@ export class ChatAgent {
   async send(userInput: string): Promise<void> {
     if (this.status.value !== 'idle') return;
     this.status.set('thinking');
+    // Local flag instead of re-reading `this.status.value` in `finally` — TS
+    // narrows the value to the literal `'idle'` from the guard above and
+    // can't see the in-place `.set('thinking')` mutation, so `!== 'error'`
+    // would be flagged as `TS2367 This comparison appears to be
+    // unintentional because the types '"idle"' and '"error"' have no
+    // overlap`. The flag captures the same intent without fighting the
+    // narrowing.
+    let errored = false;
     try {
       await this.runTurn(userInput);
     } catch (e) {
+      errored = true;
       this.status.set('error');
       throw e;
     } finally {
       this.streaming.set(null);
-      if (this.status.value !== 'error') this.status.set('idle');
+      if (!errored) this.status.set('idle');
     }
   }
 

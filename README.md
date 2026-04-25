@@ -361,10 +361,10 @@ benchmark junto con el paper.
 ## About the name / Sobre el nombre
 
 **EN.** Dazzle is named after a beloved Peruvian dog who brought joy
-and inspiration. This project carries her spirit of curiosity and
+and inspiration. This project carries his spirit of curiosity and
 exploration into edge AI.
 
-**ES.** Dazzle lleva el nombre de una perrita peruana muy querida
+**ES.** Dazzle lleva el nombre de un perrito peruano muy querido
 que trajo alegría e inspiración. Este proyecto carga su espíritu de
 curiosidad y exploración hacia la IA on-device.
 
