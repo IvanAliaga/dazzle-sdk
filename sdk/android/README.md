@@ -1,6 +1,6 @@
 # dazzle-sdk (Android)
 
-Native Kotlin SDK for [Dazzle](https://github.com/IvanAliaga/dazzle) —
+Native Kotlin SDK for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk) —
 the embedded, in-process database for on-device LLM agents.
 
 Latest: **v1.0.0-beta.4** — see
@@ -8,9 +8,25 @@ Latest: **v1.0.0-beta.4** — see
 
 ## Install
 
-The AAR is not on Maven Central yet (planned for v1.0.0). Today the
-samples + experiments consume it from a repo-local file-URL Maven
-populated by:
+> ⏳ **Maven Central publish is landing.** The
+> [`com.ivanaliaga`](https://central.sonatype.com/namespace/com.ivanaliaga)
+> namespace is currently in DNS verification with the Sonatype Central
+> Portal — once it flips to ✅ Verified, the gradle snippet below
+> resolves directly. Until then, fall back to the local Maven repo
+> flow (also documented).
+
+### Maven Central (planned)
+
+```kotlin
+// build.gradle.kts (app)
+dependencies {
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+    // Only if you use the bundled LiteRT-LM adapter:
+    implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
+}
+```
+
+### Local Maven repo (today, while Central verifies)
 
 ```bash
 # From the repo root
@@ -30,8 +46,7 @@ dependencies {
 }
 ```
 
-For development consumption from a sibling Gradle build, depend on the
-project directly:
+### Composite build (SDK development)
 
 ```kotlin
 // settings.gradle.kts

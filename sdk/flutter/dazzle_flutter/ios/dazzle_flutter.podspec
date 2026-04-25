@@ -9,14 +9,14 @@
 
 Pod::Spec.new do |s|
   s.name             = 'dazzle_flutter'
-  s.version          = '1.0.0-beta.3'
+  s.version          = '1.0.0-beta.4'
   s.summary          = 'Dazzle SDK for Flutter — embedded DB + vector search + LLM agents.'
   s.description      = <<-DESC
 Embedded, in-process Valkey-based database with vector search (HNSW_SQ8
 via NEON SDOT) and ChatAgent runtime for on-device LLM agents. Links
 the same Dazzle.xcframework native Swift apps use.
                        DESC
-  s.homepage         = 'https://github.com/IvanAliaga/dazzle'
+  s.homepage         = 'https://github.com/IvanAliaga/dazzle-sdk'
   s.license          = { :file => '../../../LICENSE' }
   s.author           = { 'Ivan Aliaga' => 'ivan.aliaga@urp.edu.pe' }
 

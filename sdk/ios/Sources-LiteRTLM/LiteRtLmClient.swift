@@ -27,11 +27,11 @@ import LiteRTLMSwift
 ///
 /// ```swift
 /// // Package.swift
-/// .package(url: "https://github.com/IvanAliaga/dazzle.git", branch: "main"),
+/// .package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.4"),
 ///
 /// // Target dependencies
-/// .product(name: "Dazzle", package: "dazzle"),
-/// .product(name: "DazzleLiteRTLM", package: "dazzle"),   // opt-in
+/// .product(name: "Dazzle", package: "dazzle-sdk"),
+/// .product(name: "DazzleLiteRTLM", package: "dazzle-sdk"),   // opt-in
 /// ```
 ///
 /// **Critical**: on-device you also need a post-build script that re-signs

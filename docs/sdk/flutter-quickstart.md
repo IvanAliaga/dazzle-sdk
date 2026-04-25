@@ -174,6 +174,6 @@ other adapter; tool-calling auto-translates to `DeltaToolCallStart`
 
 ## Reporting an issue
 
-GitHub: https://github.com/IvanAliaga/dazzle/issues — include the
+GitHub: https://github.com/IvanAliaga/dazzle-sdk/issues — include the
 failing `flutter analyze` output + the JSON report from
 `samples/_scripts/_test_results/` if the sample harness surfaces it.

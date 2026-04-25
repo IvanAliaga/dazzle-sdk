@@ -222,7 +222,7 @@ For perf-sensitive users we recommend either:
 
 ## Reporting an issue
 
-GitHub: https://github.com/IvanAliaga/dazzle/issues — include the
+GitHub: https://github.com/IvanAliaga/dazzle-sdk/issues — include the
 output of `npx react-native doctor` + the JSON report from
 `samples/_scripts/_test_results/chat-*_rn_*.json` if the automated
 harness ran.

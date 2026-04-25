@@ -27,7 +27,7 @@ every platform sees identical behaviour and the same benchmark profile.
 - **F3 — the 5 LLM adapters** ✅
 - **F4 — `chat-memory` / `chat-iot` / `chat-kb` example Flutter apps** ✅
   (3/3 PASS on Moto G35 5G + iPhone 12 Pro)
-- F5 — pub.dev publish, CI, DocC-equivalent docs (next).
+- **F5 — pub.dev publish** ✅ ([`dazzle_flutter` on pub.dev](https://pub.dev/packages/dazzle_flutter)) — CI + DocC-equivalent docs next.
 
 ## Quickstart
 

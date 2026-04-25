@@ -146,10 +146,10 @@ agent.send("Explain quantisation in one sentence.")
 
 ```swift
 // 1. Add to Package.swift
-.package(url: "https://github.com/IvanAliaga/dazzle.git", branch: "main")
+.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.4")
 
 // 2. Target dependency
-.product(name: "Dazzle", package: "dazzle"),
+.product(name: "Dazzle", package: "dazzle-sdk"),
 
 // 3. Boot + use
 import Dazzle

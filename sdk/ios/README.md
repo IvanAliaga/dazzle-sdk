@@ -1,6 +1,6 @@
 # Dazzle (iOS / Swift)
 
-Native Swift SDK for [Dazzle](https://github.com/IvanAliaga/dazzle) —
+Native Swift SDK for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk) —
 the embedded, in-process database for on-device LLM agents.
 
 Latest: **v1.0.0-beta.4** — see
@@ -25,13 +25,13 @@ The SDK ships as **`Dazzle.xcframework`**, produced by
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/IvanAliaga/dazzle.git",
-             .exact("1.0.0-beta.4")),
+    .package(url: "https://github.com/IvanAliaga/dazzle-sdk.git",
+             exact: "1.0.0-beta.4"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: [
-        .product(name: "Dazzle", package: "dazzle"),
-        // .product(name: "DazzleLiteRTLM", package: "dazzle"), // optional
+        .product(name: "Dazzle", package: "dazzle-sdk"),
+        // .product(name: "DazzleLiteRTLM", package: "dazzle-sdk"), // optional
     ]),
 ]
 ```
@@ -42,7 +42,7 @@ targets: [
 # project.yml
 packages:
   Dazzle:
-    url: https://github.com/IvanAliaga/dazzle.git
+    url: https://github.com/IvanAliaga/dazzle-sdk.git
     exactVersion: 1.0.0-beta.4
 targets:
   MyApp:

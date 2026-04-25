@@ -1,6 +1,6 @@
 # dazzle-react-native
 
-React Native package for [Dazzle](https://github.com/IvanAliaga/dazzle)
+React Native package for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk)
 — the embedded, in-process database for on-device LLM agents. Same
 embedded Valkey + HNSW vector search + ChatAgent runtime the
 Android / iOS native + Flutter SDKs ship.
@@ -10,8 +10,26 @@ Latest: **v1.0.0-beta.4** — see
 
 ## Install
 
-The package is not on npm yet (planned for v1.0.0). Today consume it
-via a path dep:
+```bash
+npm install dazzle-react-native
+# or: yarn add dazzle-react-native
+```
+
+iOS pods (run after install):
+
+```bash
+cd ios && pod install && cd ..
+```
+
+That's it for app developers — the published tarball already bundles
+the iOS Swift sources + `libvalkey-server.a` so CocoaPods can compile
+them in. On Android the AAR resolves through the package's own
+`android/build.gradle` (no extra wiring needed).
+
+### Local development (SDK contributors only)
+
+If you're hacking on Dazzle itself and want a sample app to consume
+the working tree, swap the npm install for a path dep:
 
 ```json
 // package.json of your RN app
@@ -20,7 +38,7 @@ via a path dep:
 }
 ```
 
-Bootstrap the native artefacts before the first build:
+Then bootstrap the native artefacts:
 
 ```bash
 samples/_scripts/link_rn.sh             # Android + iOS
@@ -30,7 +48,8 @@ samples/_scripts/link_rn.sh ios         # iOS only
 
 This publishes the Android AAR into a repo-local file-URL Maven repo
 (`sdk/android/build/maven-repo`) and rsyncs the iOS Swift sources +
-`libvalkey-server.a` into `sdk/react-native/dazzle-react-native/ios/vendored/`.
+`libvalkey-server.a` into
+`sdk/react-native/dazzle-react-native/ios/vendored/`.
 
 ## Minimum target
 
