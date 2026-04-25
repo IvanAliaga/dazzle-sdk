@@ -1,0 +1,14 @@
+diff --git a/src/server.c b/src/server.c
+index 8384593..a041233 100644
+--- a/src/server.c
++++ b/src/server.c
+@@ -7394,6 +7394,9 @@ __attribute__((weak)) int main(int argc, char **argv) {
+         clusterInitLast();
+     }
+     InitServerLast();
++#if defined(VALKEY_IOS) || defined(__ANDROID__)
++    { extern void dazzle_direct_init(void); dazzle_direct_init(); }
++#endif
+ 
+     if (!server.sentinel_mode) {
+         /* Things not needed when running in Sentinel mode. */

@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "litertlm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mylovelycodes/LiteRTLM-Swift.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0e63b19c21ba562d6824fbfc409fba0916acea18"
+      }
+    }
+  ],
+  "version" : 2
+}

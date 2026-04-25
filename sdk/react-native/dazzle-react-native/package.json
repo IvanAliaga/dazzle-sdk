@@ -1,0 +1,46 @@
+{
+  "name": "dazzle-react-native",
+  "version": "1.0.0-beta.3",
+  "description": "Dazzle SDK for React Native — embedded Valkey DB + HNSW vector search + ChatAgent runtime for on-device LLM agents. Same libdazzle.so / Dazzle.xcframework the native Android / iOS SDKs ship.",
+  "main": "src/index.ts",
+  "source": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "ios",
+    "dazzle-react-native.podspec",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react-native",
+    "dazzle",
+    "valkey",
+    "redis",
+    "vector-search",
+    "hnsw",
+    "llm",
+    "on-device",
+    "embedded-db"
+  ],
+  "repository": "https://github.com/IvanAliaga/dazzle",
+  "author": "Ivan Aliaga <ivan.aliaga@urp.edu.pe>",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.73.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-native": "^0.73.0",
+    "react": "^19.0.0",
+    "react-native": "^0.79.0",
+    "typescript": "^5.4.0"
+  }
+}

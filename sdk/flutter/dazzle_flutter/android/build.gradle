@@ -1,0 +1,61 @@
+// Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+// SPDX-License-Identifier: Apache-2.0
+
+group   = 'dev.dazzle.flutter'
+version = '1.0.0-beta.3'
+
+buildscript {
+    ext.kotlin_version = '2.2.21'
+    repositories { google(); mavenCentral() }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories { google(); mavenCentral() }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace  'dev.dazzle.flutter'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 26
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+// Pull the Dazzle AAR from the local Maven repo produced by
+// `samples/_scripts/link_flutter.sh android`. AGP does not allow a
+// library module (this plugin's AAR) to consume another AAR as a
+// direct file dependency, so we publish to an in-repo file-URL maven
+// and reference it by coordinates. The same code path will work
+// unchanged once the SDK is published to a real Maven repo.
+repositories {
+    maven {
+        url = uri("$rootDir/../../../sdk/android/build/maven-repo")
+    }
+}
+
+dependencies {
+    implementation "dev.dazzle:dazzle-sdk:$version"
+
+    // LiteRT-LM runtime. `compileOnly` on the upstream SDK; consumers
+    // that instantiate LiteRtLmClient need to add it to their app's
+    // build.gradle. We gate the Flutter-side method channel class the
+    // same way — the Kotlin plugin shell has no hard dependency.
+    compileOnly "com.google.ai.edge.litertlm:litertlm-android:0.10.0"
+}

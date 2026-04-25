@@ -1,0 +1,212 @@
+# Valkey runtime files
+*.rdb
+*.aof
+appendonlydir/
+dump.rdb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# iOS generated artifacts (rebuild with: sdk/ios/build.sh ; xcodegen generate)
+sdk/ios/Dazzle.xcframework/
+sdk/ios/demo/DazzleDemo.xcodeproj/
+sdk/ios/demo/build/
+
+# Android gradle build artifacts
+sdk/android/.gradle/
+sdk/android/build/
+sdk/android/*/build/
+
+# Samples — generated artifacts (xcodegen output + gradle build dirs +
+# downloaded LLM weights). Sources under samples/ are tracked.
+samples/chat-memory/ios/DazzleChatMemory.xcodeproj/
+samples/chat-memory/ios/build/
+samples/chat-memory/android/build/
+samples/chat-memory/android/.gradle/
+samples/chat-iot/ios/DazzleChatIot.xcodeproj/
+samples/chat-iot/ios/build/
+samples/chat-iot/android/build/
+samples/chat-iot/android/.gradle/
+samples/chat-kb/ios/DazzleChatKb.xcodeproj/
+samples/chat-kb/ios/build/
+samples/chat-kb/android/build/
+samples/chat-kb/android/.gradle/
+samples/_scripts/_models/
+sdk/android/.cxx/
+sdk/android/*/.cxx/
+sdk/android/.kotlin/
+sdk/android/*/.kotlin/
+local.properties
+
+# SPM build artifacts (Package.swift in sdk/ios/)
+sdk/ios/.build/
+sdk/ios/.swiftpm/
+
+# On-device model weights and runtime caches — downloaded/generated,
+# never committed (multi-GB artifacts).
+*.litertlm
+*.xnnpack_cache
+*.gguf
+artifacts/
+
+# NQ slice raw download (materialised by research/scripts/nq_slice.py) —
+# the derived JSONL slice under experiment/backends/android/assets/nq_slice/
+# is committed; the 44 MB parquet source is not.
+research/data/nq_slice/raw/
+
+# HNSW parity dataset (regenerated deterministically from seed=42 via
+# research/scripts/hnsw_parity.py — 164 MB of float32 vectors, not worth
+# committing). The summary JSONs under research/results/ are committed.
+research/data/hnsw_parity/
+
+# Editor / agent-local state.
+.claude/
+
+# sqlite-vector-ai xcframework (Elastic License 2.0, bench-only, NOT
+# redistributed — run sqlitevectorai/download_xcframework.sh to fetch).
+experiment/backends/ios/sqlitevectorai/vector.xcframework/
+# Sample test intermediate dirs (results JSONs ARE tracked for reproducibility)
+samples/_scripts/_test_logs/
+
+# Flutter / Dart — SDK package
+# Native artefacts vendored by samples/_scripts/link_flutter.sh (not
+# tracked — rebuild with the same script whenever the native SDK changes).
+sdk/flutter/dazzle_flutter/android/libs/*.aar
+sdk/flutter/dazzle_flutter/ios/Classes/vendored/
+
+# React Native — SDK package + its samples.
+sdk/react-native/dazzle-react-native/node_modules/
+sdk/react-native/dazzle-react-native/lib/
+sdk/react-native/dazzle-react-native/android/build/
+sdk/react-native/dazzle-react-native/android/.gradle/
+sdk/react-native/dazzle-react-native/android/.cxx/
+sdk/react-native/dazzle-react-native/android/local.properties
+sdk/react-native/dazzle-react-native/ios/vendored/
+samples/chat-memory-rn/node_modules/
+samples/chat-memory-rn/android/.gradle/
+samples/chat-memory-rn/android/build/
+samples/chat-memory-rn/android/app/build/
+samples/chat-memory-rn/android/app/src/main/assets/index.android.bundle
+samples/chat-memory-rn/ios/Pods/
+samples/chat-memory-rn/ios/build/
+samples/chat-memory-rn/package-lock.json
+samples/chat-iot-rn/node_modules/
+samples/chat-iot-rn/android/.gradle/
+samples/chat-iot-rn/android/build/
+samples/chat-iot-rn/android/app/build/
+samples/chat-iot-rn/android/app/src/main/assets/index.android.bundle
+samples/chat-iot-rn/ios/Pods/
+samples/chat-iot-rn/ios/build/
+samples/chat-iot-rn/package-lock.json
+samples/chat-kb-rn/node_modules/
+samples/chat-kb-rn/android/.gradle/
+samples/chat-kb-rn/android/build/
+samples/chat-kb-rn/android/app/build/
+samples/chat-kb-rn/android/app/src/main/assets/index.android.bundle
+samples/chat-kb-rn/ios/Pods/
+samples/chat-kb-rn/ios/build/
+samples/chat-kb-rn/package-lock.json
+sdk/flutter/dazzle_flutter/.dart_tool/
+sdk/flutter/dazzle_flutter/build/
+sdk/flutter/dazzle_flutter/.flutter-plugins
+sdk/flutter/dazzle_flutter/.flutter-plugins-dependencies
+sdk/flutter/dazzle_flutter/.packages
+sdk/flutter/dazzle_flutter/pubspec.lock
+sdk/flutter/dazzle_flutter/example/.dart_tool/
+sdk/flutter/dazzle_flutter/example/build/
+sdk/flutter/dazzle_flutter/example/pubspec.lock
+sdk/flutter/dazzle_flutter/example/ios/Podfile.lock
+sdk/flutter/dazzle_flutter/example/ios/Pods/
+sdk/flutter/dazzle_flutter/example/android/.gradle/
+sdk/flutter/dazzle_flutter/example/android/build/
+
+# Flutter samples — per-app generated artifacts
+samples/_shared/flutter/.dart_tool/
+samples/_shared/flutter/pubspec.lock
+samples/chat-memory-flutter/.dart_tool/
+samples/chat-memory-flutter/build/
+samples/chat-memory-flutter/.flutter-plugins
+samples/chat-memory-flutter/.flutter-plugins-dependencies
+samples/chat-memory-flutter/pubspec.lock
+samples/chat-memory-flutter/*.iml
+samples/chat-memory-flutter/android/.gradle/
+samples/chat-memory-flutter/android/build/
+samples/chat-memory-flutter/android/app/build/
+samples/chat-memory-flutter/android/local.properties
+samples/chat-memory-flutter/android/*.iml
+samples/chat-memory-flutter/ios/Pods/
+samples/chat-memory-flutter/ios/Flutter/Flutter.podspec
+samples/chat-memory-flutter/ios/Podfile.lock
+samples/chat-memory-flutter/ios/Runner.xcworkspace/xcuserdata/
+samples/chat-memory-flutter/ios/Runner.xcodeproj/xcuserdata/
+samples/chat-memory-flutter/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+
+samples/chat-iot-flutter/.dart_tool/
+samples/chat-iot-flutter/build/
+samples/chat-iot-flutter/.flutter-plugins
+samples/chat-iot-flutter/.flutter-plugins-dependencies
+samples/chat-iot-flutter/pubspec.lock
+samples/chat-iot-flutter/*.iml
+samples/chat-iot-flutter/android/.gradle/
+samples/chat-iot-flutter/android/build/
+samples/chat-iot-flutter/android/app/build/
+samples/chat-iot-flutter/android/local.properties
+samples/chat-iot-flutter/android/*.iml
+samples/chat-iot-flutter/ios/Pods/
+samples/chat-iot-flutter/ios/Flutter/Flutter.podspec
+samples/chat-iot-flutter/ios/Podfile.lock
+samples/chat-iot-flutter/ios/Runner.xcworkspace/xcuserdata/
+samples/chat-iot-flutter/ios/Runner.xcodeproj/xcuserdata/
+samples/chat-iot-flutter/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+
+samples/chat-kb-flutter/.dart_tool/
+samples/chat-kb-flutter/build/
+samples/chat-kb-flutter/.flutter-plugins
+samples/chat-kb-flutter/.flutter-plugins-dependencies
+samples/chat-kb-flutter/pubspec.lock
+samples/chat-kb-flutter/*.iml
+samples/chat-kb-flutter/android/.gradle/
+samples/chat-kb-flutter/android/build/
+samples/chat-kb-flutter/android/app/build/
+samples/chat-kb-flutter/android/local.properties
+samples/chat-kb-flutter/android/*.iml
+samples/chat-kb-flutter/ios/Pods/
+samples/chat-kb-flutter/ios/Flutter/Flutter.podspec
+samples/chat-kb-flutter/ios/Podfile.lock
+samples/chat-kb-flutter/ios/Runner.xcworkspace/xcuserdata/
+samples/chat-kb-flutter/ios/Runner.xcodeproj/xcuserdata/
+samples/chat-kb-flutter/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+samples/chat-iot-rn/node_modules/
+samples/chat-iot-rn/android/.gradle/
+samples/chat-iot-rn/android/build/
+samples/chat-iot-rn/android/app/build/
+samples/chat-iot-rn/android/app/src/main/assets/index.android.bundle
+samples/chat-iot-rn/ios/Pods/
+samples/chat-iot-rn/ios/Podfile.lock
+samples/chat-iot-rn/ios/build/
+samples/chat-iot-rn/ios/main.jsbundle
+samples/chat-iot-rn/ios/assets/
+samples/chat-iot-rn/ios/*.xcworkspace/xcshareddata/
+samples/chat-iot-rn/ios/*.xcworkspace/xcuserdata/
+samples/chat-iot-rn/package-lock.json
+samples/chat-kb-rn/node_modules/
+samples/chat-kb-rn/android/.gradle/
+samples/chat-kb-rn/android/build/
+samples/chat-kb-rn/android/app/build/
+samples/chat-kb-rn/android/app/src/main/assets/index.android.bundle
+samples/chat-kb-rn/ios/Pods/
+samples/chat-kb-rn/ios/Podfile.lock
+samples/chat-kb-rn/ios/build/
+samples/chat-kb-rn/ios/main.jsbundle
+samples/chat-kb-rn/ios/assets/
+samples/chat-kb-rn/ios/*.xcworkspace/xcshareddata/
+samples/chat-kb-rn/ios/*.xcworkspace/xcuserdata/
+samples/chat-kb-rn/package-lock.json

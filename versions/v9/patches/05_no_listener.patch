@@ -1,0 +1,39 @@
+Patch 05 — skip the "Configured to not listen anywhere" exit on mobile builds.
+
+Dazzle runs Valkey in-process. Every directCommand / directPipeline /
+primitive call routes through dazzle_direct_init's fake client
+(CLIENT_ID_CACHED_RESPONSE, set up in InitServerLast), which does not
+need a socket, TCP port, or unix socket to operate. With `--port 0`
+and no `--unixsocket`, upstream Valkey aborts in initListeners()
+before the fake-client bring-up runs, even though nothing in the
+embedded path depends on `listen_fds > 0`.
+
+This patch turns the bail-out into a warning-only path when compiled
+for VALKEY_IOS or __ANDROID__. Mainline builds (the default) keep the
+existing guard so the server still refuses to boot silently when
+mis-configured on a standalone host.
+
+diff --git a/src/server.c b/src/server.c
+--- a/src/server.c
++++ b/src/server.c
+@@ -3131,10 +3131,19 @@ void initListeners(void) {
+         listen_fds += listener->count;
+     }
+
+     if (listen_fds == 0) {
++#if defined(VALKEY_IOS) || defined(__ANDROID__)
++        /* dazzle: the in-process fake-client path
++         * (see core/transport/dazzle_transport.c — CLIENT_ID_CACHED_RESPONSE)
++         * serves every directCommand / directPipeline call, so a zero
++         * listener count is the intentional "in-process only" mode.
++         * Log for diagnostics and keep going instead of exiting. */
++        serverLog(LL_NOTICE, "Dazzle in-process mode: no listener configured, using JNI pipe only.");
++#else
+         serverLog(LL_WARNING, "Configured to not listen anywhere, exiting.");
+         exit(1);
++#endif
+     }
+ }
+
+ /* Some steps in server initialization need to be done last (after modules
+  * are loaded).

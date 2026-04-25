@@ -1,0 +1,54 @@
+name: Security — CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 9 * * 1"
+
+jobs:
+  analyze-c:
+    name: CodeQL — C
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: c-cpp
+          queries: security-extended
+      - name: Build for analysis
+        run: |
+          sudo apt-get install -y gcc liburing-dev
+          gcc -O0 -std=c11 -Icore/transport \
+            core/transport/dazzle_transport.c \
+            core/transport/dazzle_worker_pool.c \
+            -luring -lpthread -c
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
+  analyze-kotlin:
+    name: CodeQL — Kotlin
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          queries: security-extended
+      - name: Build for analysis
+        working-directory: sdk/android
+        run: ./gradlew :dazzle:compileDebugKotlin --no-daemon || true
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3

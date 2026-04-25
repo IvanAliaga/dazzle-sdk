@@ -1,0 +1,32 @@
+name: Test — iOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sdk/ios/**"
+      - "core/**"
+      - "versions/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "sdk/ios/**"
+      - "core/**"
+      - "versions/**"
+
+jobs:
+  build:
+    name: Build XCFramework
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+      - name: Build XCFramework
+        working-directory: sdk/ios
+        run: bash build.sh
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dazzle.xcframework
+          path: sdk/ios/Dazzle.xcframework

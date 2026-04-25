@@ -1,0 +1,40 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name:        dazzle_flutter
+description: >
+  Dazzle SDK for Flutter. Embedded in-process database + vector search +
+  ChatAgent runtime for on-device LLM agents. Links the same
+  libdazzle.so / Dazzle.xcframework the native Android and iOS SDKs
+  ship — zero behaviour drift across platforms.
+version:     1.0.0-beta.3
+homepage:    https://github.com/IvanAliaga/dazzle
+repository:  https://github.com/IvanAliaga/dazzle
+issue_tracker: https://github.com/IvanAliaga/dazzle/issues
+
+environment:
+  sdk:     ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.8
+  ffi:                        ^2.1.0
+  # OpenAICompatibleClient — pure Dart HTTP, no native deps.
+  http:                       ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  ffigen:        ^13.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package:    dev.dazzle.flutter
+        pluginClass: DazzleFlutterPlugin
+      ios:
+        pluginClass: DazzleFlutterPlugin

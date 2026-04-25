@@ -1,0 +1,71 @@
+// Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+// SPDX-License-Identifier: Apache-2.0
+
+buildscript {
+    ext.kotlin_version = '2.2.21'
+    repositories { google(); mavenCentral() }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace  'dev.dazzle.rn'
+    compileSdk 35
+    defaultConfig {
+        minSdk 26
+        ndk {
+            // JSI .so ships for the same arches the Dazzle AAR does.
+            abiFilters "arm64-v8a"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags += ["-std=c++17"]
+                arguments += [
+                    "-DANDROID_STL=c++_shared",
+                    "-DCMAKE_CXX_VISIBILITY_PRESET=hidden",
+                ]
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path = file("CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    // PackagingOptions — strip the dup libc++_shared.so the RN AAR
+    // also bundles; pickFirst lets Gradle keep one copy.
+    packagingOptions {
+        pickFirst "**/libc++_shared.so"
+    }
+}
+
+repositories { google(); mavenCentral() }
+
+dependencies {
+    // The React Native runtime provides React-Core; autolinking pulls it in.
+    implementation 'com.facebook.react:react-native:+'
+    // Dazzle SDK — same local file-URL maven repo as the Flutter plugin.
+    // samples/_scripts/link_rn.sh publishes here before the consumer
+    // app builds.
+    implementation 'dev.dazzle:dazzle-sdk:1.0.0-beta.3'
+
+    // The RN plugin's Kotlin source doesn't reference
+    // com.google.ai.edge.litertlm directly — the LiteRtLmClient decode
+    // loop lives in the Dazzle SDK AAR. Consumers that want to run
+    // LiteRT add the runtime themselves with a kotlinVersion ≥ 2.3:
+    //
+    //     implementation 'com.google.ai.edge.litertlm:litertlm-android:0.10.0'
+}

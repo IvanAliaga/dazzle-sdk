@@ -1,0 +1,77 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name: DazzleChatKb
+options:
+  bundleIdPrefix: io.dazzle.samples
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+# LiteRT-LM Swift wrapper (our iOS port). Shipped in every sample so
+# swapping the LLMAdapter to LiteRtLm requires zero project changes.
+packages:
+  LiteRTLM-Swift:
+    url: https://github.com/mylovelycodes/LiteRTLM-Swift.git
+    branch: main
+
+targets:
+  DazzleChatKb:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Resources
+      - path: ../../_shared/ios/ChatView.swift
+      - path: ../../_shared/ios/LLMAdapter.swift
+      - path: ../../_shared/ios/SampleTestRunner.swift
+      - path: ../../../sdk/ios/Sources
+      - path: ../../../sdk/ios/Sources-LiteRTLM
+      - path: ../../../sdk/ios/cshim/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.samples.chatkb
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lc++ -lz -lsqlite3"
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      - package: LiteRTLM-Swift
+        product: LiteRTLMSwift
+    postBuildScripts:
+      - name: "Re-sign nested CLiteRTLM dylibs"
+        runOnlyWhenInstalling: false
+        shell: /bin/bash
+        script: |
+          set -e
+          FW="${CODESIGNING_FOLDER_PATH}/Frameworks/CLiteRTLM.framework"
+          if [ ! -d "$FW" ]; then
+            echo "CLiteRTLM.framework not found at $FW — skipping"
+            exit 0
+          fi
+          if [ -z "${EXPANDED_CODE_SIGN_IDENTITY}" ]; then
+            echo "No code sign identity — skipping"
+            exit 0
+          fi
+          IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY}"
+          for DYLIB in "$FW"/*.dylib; do
+            [ -f "$DYLIB" ] || continue
+            /usr/bin/codesign --force --sign "$IDENTITY" \
+              --preserve-metadata=identifier,entitlements,flags \
+              --timestamp=none "$DYLIB"
+          done
+          /usr/bin/codesign --force --sign "$IDENTITY" \
+            --preserve-metadata=identifier,entitlements,flags \
+            --timestamp=none "$FW"
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName:         "$(PRODUCT_NAME)"
+        CFBundleDisplayName:  "Dazzle Chat KB"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait

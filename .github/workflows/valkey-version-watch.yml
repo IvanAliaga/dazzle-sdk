@@ -1,0 +1,56 @@
+name: Valkey version watch
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Check for new Valkey release
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      CURRENT_VERSION: "9.0.3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch latest Valkey release
+        id: latest
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/valkey-io/valkey/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+          echo "version=$LATEST" >> "$GITHUB_OUTPUT"
+      - name: Compare versions
+        id: compare
+        run: |
+          CURRENT="${{ env.CURRENT_VERSION }}"
+          LATEST="${{ steps.latest.outputs.version }}"
+          if [ "$CURRENT" != "$LATEST" ]; then
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+            echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          else
+            echo "outdated=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open issue if outdated
+        if: steps.compare.outputs.outdated == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const latest = "${{ steps.compare.outputs.latest }}";
+            const current = "${{ env.CURRENT_VERSION }}";
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'valkey-upgrade'
+            });
+            const alreadyOpen = existing.data.some(i => i.title.includes(latest));
+            if (!alreadyOpen) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Valkey upstream: ${current} → ${latest}`,
+                body: `Valkey publicó la versión **${latest}**. Dazzle está en **${current}**.\n\nRevisar changelog y actualizar parches en \`versions/v9/patches/\`.`,
+                labels: ['valkey-upgrade']
+              });
+            }

@@ -1,0 +1,25 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name:        dazzle_flutter_example
+description: Smoke-test app for the dazzle_flutter plugin.
+publish_to:  'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk:     ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dazzle_flutter:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

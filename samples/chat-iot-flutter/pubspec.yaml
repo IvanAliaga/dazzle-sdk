@@ -1,0 +1,32 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name: dazzle_chat_iot_flutter
+description: >
+  Chat-iot sample — LLM + sensor-data tool grounded on a Dazzle
+  SortedSet corpus. Same behaviour as samples/chat-iot/{android,ios},
+  ported to Flutter.
+publish_to: 'none'
+version:    1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  dazzle_flutter:
+    path: ../../sdk/flutter/dazzle_flutter
+  dazzle_samples_shared:
+    path: ../_shared/flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/iot_windows.json

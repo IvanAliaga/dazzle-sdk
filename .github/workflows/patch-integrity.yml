@@ -1,0 +1,37 @@
+name: Patch integrity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "versions/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "versions/**"
+
+jobs:
+  verify:
+    name: Verify patches apply cleanly
+    runs-on: ubuntu-latest
+    env:
+      VALKEY_VERSION: "9.0.3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Valkey source
+        run: |
+          curl -sL "https://github.com/valkey-io/valkey/archive/refs/tags/${{ env.VALKEY_VERSION }}.tar.gz" \
+            | tar -xz
+          mv "valkey-${{ env.VALKEY_VERSION }}" valkey-src
+      - name: Apply patches
+        run: |
+          FAILED=0
+          for patch in versions/v9/patches/*.patch; do
+            [ -f "$patch" ] || continue
+            echo "Applying $patch..."
+            if ! patch -d valkey-src -p1 --dry-run < "$patch"; then
+              echo "FAIL: $patch no aplica limpio"
+              FAILED=1
+            fi
+          done
+          exit $FAILED

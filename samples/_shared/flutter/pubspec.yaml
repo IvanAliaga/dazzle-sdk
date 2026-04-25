@@ -1,0 +1,25 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name:        dazzle_samples_shared
+description: >
+  Shared Flutter UI + test harness for the Dazzle sample apps
+  (chat-memory, chat-iot, chat-kb). Mirrors samples/_shared/{android,ios}
+  one-to-one so behaviour is identical across platforms.
+publish_to:  none
+version:     0.0.1
+
+environment:
+  sdk:     ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  dazzle_flutter:
+    path: ../../../sdk/flutter/dazzle_flutter
+  path_provider: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

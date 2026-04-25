@@ -1,0 +1,55 @@
+name: Check commit messages
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check-commits:
+    name: No prohibited words in commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan commit messages
+        run: |
+          set -u
+          ZERO="0000000000000000000000000000000000000000"
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            BEFORE="${{ github.event.before }}"
+            AFTER="${{ github.event.after }}"
+            if [ -z "$BEFORE" ] || [ "$BEFORE" = "$ZERO" ]; then
+              # New-branch push or deleted branch: before is zero-SHA, so
+              # before..after is invalid. Fall back to the commits unique
+              # to this branch relative to main.
+              if git rev-parse --verify origin/main >/dev/null 2>&1; then
+                RANGE="origin/main..$AFTER"
+              else
+                # No main reference (first push ever) — bound the scan to
+                # the last 50 commits so we do not scan arbitrary history.
+                RANGE="$AFTER~50..$AFTER"
+              fi
+            else
+              RANGE="$BEFORE..$AFTER"
+            fi
+          fi
+
+          echo "Scanning range: $RANGE"
+
+          # \b word boundaries avoid substring false positives like
+          # "claudette" or "unclaude" matching "claude".
+          OFFENDING=$(git log --format="%H %s%n%b" "$RANGE" 2>/dev/null \
+            | grep -iE '\b(co-authored-by|claude)\b' || true)
+
+          if [ -n "$OFFENDING" ]; then
+            echo "Commits con palabras prohibidas (co-authored-by / claude):"
+            echo "$OFFENDING"
+            exit 1
+          fi
+
+          echo "Todos los commits estan limpios."

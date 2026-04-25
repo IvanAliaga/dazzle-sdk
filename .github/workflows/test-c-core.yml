@@ -1,0 +1,33 @@
+name: Test — C core
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "core/**"
+      - "tests/c/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "core/**"
+      - "tests/c/**"
+
+jobs:
+  test:
+    name: Build & run C tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: sudo apt-get install -y gcc make liburing-dev
+      - name: Build test_batch
+        run: |
+          gcc -O2 -std=c11 \
+            -Icore/transport \
+            tests/c/test_batch.c \
+            core/transport/dazzle_transport.c \
+            core/transport/dazzle_worker_pool.c \
+            -luring -lpthread \
+            -o tests/c/test_batch_ci
+      - name: Run tests
+        run: ./tests/c/test_batch_ci

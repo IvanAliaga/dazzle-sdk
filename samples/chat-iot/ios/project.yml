@@ -1,0 +1,92 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+
+name: DazzleChatIot
+options:
+  bundleIdPrefix: io.dazzle.samples
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+# LiteRT-LM Swift wrapper. Same package the experiment app uses; we
+# include it in every sample so a developer who switches the
+# `LLMAdapter` to `LiteRtLmClient` doesn't have to also edit the
+# project file. The cost is ~10 MB of CLiteRTLM.framework in the .app
+# even when LiteRT isn't the active provider — fine for a sample.
+packages:
+  LiteRTLM-Swift:
+    url: https://github.com/mylovelycodes/LiteRTLM-Swift.git
+    branch: main
+
+targets:
+  DazzleChatIot:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Resources
+      - path: ../../_shared/ios/ChatView.swift
+      - path: ../../_shared/ios/LLMAdapter.swift
+      - path: ../../_shared/ios/SampleTestRunner.swift
+      # Dazzle SDK — base + the LiteRT-LM client (our iOS port that
+      # nobody else ships).
+      - path: ../../../sdk/ios/Sources
+      - path: ../../../sdk/ios/Sources-LiteRTLM
+      - path: ../../../sdk/ios/cshim/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.samples.chatiot
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lc++ -lz -lsqlite3"
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      # LiteRT-LM runtime. The Sources-LiteRTLM Swift file imports
+      # `LiteRTLMSwift`; ship the package even when LlamaCpp is the
+      # active provider so swapping never requires a project re-gen.
+      - package: LiteRTLM-Swift
+        product: LiteRTLMSwift
+    postBuildScripts:
+      # CLiteRTLM.framework ships a nested dylib whose signature does
+      # not chain to our dev provisioning. Re-sign it then re-seal the
+      # framework, otherwise dyld rejects on device with EBADEXEC.
+      # Same shape across all three iOS samples — keep in sync.
+      - name: "Re-sign nested CLiteRTLM dylibs"
+        runOnlyWhenInstalling: false
+        shell: /bin/bash
+        script: |
+          set -e
+          FW="${CODESIGNING_FOLDER_PATH}/Frameworks/CLiteRTLM.framework"
+          if [ ! -d "$FW" ]; then
+            echo "CLiteRTLM.framework not found at $FW — skipping"
+            exit 0
+          fi
+          if [ -z "${EXPANDED_CODE_SIGN_IDENTITY}" ]; then
+            echo "No code sign identity — skipping (sim/unsigned build)"
+            exit 0
+          fi
+          IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY}"
+          echo "Re-signing nested dylibs in CLiteRTLM.framework with $IDENTITY"
+          for DYLIB in "$FW"/*.dylib; do
+            [ -f "$DYLIB" ] || continue
+            echo "  codesign $(basename "$DYLIB")"
+            /usr/bin/codesign --force --sign "$IDENTITY" \
+              --preserve-metadata=identifier,entitlements,flags \
+              --timestamp=none "$DYLIB"
+          done
+          echo "Re-sealing CLiteRTLM.framework"
+          /usr/bin/codesign --force --sign "$IDENTITY" \
+            --preserve-metadata=identifier,entitlements,flags \
+            --timestamp=none "$FW"
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName:         "$(PRODUCT_NAME)"
+        CFBundleDisplayName:  "Dazzle Chat IoT"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait

@@ -1,0 +1,90 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# SPDX-License-Identifier: Apache-2.0
+#
+# xcodegen project spec for the Dazzle chat-memory sample.
+
+name: DazzleChatMemory
+options:
+  bundleIdPrefix: io.dazzle.samples
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+# LiteRT-LM Swift wrapper (our iOS port). Shipped in every sample so
+# swapping the LLMAdapter to LiteRtLm requires zero project changes.
+packages:
+  LiteRTLM-Swift:
+    url: https://github.com/mylovelycodes/LiteRTLM-Swift.git
+    branch: main
+
+targets:
+  DazzleChatMemory:
+    type: application
+    platform: iOS
+    sources:
+      # App entry + sample-specific code.
+      - path: App
+      - path: Resources
+      # Shared chat UI and the swappable LLMAdapter. Every sample pulls
+      # these by relative path so editing `_shared/LLMAdapter.swift`
+      # once flows into all three samples.
+      - path: ../../_shared/ios/ChatView.swift
+      - path: ../../_shared/ios/LLMAdapter.swift
+      - path: ../../_shared/ios/SampleTestRunner.swift
+      # Dazzle SDK Swift sources — base + the LiteRT-LM client (iOS
+      # port). The xcframework below supplies the native
+      # libvalkey-server.a + DazzleC C module these Swift files call.
+      - path: ../../../sdk/ios/Sources
+      - path: ../../../sdk/ios/Sources-LiteRTLM
+      - path: ../../../sdk/ios/cshim/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.samples.chatmemory
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        # Link against libvalkey-server.a (inside the xcframework) +
+        # system C++ / zlib / sqlite3.
+        OTHER_LDFLAGS: "$(inherited) -lc++ -lz -lsqlite3"
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      - package: LiteRTLM-Swift
+        product: LiteRTLMSwift
+    postBuildScripts:
+      # Re-sign CLiteRTLM.framework's nested dylib so dyld accepts it on
+      # device. Same shape across all three iOS samples.
+      - name: "Re-sign nested CLiteRTLM dylibs"
+        runOnlyWhenInstalling: false
+        shell: /bin/bash
+        script: |
+          set -e
+          FW="${CODESIGNING_FOLDER_PATH}/Frameworks/CLiteRTLM.framework"
+          if [ ! -d "$FW" ]; then
+            echo "CLiteRTLM.framework not found at $FW — skipping"
+            exit 0
+          fi
+          if [ -z "${EXPANDED_CODE_SIGN_IDENTITY}" ]; then
+            echo "No code sign identity — skipping"
+            exit 0
+          fi
+          IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY}"
+          for DYLIB in "$FW"/*.dylib; do
+            [ -f "$DYLIB" ] || continue
+            /usr/bin/codesign --force --sign "$IDENTITY" \
+              --preserve-metadata=identifier,entitlements,flags \
+              --timestamp=none "$DYLIB"
+          done
+          /usr/bin/codesign --force --sign "$IDENTITY" \
+            --preserve-metadata=identifier,entitlements,flags \
+            --timestamp=none "$FW"
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName:         "$(PRODUCT_NAME)"
+        CFBundleDisplayName:  "Dazzle Chat Memory"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait

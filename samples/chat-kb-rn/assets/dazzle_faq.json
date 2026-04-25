@@ -1,0 +1,182 @@
+[
+  {
+    "id": "faq-001",
+    "category": "overview",
+    "question": "What is Dazzle?",
+    "answer": "Dazzle is an embedded, in-process database for on-device LLM agents on Android and iOS. It's Valkey 9 (a Redis fork) compiled for mobile from day one, with RESP-bypassing snapshot cache for sub-100 µs reads."
+  },
+  {
+    "id": "faq-002",
+    "category": "overview",
+    "question": "How does Dazzle differ from sqlite-vec or sqlite-vector-ai?",
+    "answer": "Both sqlite-vec (open source) and sqlite-vector-ai (SQLiteAI commercial) are SQLite extensions — they still go through SQL's cursor + B-tree. Dazzle is a full embedded Valkey + HNSW + snapshot cache in one process. At dim=384 N=10 000, dazzle-sq8 is 9× faster than sqlite-vector-ai and 76× faster than sqlite-vec on retrieval."
+  },
+  {
+    "id": "faq-003",
+    "category": "adapters",
+    "question": "Which LLM adapters does Dazzle ship with?",
+    "answer": "Four: LlamaCppClient (any GGUF), LiteRtLmClient (Google .litertlm), OpenAICompatibleClient (OpenAI / HuggingFace Router / Ollama / vLLM / Groq / any OpenAI-shaped HTTP API), and FoundationModelsClient (Apple Intelligence, iOS 26+)."
+  },
+  {
+    "id": "faq-004",
+    "category": "adapters",
+    "question": "Which adapter should I use if I already have a GGUF model?",
+    "answer": "LlamaCppClient. It takes a file URL / path to any GGUF and exposes the same LLMClient contract — llama.cpp is linked statically inside the SDK binary, no extra deps."
+  },
+  {
+    "id": "faq-005",
+    "category": "adapters",
+    "question": "Can I use OpenAI's API with Dazzle?",
+    "answer": "Yes. OpenAICompatibleClient takes any baseURL + model + API key. Point it at https://api.openai.com/v1 for OpenAI, https://router.huggingface.co/v1 for HuggingFace Inference, or a self-hosted vLLM/Ollama/llama-server endpoint."
+  },
+  {
+    "id": "faq-006",
+    "category": "adapters",
+    "question": "How do I swap from llama.cpp to LiteRT?",
+    "answer": "In the samples, open _shared/ios/LLMAdapter.swift (or the Kotlin equivalent), uncomment the LiteRtLmClient block, comment the llama.cpp block, rebuild. The rest of the app stays identical."
+  },
+  {
+    "id": "faq-007",
+    "category": "storage",
+    "question": "How fast is Dazzle's key/value read path?",
+    "answer": "On Android moto g35 5G, a HashKey.getAllDirect call (RESP-free snapshot cache) benches at 150.8 µs P50. That's 13× faster than stock SQLite, 9× faster than an InMemory hashmap, and 50× faster than RocksDB on the same phone. On iPhone 12 Pro (A14), the same call is 33 µs when the backing pattern is dazzle-precompute (SortedSet)."
+  },
+  {
+    "id": "faq-008",
+    "category": "storage",
+    "question": "What is the snapshot cache?",
+    "answer": "A per-type memory cache maintained alongside the Valkey keyspace. When you write a hash/set/zset/string, Dazzle updates a parallel native-C copy. Reads via HashKey.getAllDirect / SetKey.membersDirect / SortedSetKey.rangeByScoreDirect / StringKey.getDirect skip RESP encoding entirely — no serialise, no parse, just a memcpy of the already-typed native arrays."
+  },
+  {
+    "id": "faq-009",
+    "category": "vectors",
+    "question": "What HNSW variants does Dazzle support?",
+    "answer": "Four: HNSW (fp32), HNSW_SQ8 (int8 + NEON SDOT), HNSW_SQ8_RERANK (int8 search + fp32 top-k rescore), HNSW_F16 (half-precision). Pick Sq8 for max speed, Sq8-rerank for near-perfect recall at low latency."
+  },
+  {
+    "id": "faq-010",
+    "category": "vectors",
+    "question": "Why is dazzle-sq8 so much faster than other HNSW libraries?",
+    "answer": "Three reasons: (a) int8 NEON SDOT — one instruction evaluates 16 int8 products + accumulate; (b) HNSW graph stored contiguously with SQ8-side scale-bias packed into the graph metadata so the distance fn is purely vectorized; (c) the SDK goes straight to hnswlib through dazzle_vs_search_handle — no RESP, no base64, no parsing."
+  },
+  {
+    "id": "faq-011",
+    "category": "vectors",
+    "question": "How do I create a vector index?",
+    "answer": "server.vectorIndex(name, hashPrefix, vectorField, dim, algorithm: .hnswSq8, metric: .cosine).create(). After .create() returns true, call addDirect(id, vector) or addBatchDirect(ids, vectors) for bulk ingest, then searchDirect(query, k, efRuntime: 10) to query."
+  },
+  {
+    "id": "faq-012",
+    "category": "vectors",
+    "question": "What's a good ef_runtime for dazzle-sq8?",
+    "answer": "ef=10 is the default fast point — typical P50 ~34 µs on A14, ~180 µs on SD695. For higher recall use ef=200 and combine with sq8+rerank — still 5–10× faster than sqlite-vector-ai at matching 0.99+ recall."
+  },
+  {
+    "id": "faq-013",
+    "category": "vectors",
+    "question": "Can I use Dazzle's vector index from Swift or Kotlin?",
+    "answer": "Yes — same API on both. Swift: server.vectorIndex(...).addBatchDirect(ids:vectors:). Kotlin: server.vectorIndex(...).addBatchDirect(ids, vectors). Shape is identical; the underlying hnswlib + NEON SDOT is shared C++ code."
+  },
+  {
+    "id": "faq-014",
+    "category": "agents",
+    "question": "How do I build a chat agent?",
+    "answer": "DazzleServer.shared.client().chatAgent(threadId: 'x', llm: myLLMClient) { it.systemPrompt = '...' ; it.tools = [...] }. Returns an observable ChatAgentImpl that owns an LLMClient, a ContextStore<ChatTurn> for persistent memory, and a tool loop."
+  },
+  {
+    "id": "faq-015",
+    "category": "agents",
+    "question": "What is ContextStore<ChatTurn>?",
+    "answer": "A typed Dazzle store where ChatTurns live. Each turn is a hash under agent:<threadId>:memory:<turnId>. Reads use HashKey.getAllDirect; the agent rebuilds its history on cold start by iterating the store."
+  },
+  {
+    "id": "faq-016",
+    "category": "agents",
+    "question": "How does tool calling work?",
+    "answer": "You declare tools with a name + JSON schema + typed invoke(args). The ChatAgent serialises the schema in OpenAI-compatible format, streams the LLM's response, detects tool_call deltas, calls your tool's invoke(), appends the result as a role=tool message, and re-invokes the LLM until it produces a final text response."
+  },
+  {
+    "id": "faq-017",
+    "category": "agents",
+    "question": "Can the chat agent remember past conversations?",
+    "answer": "Yes — every ChatAgent has a ContextStore<ChatTurn> bound to its threadId. Restart the app, re-open the thread with the same threadId, and history is restored from the Valkey AOF. The bound-context ranges from 'no compaction' to 'rolling summary via LLM'."
+  },
+  {
+    "id": "faq-018",
+    "category": "primitives",
+    "question": "What Valkey primitives does Dazzle expose?",
+    "answer": "String, Hash, List, Set, SortedSet, Stream, pub/sub, geo, HyperLogLog — the full Valkey 9 surface. Every primitive has a RESP path (for compatibility) and, for reads, a *Direct path that bypasses RESP."
+  },
+  {
+    "id": "faq-019",
+    "category": "primitives",
+    "question": "When should I use a SortedSet vs a Hash?",
+    "answer": "Hash: structured record with named fields (agent turns, user profile, config). SortedSet: time-ranged or score-ranged lookups (event streams, leaderboards, time-series windows). The dazzle-precompute pattern uses SortedSet for time-bucketed retrieval."
+  },
+  {
+    "id": "faq-020",
+    "category": "primitives",
+    "question": "Does Dazzle support streams?",
+    "answer": "Yes — Valkey Streams (XADD, XREAD, XRANGE) are available. The SDK's StreamKey wrapper exposes them as a typed Swift/Kotlin API, and the snapshot cache also accelerates XRANGE reads."
+  },
+  {
+    "id": "faq-021",
+    "category": "deployment",
+    "question": "How do I include the Dazzle SDK in my app?",
+    "answer": "iOS: add Dazzle.xcframework as a target dependency (embed: false). Android: depend on dev.dazzle:sdk-android as a gradle dependency. Boot: call DazzleServer.shared.start(...) once at app init."
+  },
+  {
+    "id": "faq-022",
+    "category": "deployment",
+    "question": "How big is the Dazzle binary?",
+    "answer": "Android arm64 AAR: ~12 MB. iOS arm64 xcframework: ~14 MB (both include Valkey 9, hnswlib, simsimd, llama.cpp, and the vector module statically linked)."
+  },
+  {
+    "id": "faq-023",
+    "category": "deployment",
+    "question": "Does Dazzle need internet?",
+    "answer": "No. The embedded runtime has no network listener by default (Dazzle in-process mode: no listener configured). You only need network if you plug OpenAICompatibleClient or LiteRtLmClient pointing at a remote HTTP endpoint — all other paths are 100% on-device."
+  },
+  {
+    "id": "faq-024",
+    "category": "deployment",
+    "question": "How is data persisted?",
+    "answer": "Two options: AOF (append-only file, default) and RDB snapshot. Both are Valkey-native formats. Set persistence: .aof on DazzleConfig for crash-safe writes; the AOF is replayed on next boot."
+  },
+  {
+    "id": "faq-025",
+    "category": "deployment",
+    "question": "Can I use Dazzle for Android auto/wearable/TV?",
+    "answer": "Yes — any ARM64 Android target works. minSdk = 26 covers Auto, Wear OS 3+, Android TV. Pure in-process so there's no background service to manage."
+  },
+  {
+    "id": "faq-026",
+    "category": "benchmarks",
+    "question": "Where do the benchmark numbers come from?",
+    "answer": "The public benches live under <paper benchmark suite>. Each backend runs 5 times for P50/P95 stability; the README headline numbers use the most recent run."
+  },
+  {
+    "id": "faq-027",
+    "category": "benchmarks",
+    "question": "Why is Dazzle's K/V gap smaller on iPhone?",
+    "answer": "iOS system libsqlite3 binds directly to C (no JNI), and A14 Bionic's single-thread throughput is ~6× higher than Snapdragon 695. So SQLite on iPhone closes from 13× slower on Android to ~2× slower on iPhone. Dazzle's win on iOS is primarily in vector search (498× vs sqlite-vec) and in having everything in one binary."
+  },
+  {
+    "id": "faq-028",
+    "category": "benchmarks",
+    "question": "Why can't I run sqlite-vector-ai on iOS?",
+    "answer": "Apple's system libsqlite3 deprecated process-global auto extensions in iOS 12 and never exported sqlite3_load_extension. SQLiteAI's vector.xcframework needs one of those entry points to attach to a connection, so on iOS the bench skips that row. Android doesn't have this limitation (their bench vendors its own sqlite3 amalgamation)."
+  },
+  {
+    "id": "faq-029",
+    "category": "license",
+    "question": "What license is Dazzle under?",
+    "answer": "Apache License 2.0. The SDK binary does NOT redistribute third-party commercial extensions — sqlite-vector-ai is Elastic 2.0 and is fetched on-demand by the benchmark scripts."
+  },
+  {
+    "id": "faq-030",
+    "category": "license",
+    "question": "Where can I file issues or contribute?",
+    "answer": "The GitHub repo at IvanAliaga/dazzle. The SDK source and samples live in this repo; the benchmarks and paper artefacts are released separately."
+  }
+]

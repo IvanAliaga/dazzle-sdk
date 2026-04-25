@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release-ios:
+    name: Build & publish iOS XCFramework
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+      - name: Build XCFramework
+        working-directory: sdk/ios
+        run: bash build.sh
+      - name: Zip XCFramework
+        run: zip -r Dazzle-${{ github.ref_name }}.xcframework.zip sdk/ios/Dazzle.xcframework
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Dazzle-${{ github.ref_name }}.xcframework.zip
+
+  release-android:
+    name: Build & publish Android AAR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - uses: android-actions/setup-android@v3
+      - name: Install NDK
+        run: echo "y" | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
+      - name: Assemble release AAR
+        working-directory: sdk/android
+        run: ./gradlew :dazzle:assembleRelease --no-daemon
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: sdk/android/build/outputs/aar/dazzle-release.aar
