@@ -125,7 +125,14 @@ mavenPublishing {
     configure(AndroidSingleVariantLibrary(
         variant = "release",
         sourcesJar = true,
-        publishJavadocJar = true,
+        // AGP's javaDocReleaseGeneration runs Dokka, which uses an ASM
+        // version that can't read sealed classes (PermittedSubclasses
+        // attribute). litertlm-android:0.10.0's `Backend.class` is a
+        // Java 17 sealed class, so the task crashes:
+        //   UnsupportedOperationException: PermittedSubclasses requires ASM9
+        // We turn off the auto-Javadoc and attach an empty javadoc.jar
+        // below — Sonatype Central only requires the artefact to exist.
+        publishJavadocJar = false,
     ))
 
     pom {
@@ -177,9 +184,21 @@ mavenPublishing {
 // to populate `sdk/android/build/maven-repo/` so a sibling Flutter /
 // RN build can resolve us without the Central Portal round-trip.
 
+// Empty placeholder javadoc.jar required by Sonatype Central — the
+// AGP/Dokka pipeline can't generate a real one (see comment on
+// `publishJavadocJar = false` above). Attached to the `maven`
+// publication that Vanniktech created so it ends up in both the
+// Central upload bundle and the local file-repo mirror.
+val emptyJavadocJar = tasks.register<Jar>("emptyJavadocJar") {
+    archiveClassifier.set("javadoc")
+}
+
 afterEvaluate {
     publishing {
         publications {
+            named<MavenPublication>("maven") {
+                artifact(emptyJavadocJar)
+            }
             // Mirror the same release publication as the Central one,
             // keyed by the Vanniktech plugin under the same groupId so
             // local consumers see the artefact at exactly the same
@@ -189,6 +208,7 @@ afterEvaluate {
                 groupId    = dazzleGroupId
                 artifactId = dazzleArtifactId
                 version    = dazzleVersion
+                artifact(emptyJavadocJar)
             }
         }
         repositories {
@@ -198,6 +218,16 @@ afterEvaluate {
             }
         }
     }
+
+    // Gradle 8.9 implicit-dependency check: every publish task that
+    // consumes the AAR signature has to declare the producer
+    // explicitly. The `localRelease` publication reuses the artefacts
+    // signed by `signMavenPublication` (Vanniktech), so wire all four
+    // local publish tasks to depend on it.
+    tasks.matching { it.name.startsWith("publishLocalReleasePublication") }
+        .configureEach { dependsOn("signMavenPublication") }
+    tasks.matching { it.name.startsWith("publishMavenPublication") }
+        .configureEach { dependsOn("signLocalReleasePublication") }
 }
 
 dependencies {
