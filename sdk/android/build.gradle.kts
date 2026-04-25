@@ -89,12 +89,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    // Used by the Vanniktech plugin to know which AGP variant gets
-    // packaged into the AAR. Sources jar is always attached.
-    publishing {
-        singleVariant("release") { withSourcesJar() }
-    }
 }
 
 // ── Maven Central publishing — Vanniktech plugin ────────────────────
@@ -112,11 +106,11 @@ android {
 //
 //     mavenCentralUsername=<sonatype-token-username>
 //     mavenCentralPassword=<sonatype-token-password>
-//     signing.keyId=<last 8 chars of GPG key ID>
-//     signing.password=<GPG key passphrase>
-//     signing.secretKeyRingFile=/Users/.../secring.gpg
+//     signingInMemoryKey=<armored GPG private key, \n-encoded>
+//     signingInMemoryKeyId=<last 8 hex chars of GPG key ID>
+//     signingInMemoryKeyPassword=<GPG passphrase>
 //
-// First-time setup walkthrough lives in `samples/_scripts/CHECKLIST.md`.
+// First-time setup walkthrough lives in PUBLISHING.md at the repo root.
 
 mavenPublishing {
     // Sonatype Central Portal — the new endpoint (replaces s01.oss.sonatype.org).
