@@ -4,7 +4,7 @@ Build a Dazzle-powered Flutter app end-to-end. Same embedded Valkey +
 HNSW vector search + ChatAgent runtime the Android / iOS native SDKs
 ship — one API, zero behaviour drift.
 
-Latest: **v1.0.0-beta.4**.
+Latest: **v1.0.0-beta.5**.
 
 ## What you get
 

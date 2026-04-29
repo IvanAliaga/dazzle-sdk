@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering
+\caption{Storage-Only Retrieval Latency — motorola moto g35 5G}
+\label{tab:storage-only}
+\begin{tabular}{lrrrrrr}
+\toprule
+Backend & Retrieval ($\mu$s) & P50 & P95 & Ingest (ms) & Ctx Tokens & IO $\Delta$ (B) \\
+\midrule
+  Valkey & 4868.8 $\pm$ 411.6 & 4766.6 & 6452.0 & 462.5 & 78 & 0 \\
+  Valkey-Pipeline & 3346.6 $\pm$ 947.8 & 2981.3 & 5588.5 & 344.9 & 78 & 0 \\
+  Valkey-Precompute & 1062.2 $\pm$ 231.0 & 1048.2 & 1568.6 & 762.2 & 62 & 0 \\
+  Valkey-Lua & 2601.1 $\pm$ 476.1 & 2500.3 & 4000.7 & 345.8 & 78 & 0 \\
+  Valkey-HFE & 4838.8 $\pm$ 459.0 & 4743.9 & 6278.3 & 459.1 & 78 & 0 \\
+  Valkey-HLL & 5043.3 $\pm$ 537.2 & 4821.1 & 7105.6 & 459.7 & 88 & 0 \\
+  SQLite & 1900.2 $\pm$ 616.0 & 1879.5 & 2181.6 & 549.3 & 78 & 12920094 \\
+  RocksDB & 7499.1 $\pm$ 1213.1 & 7596.7 & 8181.5 & 218.6 & 78 & 45056 \\
+  ObjectBox & 2000.9 $\pm$ 634.3 & 2042.7 & 2550.2 & 651.4 & 78 & 22072688 \\
+  LMDB & 2025.7 $\pm$ 138.3 & 1992.2 & 2485.6 & 87.1 & 78 & 8355 \\
+  InMemory & 1358.3 $\pm$ 89.3 & 1313.5 & 1699.6 & 2.7 & 78 & 0 \\
+  Dazzle-Precompute & 150.8 $\pm$ 23.4 & 157.9 & 215.1 & 497.3 & 47 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

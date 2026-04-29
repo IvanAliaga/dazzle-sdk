@@ -1,0 +1,100 @@
+{
+  "type": "multiagent_bench",
+  "plan": "plan02",
+  "mode": "parallel_reads",
+  "backend": "dazzle",
+  "backend_key": "dazzle",
+  "cluster_enabled": false,
+  "agents": 4,
+  "duration_sec": 30,
+  "read_pct": 80,
+  "platform": "Android",
+  "timestamp": "2026-04-18T15:42:51.061514Z",
+  "device": "motorola moto g35 5G",
+  "device_info": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "hardware": "ums9620_2h10",
+    "cpu_cores": 8,
+    "cpu_max_freqs_khz": [
+      2002000,
+      2002000,
+      2002000,
+      2002000,
+      2210000,
+      2210000,
+      2210000,
+      2210000
+    ],
+    "ram_total_kb": 3497628,
+    "storage_total_bytes": 247416750080,
+    "storage_free_bytes": 224738107392,
+    "android_version": "14",
+    "sdk_int": 34,
+    "abi": "arm64-v8a",
+    "platform": "Android"
+  },
+  "battery_before": {
+    "level": 0.84,
+    "state": "unplugged",
+    "temperature_c": 28.3,
+    "voltage_mv": 4217,
+    "charge_counter_uah": 1,
+    "current_now_ua": -201000,
+    "timestamp": "2026-04-18T15:42:20.740389Z"
+  },
+  "battery_after": {
+    "level": 0.84,
+    "state": "unplugged",
+    "temperature_c": 28.3,
+    "voltage_mv": 4217,
+    "charge_counter_uah": 1,
+    "current_now_ua": -660000,
+    "timestamp": "2026-04-18T15:42:51.058127Z"
+  },
+  "total_ops": 114802,
+  "reads": 91860,
+  "writes": 22942,
+  "aggregate_ops_per_sec": 3826.733333333333,
+  "latency_us": {
+    "avg": 1041.8090327172,
+    "p50": 909.192,
+    "p95": 1988.115,
+    "p99": 2693.038
+  },
+  "per_agent": [
+    {
+      "agent": 0,
+      "ops": 28807,
+      "p50_us": 905.077,
+      "p95_us": 1979.693,
+      "p99_us": 2710.923,
+      "avg_us": 1037.9872544867567
+    },
+    {
+      "agent": 1,
+      "ops": 28539,
+      "p50_us": 916.577,
+      "p95_us": 2000.231,
+      "p99_us": 2673.192,
+      "avg_us": 1047.7165844984056
+    },
+    {
+      "agent": 2,
+      "ops": 28773,
+      "p50_us": 907.654,
+      "p95_us": 1984.654,
+      "p99_us": 2690.308,
+      "avg_us": 1039.1755966357348
+    },
+    {
+      "agent": 3,
+      "ops": 28683,
+      "p50_us": 907.231,
+      "p95_us": 1992.077,
+      "p99_us": 2694.731,
+      "avg_us": 1042.4111385489662
+    }
+  ]
+}

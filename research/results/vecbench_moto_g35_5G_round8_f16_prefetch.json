@@ -1,0 +1,2554 @@
+{
+  "type": "vector_benchmark",
+  "timestamp": "2026-04-22T17:37:58.409382Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "hardware": "ums9620_2h10",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "configs": [
+    {
+      "dim": 16,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 37,
+        "ingest_avg_us": 74.695,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 136939.73,
+          "p50": 135943,
+          "p95": 143363,
+          "p99": 148730,
+          "min": 131718,
+          "max": 148730
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 34,
+        "ingest_avg_us": 68.63707799999999,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 415.03,
+          "p50": 411,
+          "p95": 446,
+          "p99": 603,
+          "min": 389,
+          "max": 603
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 99,
+        "ingest_avg_us": 199.475924,
+        "recall_at_k": 0.997,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 280.85,
+          "p50": 272,
+          "p95": 333,
+          "p99": 627,
+          "min": 243,
+          "max": 627
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 20,
+        "ingest_avg_us": 40.224768,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 46.96,
+              "p50": 39,
+              "p95": 92,
+              "p99": 217,
+              "min": 32,
+              "max": 217
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 59.79,
+              "p50": 58,
+              "p95": 79,
+              "p99": 105,
+              "min": 52,
+              "max": 105
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 74.97,
+              "p50": 72,
+              "p95": 97,
+              "p99": 114,
+              "min": 65,
+              "max": 114
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 104.64,
+              "p50": 103,
+              "p95": 124,
+              "p99": 137,
+              "min": 95,
+              "max": 137
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 22,
+        "ingest_avg_us": 44.86777,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.992,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 43.87,
+              "p50": 42,
+              "p95": 54,
+              "p99": 118,
+              "min": 36,
+              "max": 118
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.992,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 63.21,
+              "p50": 62,
+              "p95": 73,
+              "p99": 81,
+              "min": 56,
+              "max": 81
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.992,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 83.19,
+              "p50": 81,
+              "p95": 99,
+              "p99": 123,
+              "min": 74,
+              "max": 123
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.992,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 122.67,
+              "p50": 108,
+              "p95": 121,
+              "p99": 1379,
+              "min": 102,
+              "max": 1379
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 23,
+        "ingest_avg_us": 47.785846,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 67.62,
+              "p50": 64,
+              "p95": 79,
+              "p99": 228,
+              "min": 56,
+              "max": 228
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 89.5,
+              "p50": 69,
+              "p95": 240,
+              "p99": 296,
+              "min": 60,
+              "max": 296
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 90.29,
+              "p50": 87,
+              "p95": 107,
+              "p99": 294,
+              "min": 77,
+              "max": 294
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 116.84,
+              "p50": 116,
+              "p95": 126,
+              "p99": 143,
+              "min": 106,
+              "max": 143
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 21,
+        "ingest_avg_us": 43.934461999999996,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 46.15,
+              "p50": 40,
+              "p95": 63,
+              "p99": 373,
+              "min": 33,
+              "max": 373
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 62.99,
+              "p50": 58,
+              "p95": 75,
+              "p99": 363,
+              "min": 49,
+              "max": 363
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 75.57,
+              "p50": 73,
+              "p95": 85,
+              "p99": 201,
+              "min": 65,
+              "max": 201
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 101.55,
+              "p50": 101,
+              "p95": 112,
+              "p99": 122,
+              "min": 92,
+              "max": 122
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 16,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 131,
+        "ingest_avg_us": 65.69090399999999,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 106242.92,
+          "p50": 105758,
+          "p95": 113386,
+          "p99": 118799,
+          "min": 100835,
+          "max": 118799
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 134,
+        "ingest_avg_us": 67.0731155,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 604.44,
+          "p50": 611,
+          "p95": 658,
+          "p99": 787,
+          "min": 543,
+          "max": 787
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 799,
+        "ingest_avg_us": 399.87140350000004,
+        "recall_at_k": 0.999,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 321.06,
+          "p50": 313,
+          "p95": 355,
+          "p99": 705,
+          "min": 270,
+          "max": 705
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 108,
+        "ingest_avg_us": 54.002231,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 62.48,
+              "p50": 43,
+              "p95": 153,
+              "p99": 360,
+              "min": 37,
+              "max": 360
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 68.76,
+              "p50": 68,
+              "p95": 82,
+              "p99": 88,
+              "min": 61,
+              "max": 88
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 108.37,
+              "p50": 98,
+              "p95": 115,
+              "p99": 524,
+              "min": 86,
+              "max": 524
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 148.98,
+              "p50": 148,
+              "p95": 163,
+              "p99": 180,
+              "min": 136,
+              "max": 180
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 110,
+        "ingest_avg_us": 55.1213655,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 43.65,
+              "p50": 42,
+              "p95": 56,
+              "p99": 123,
+              "min": 35,
+              "max": 123
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 78.92,
+              "p50": 78,
+              "p95": 96,
+              "p99": 101,
+              "min": 69,
+              "max": 101
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 179.63,
+              "p50": 110,
+              "p95": 125,
+              "p99": 4342,
+              "min": 103,
+              "max": 4342
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 168.75,
+              "p50": 166,
+              "p95": 185,
+              "p99": 208,
+              "min": 158,
+              "max": 208
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 112,
+        "ingest_avg_us": 56.316211499999994,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 85.92,
+              "p50": 73,
+              "p95": 87,
+              "p99": 1227,
+              "min": 62,
+              "max": 1227
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 80.22,
+              "p50": 80,
+              "p95": 92,
+              "p99": 100,
+              "min": 68,
+              "max": 100
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 116.7,
+              "p50": 116,
+              "p95": 128,
+              "p99": 131,
+              "min": 106,
+              "max": 131
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 170.14,
+              "p50": 169,
+              "p95": 183,
+              "p99": 194,
+              "min": 156,
+              "max": 194
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 100,
+        "ingest_avg_us": 50.1170965,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 39.94,
+              "p50": 37,
+              "p95": 56,
+              "p99": 113,
+              "min": 32,
+              "max": 113
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 66.14,
+              "p50": 65,
+              "p95": 78,
+              "p99": 88,
+              "min": 56,
+              "max": 88
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 96.52,
+              "p50": 95,
+              "p95": 109,
+              "p99": 165,
+              "min": 86,
+              "max": 165
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 141.38,
+              "p50": 140,
+              "p95": 155,
+              "p99": 213,
+              "min": 129,
+              "max": 213
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 16,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 491,
+        "ingest_avg_us": 49.102673100000004,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 25511.82,
+          "p50": 25333,
+          "p95": 25971,
+          "p99": 31535,
+          "min": 24889,
+          "max": 31535
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 627,
+        "ingest_avg_us": 62.7147385,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 2082.3,
+          "p50": 2076,
+          "p95": 2157,
+          "p99": 2468,
+          "min": 2010,
+          "max": 2468
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 9494,
+        "ingest_avg_us": 949.4612724,
+        "recall_at_k": 0.998,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 466.21,
+          "p50": 434,
+          "p95": 639,
+          "p99": 1761,
+          "min": 374,
+          "max": 1761
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 715,
+        "ingest_avg_us": 71.5900153,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 58.1,
+              "p50": 56,
+              "p95": 65,
+              "p99": 141,
+              "min": 47,
+              "max": 141
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 118.69,
+              "p50": 117,
+              "p95": 142,
+              "p99": 184,
+              "min": 90,
+              "max": 184
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 171.65,
+              "p50": 169,
+              "p95": 199,
+              "p99": 242,
+              "min": 142,
+              "max": 242
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 276.78,
+              "p50": 272,
+              "p95": 323,
+              "p99": 338,
+              "min": 240,
+              "max": 338
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 779,
+        "ingest_avg_us": 77.9427269,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.988,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 63.55,
+              "p50": 61,
+              "p95": 81,
+              "p99": 131,
+              "min": 51,
+              "max": 131
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 122.34,
+              "p50": 120,
+              "p95": 146,
+              "p99": 149,
+              "min": 105,
+              "max": 149
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 177.31,
+              "p50": 177,
+              "p95": 194,
+              "p99": 197,
+              "min": 159,
+              "max": 197
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 276.63,
+              "p50": 275,
+              "p95": 302,
+              "p99": 317,
+              "min": 253,
+              "max": 317
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 791,
+        "ingest_avg_us": 79.15006149999999,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 123.23,
+              "p50": 119,
+              "p95": 144,
+              "p99": 434,
+              "min": 101,
+              "max": 434
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 125.07,
+              "p50": 123,
+              "p95": 145,
+              "p99": 154,
+              "min": 105,
+              "max": 154
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 183.92,
+              "p50": 184,
+              "p95": 199,
+              "p99": 223,
+              "min": 165,
+              "max": 223
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 285.02,
+              "p50": 284,
+              "p95": 305,
+              "p99": 323,
+              "min": 263,
+              "max": 323
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 677,
+        "ingest_avg_us": 67.75938839999999,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 54.89,
+              "p50": 52,
+              "p95": 71,
+              "p99": 125,
+              "min": 40,
+              "max": 125
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 102.19,
+              "p50": 100,
+              "p95": 124,
+              "p99": 143,
+              "min": 84,
+              "max": 143
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 147.77,
+              "p50": 146,
+              "p95": 174,
+              "p99": 193,
+              "min": 117,
+              "max": 193
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 237.63,
+              "p50": 230,
+              "p95": 283,
+              "p99": 315,
+              "min": 212,
+              "max": 315
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 31,
+        "ingest_avg_us": 62.886538,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 22799.85,
+          "p50": 22587,
+          "p95": 24592,
+          "p99": 30920,
+          "min": 21942,
+          "max": 30920
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 34,
+        "ingest_avg_us": 68.56977,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 834.04,
+          "p50": 823,
+          "p95": 896,
+          "p99": 1370,
+          "min": 786,
+          "max": 1370
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 117,
+        "ingest_avg_us": 234.472076,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 268.15,
+          "p50": 259,
+          "p95": 299,
+          "p99": 599,
+          "min": 231,
+          "max": 599
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 35,
+        "ingest_avg_us": 70.055692,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 49.12,
+              "p50": 46,
+              "p95": 65,
+              "p99": 128,
+              "min": 41,
+              "max": 128
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 79.52,
+              "p50": 78,
+              "p95": 90,
+              "p99": 137,
+              "min": 70,
+              "max": 137
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 97.42,
+              "p50": 97,
+              "p95": 106,
+              "p99": 114,
+              "min": 89,
+              "max": 114
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 126.54,
+              "p50": 125,
+              "p95": 141,
+              "p99": 145,
+              "min": 118,
+              "max": 145
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 28,
+        "ingest_avg_us": 56.320384,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.987,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 60.43,
+              "p50": 48,
+              "p95": 173,
+              "p99": 197,
+              "min": 40,
+              "max": 197
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 85.76,
+              "p50": 85,
+              "p95": 95,
+              "p99": 108,
+              "min": 77,
+              "max": 108
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 107.52,
+              "p50": 106,
+              "p95": 122,
+              "p99": 128,
+              "min": 98,
+              "max": 128
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 136.04,
+              "p50": 135,
+              "p95": 148,
+              "p99": 153,
+              "min": 128,
+              "max": 153
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 27,
+        "ingest_avg_us": 55.659694,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 92.18,
+              "p50": 90,
+              "p95": 108,
+              "p99": 147,
+              "min": 79,
+              "max": 147
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 99.05,
+              "p50": 97,
+              "p95": 116,
+              "p99": 148,
+              "min": 87,
+              "max": 148
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 117.88,
+              "p50": 116,
+              "p95": 129,
+              "p99": 145,
+              "min": 106,
+              "max": 145
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 147.85,
+              "p50": 146,
+              "p95": 163,
+              "p99": 167,
+              "min": 137,
+              "max": 167
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 34,
+        "ingest_avg_us": 69.711538,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 48.09,
+              "p50": 46,
+              "p95": 58,
+              "p99": 115,
+              "min": 38,
+              "max": 115
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 79.82,
+              "p50": 79,
+              "p95": 89,
+              "p99": 90,
+              "min": 72,
+              "max": 90
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 100.11,
+              "p50": 98,
+              "p95": 113,
+              "p99": 126,
+              "min": 92,
+              "max": 126
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 128.49,
+              "p50": 127,
+              "p95": 144,
+              "p99": 150,
+              "min": 120,
+              "max": 150
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 93,
+        "ingest_avg_us": 46.787845999999995,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 31897.41,
+          "p50": 31590,
+          "p95": 35814,
+          "p99": 35879,
+          "min": 30305,
+          "max": 35879
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 150,
+        "ingest_avg_us": 75.022846,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 2318.53,
+          "p50": 2301,
+          "p95": 2422,
+          "p99": 2933,
+          "min": 2238,
+          "max": 2933
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 1224,
+        "ingest_avg_us": 612.021615,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 401.67,
+          "p50": 388,
+          "p95": 497,
+          "p99": 803,
+          "min": 346,
+          "max": 803
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 194,
+        "ingest_avg_us": 97.23876949999999,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 80.23,
+              "p50": 78,
+              "p95": 102,
+              "p99": 176,
+              "min": 66,
+              "max": 176
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 176.22,
+              "p50": 175,
+              "p95": 190,
+              "p99": 205,
+              "min": 163,
+              "max": 205
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 242.48,
+              "p50": 243,
+              "p95": 263,
+              "p99": 274,
+              "min": 221,
+              "max": 274
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 314.04,
+              "p50": 314,
+              "p95": 340,
+              "p99": 353,
+              "min": 285,
+              "max": 353
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 182,
+        "ingest_avg_us": 91.3641155,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.988,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 76.78,
+              "p50": 75,
+              "p95": 90,
+              "p99": 160,
+              "min": 63,
+              "max": 160
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.988,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 174.05,
+              "p50": 172,
+              "p95": 189,
+              "p99": 194,
+              "min": 162,
+              "max": 194
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 240.19,
+              "p50": 239,
+              "p95": 255,
+              "p99": 263,
+              "min": 228,
+              "max": 263
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 309.04,
+              "p50": 308,
+              "p95": 322,
+              "p99": 334,
+              "min": 296,
+              "max": 334
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 172,
+        "ingest_avg_us": 86.1969035,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 169.0,
+              "p50": 166,
+              "p95": 192,
+              "p99": 247,
+              "min": 152,
+              "max": 247
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 186.78,
+              "p50": 186,
+              "p95": 199,
+              "p99": 209,
+              "min": 169,
+              "max": 209
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 252.95,
+              "p50": 253,
+              "p95": 265,
+              "p99": 269,
+              "min": 238,
+              "max": 269
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 325.48,
+              "p50": 325,
+              "p95": 344,
+              "p99": 360,
+              "min": 306,
+              "max": 360
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 180,
+        "ingest_avg_us": 90.108327,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 76.99,
+              "p50": 70,
+              "p95": 112,
+              "p99": 178,
+              "min": 59,
+              "max": 178
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 160.64,
+              "p50": 161,
+              "p95": 173,
+              "p99": 182,
+              "min": 146,
+              "max": 182
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 218.46,
+              "p50": 217,
+              "p95": 232,
+              "p99": 249,
+              "min": 203,
+              "max": 249
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 287.83,
+              "p50": 286,
+              "p95": 310,
+              "p99": 328,
+              "min": 268,
+              "max": 328
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 448,
+        "ingest_avg_us": 44.8032192,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 94242.31,
+          "p50": 94526,
+          "p95": 98073,
+          "p99": 101560,
+          "min": 86816,
+          "max": 101560
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 788,
+        "ingest_avg_us": 78.86390379999999,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 11481.69,
+          "p50": 11474,
+          "p95": 11574,
+          "p99": 12702,
+          "min": 11307,
+          "max": 12702
+        },
+        "db_file_bytes": 5763072
+      },
+      "objectbox": {
+        "ingest_total_ms": 20789,
+        "ingest_avg_us": 2078.9866985,
+        "recall_at_k": 0.958,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 648.68,
+          "p50": 618,
+          "p95": 892,
+          "p99": 1467,
+          "min": 540,
+          "max": 1467
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 3770,
+        "ingest_avg_us": 377.03649210000003,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 186.51,
+              "p50": 170,
+              "p95": 229,
+              "p99": 1397,
+              "min": 136,
+              "max": 1397
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 535.02,
+              "p50": 533,
+              "p95": 584,
+              "p99": 660,
+              "min": 467,
+              "max": 660
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 922.72,
+              "p50": 918,
+              "p95": 982,
+              "p99": 1064,
+              "min": 837,
+              "max": 1064
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1462.01,
+              "p50": 1459,
+              "p95": 1536,
+              "p99": 1562,
+              "min": 1354,
+              "max": 1562
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 1753,
+        "ingest_avg_us": 175.3952653,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 161.31,
+              "p50": 146,
+              "p95": 192,
+              "p99": 1343,
+              "min": 123,
+              "max": 1343
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 423.87,
+              "p50": 419,
+              "p95": 469,
+              "p99": 546,
+              "min": 389,
+              "max": 546
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 709.24,
+              "p50": 705,
+              "p95": 767,
+              "p99": 846,
+              "min": 660,
+              "max": 846
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1153.78,
+              "p50": 1148,
+              "p95": 1232,
+              "p99": 1342,
+              "min": 1090,
+              "max": 1342
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 1800,
+        "ingest_avg_us": 180.0432499,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 398.21,
+              "p50": 394,
+              "p95": 449,
+              "p99": 636,
+              "min": 345,
+              "max": 636
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 520.79,
+              "p50": 500,
+              "p95": 585,
+              "p99": 1921,
+              "min": 405,
+              "max": 1921
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 792.64,
+              "p50": 796,
+              "p95": 845,
+              "p99": 982,
+              "min": 714,
+              "max": 982
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1320.31,
+              "p50": 1315,
+              "p95": 1405,
+              "p99": 1469,
+              "min": 1239,
+              "max": 1469
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 2299,
+        "ingest_avg_us": 229.95854989999998,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 154.14,
+              "p50": 146,
+              "p95": 216,
+              "p99": 274,
+              "min": 117,
+              "max": 274
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 476.41,
+              "p50": 475,
+              "p95": 529,
+              "p99": 566,
+              "min": 420,
+              "max": 566
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 837.62,
+              "p50": 836,
+              "p95": 882,
+              "p99": 898,
+              "min": 768,
+              "max": 898
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1333.66,
+              "p50": 1335,
+              "p95": 1390,
+              "p99": 1511,
+              "min": 1253,
+              "max": 1511
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 53,
+        "ingest_avg_us": 107.23330800000001,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 52834.07,
+          "p50": 52024,
+          "p95": 59206,
+          "p99": 61010,
+          "min": 50333,
+          "max": 61010
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 45,
+        "ingest_avg_us": 91.53823,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 2204.98,
+          "p50": 2193,
+          "p95": 2259,
+          "p99": 3130,
+          "min": 2091,
+          "max": 3130
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 118,
+        "ingest_avg_us": 237.421846,
+        "recall_at_k": 0.998,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 264.44,
+          "p50": 257,
+          "p95": 294,
+          "p99": 626,
+          "min": 237,
+          "max": 626
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 46,
+        "ingest_avg_us": 92.402616,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 80.75,
+              "p50": 77,
+              "p95": 104,
+              "p99": 198,
+              "min": 61,
+              "max": 198
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 132.65,
+              "p50": 130,
+              "p95": 171,
+              "p99": 232,
+              "min": 114,
+              "max": 232
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 151.62,
+              "p50": 150,
+              "p95": 169,
+              "p99": 179,
+              "min": 134,
+              "max": 179
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 182.31,
+              "p50": 182,
+              "p95": 194,
+              "p99": 206,
+              "min": 166,
+              "max": 206
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 41,
+        "ingest_avg_us": 82.046924,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.987,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 85.5,
+              "p50": 83,
+              "p95": 103,
+              "p99": 147,
+              "min": 72,
+              "max": 147
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 139.9,
+              "p50": 139,
+              "p95": 153,
+              "p99": 162,
+              "min": 124,
+              "max": 162
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 161.5,
+              "p50": 161,
+              "p95": 174,
+              "p99": 179,
+              "min": 147,
+              "max": 179
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 193.76,
+              "p50": 193,
+              "p95": 210,
+              "p99": 220,
+              "min": 183,
+              "max": 220
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 41,
+        "ingest_avg_us": 82.80338400000001,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 158.51,
+              "p50": 145,
+              "p95": 194,
+              "p99": 655,
+              "min": 132,
+              "max": 655
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 152.62,
+              "p50": 152,
+              "p95": 166,
+              "p99": 176,
+              "min": 141,
+              "max": 176
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 174.34,
+              "p50": 175,
+              "p95": 187,
+              "p99": 192,
+              "min": 161,
+              "max": 192
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 205.73,
+              "p50": 204,
+              "p95": 221,
+              "p99": 238,
+              "min": 193,
+              "max": 238
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 51,
+        "ingest_avg_us": 102.508846,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.992,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 89.42,
+              "p50": 87,
+              "p95": 106,
+              "p99": 179,
+              "min": 75,
+              "max": 179
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 149.96,
+              "p50": 149,
+              "p95": 165,
+              "p99": 177,
+              "min": 134,
+              "max": 177
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 172.9,
+              "p50": 174,
+              "p95": 188,
+              "p99": 192,
+              "min": 157,
+              "max": 192
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 201.57,
+              "p50": 201,
+              "p95": 214,
+              "p99": 225,
+              "min": 189,
+              "max": 225
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 170,
+        "ingest_avg_us": 85.0458845,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 158075.76,
+          "p50": 156103,
+          "p95": 166981,
+          "p99": 174152,
+          "min": 153799,
+          "max": 174152
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 229,
+        "ingest_avg_us": 114.9004035,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 8269.06,
+          "p50": 8253,
+          "p95": 8429,
+          "p99": 9036,
+          "min": 8053,
+          "max": 9036
+        },
+        "db_file_bytes": 4096
+      },
+      "objectbox": {
+        "ingest_total_ms": 1352,
+        "ingest_avg_us": 676.3101915,
+        "recall_at_k": 0.995,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 410.25,
+          "p50": 396,
+          "p95": 541,
+          "p99": 830,
+          "min": 342,
+          "max": 830
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 349,
+        "ingest_avg_us": 174.85676949999998,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 201.47,
+              "p50": 194,
+              "p95": 271,
+              "p99": 453,
+              "min": 150,
+              "max": 453
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 518.37,
+              "p50": 515,
+              "p95": 579,
+              "p99": 605,
+              "min": 465,
+              "max": 605
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 748.66,
+              "p50": 688,
+              "p95": 907,
+              "p99": 4703,
+              "min": 621,
+              "max": 4703
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 781.49,
+              "p50": 778,
+              "p95": 834,
+              "p99": 904,
+              "min": 742,
+              "max": 904
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 263,
+        "ingest_avg_us": 131.516981,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.993,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 129.22,
+              "p50": 127,
+              "p95": 148,
+              "p99": 200,
+              "min": 109,
+              "max": 200
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 332.51,
+              "p50": 333,
+              "p95": 362,
+              "p99": 388,
+              "min": 300,
+              "max": 388
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 445.52,
+              "p50": 447,
+              "p95": 471,
+              "p99": 488,
+              "min": 404,
+              "max": 488
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 530.22,
+              "p50": 534,
+              "p95": 558,
+              "p99": 566,
+              "min": 493,
+              "max": 566
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 259,
+        "ingest_avg_us": 129.786577,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 322.1,
+              "p50": 322,
+              "p95": 361,
+              "p99": 393,
+              "min": 289,
+              "max": 393
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 359.72,
+              "p50": 359,
+              "p95": 387,
+              "p99": 395,
+              "min": 326,
+              "max": 395
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 480.48,
+              "p50": 481,
+              "p95": 513,
+              "p99": 529,
+              "min": 431,
+              "max": 529
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 573.25,
+              "p50": 578,
+              "p95": 612,
+              "p99": 631,
+              "min": 509,
+              "max": 631
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 335,
+        "ingest_avg_us": 167.7472495,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 146.78,
+              "p50": 143,
+              "p95": 177,
+              "p99": 231,
+              "min": 116,
+              "max": 231
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 367.41,
+              "p50": 366,
+              "p95": 392,
+              "p99": 414,
+              "min": 337,
+              "max": 414
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 497.33,
+              "p50": 495,
+              "p95": 524,
+              "p99": 546,
+              "min": 472,
+              "max": 546
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 594.5,
+              "p50": 592,
+              "p95": 620,
+              "p99": 652,
+              "min": 573,
+              "max": 652
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 859,
+        "ingest_avg_us": 85.9639461,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 273347.26,
+          "p50": 272296,
+          "p95": 279389,
+          "p99": 283714,
+          "min": 270035,
+          "max": 283714
+        },
+        "db_file_bytes": -1
+      },
+      "sqlite_vec": {
+        "ingest_total_ms": 1211,
+        "ingest_avg_us": 121.116946,
+        "recall_at_k": 1.0,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 33784.79,
+          "p50": 33759,
+          "p95": 34407,
+          "p99": 35263,
+          "min": 32613,
+          "max": 35263
+        },
+        "db_file_bytes": 16261120
+      },
+      "objectbox": {
+        "ingest_total_ms": 32920,
+        "ingest_avg_us": 3292.0874592,
+        "recall_at_k": 0.874,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 674.29,
+          "p50": 657,
+          "p95": 841,
+          "p99": 1330,
+          "min": 542,
+          "max": 1330
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 10348,
+        "ingest_avg_us": 1034.8140646,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 282.46,
+              "p50": 278,
+              "p95": 370,
+              "p99": 471,
+              "min": 209,
+              "max": 471
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 923.22,
+              "p50": 922,
+              "p95": 1005,
+              "p99": 1045,
+              "min": 811,
+              "max": 1045
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1596.25,
+              "p50": 1592,
+              "p95": 1661,
+              "p99": 1735,
+              "min": 1515,
+              "max": 1735
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2519.79,
+              "p50": 2517,
+              "p95": 2584,
+              "p99": 2678,
+              "min": 2424,
+              "max": 2678
+            }
+          }
+        ]
+      },
+      "dazzle_sq8": {
+        "ingest_total_ms": 3870,
+        "ingest_avg_us": 387.0903228,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 253.16,
+              "p50": 250,
+              "p95": 332,
+              "p99": 407,
+              "min": 183,
+              "max": 407
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 957.08,
+              "p50": 883,
+              "p95": 1168,
+              "p99": 3407,
+              "min": 723,
+              "max": 3407
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.989,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1419.74,
+              "p50": 1420,
+              "p95": 1476,
+              "p99": 1523,
+              "min": 1328,
+              "max": 1523
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.991,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2237.64,
+              "p50": 2238,
+              "p95": 2287,
+              "p99": 2346,
+              "min": 2144,
+              "max": 2346
+            }
+          }
+        ]
+      },
+      "dazzle_sq8_rerank": {
+        "ingest_total_ms": 3908,
+        "ingest_avg_us": 390.8728766,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 726.52,
+              "p50": 721,
+              "p95": 820,
+              "p99": 917,
+              "min": 668,
+              "max": 917
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 860.69,
+              "p50": 855,
+              "p95": 935,
+              "p99": 1045,
+              "min": 793,
+              "max": 1045
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1457.5,
+              "p50": 1455,
+              "p95": 1522,
+              "p99": 1613,
+              "min": 1384,
+              "max": 1613
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2285.65,
+              "p50": 2282,
+              "p95": 2362,
+              "p99": 2425,
+              "min": 2201,
+              "max": 2425
+            }
+          }
+        ]
+      },
+      "dazzle_f16": {
+        "ingest_total_ms": 5852,
+        "ingest_avg_us": 585.2663418999999,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 281.23,
+              "p50": 274,
+              "p95": 368,
+              "p99": 452,
+              "min": 226,
+              "max": 452
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.994,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 908.4,
+              "p50": 909,
+              "p95": 987,
+              "p99": 1004,
+              "min": 818,
+              "max": 1004
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1558.12,
+              "p50": 1557,
+              "p95": 1647,
+              "p99": 1714,
+              "min": 1436,
+              "max": 1714
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2415.77,
+              "p50": 2400,
+              "p95": 2532,
+              "p99": 2723,
+              "min": 2311,
+              "max": 2723
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

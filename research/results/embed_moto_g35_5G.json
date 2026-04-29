@@ -1,0 +1,86 @@
+{
+  "type": "embed_latency",
+  "timestamp": "2026-04-23T00:49:59.379255Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "model": {
+    "file": "bge-small-en-v1.5-q4_k_m.gguf",
+    "output_dim": 384,
+    "n_ctx": 512,
+    "path": "/data/user/0/dev.dazzle.experiment.storage/files/embed/bge-small-en-v1.5-q4_k_m.gguf",
+    "size_bytes": 24808576
+  },
+  "cold_start_ms": 142,
+  "results": {
+    "len_200": {
+      "n_docs": 100,
+      "target_chars": 200,
+      "latency_us": {
+        "n": 100,
+        "avg": 67719.58,
+        "p50": 67575,
+        "p95": 72094,
+        "p99": 74196,
+        "min": 63332,
+        "max": 74196
+      },
+      "throughput_docs_per_s": 14.765905855789056,
+      "sustained_total_ms": 6772,
+      "first_vec_head": [
+        -0.10703714936971664,
+        -0.0024185078218579292,
+        0.019748661667108536,
+        -0.02648085355758667
+      ]
+    },
+    "len_400": {
+      "n_docs": 100,
+      "target_chars": 400,
+      "latency_us": {
+        "n": 100,
+        "avg": 131691.81,
+        "p50": 130901,
+        "p95": 137817,
+        "p99": 166153,
+        "min": 123100,
+        "max": 166153
+      },
+      "throughput_docs_per_s": 7.593252727444005,
+      "sustained_total_ms": 13169,
+      "first_vec_head": [
+        -0.07909894734621048,
+        0.013986878097057343,
+        -8.462046971544623E-4,
+        -0.026142021641135216
+      ]
+    },
+    "len_800": {
+      "n_docs": 100,
+      "target_chars": 800,
+      "latency_us": {
+        "n": 100,
+        "avg": 299167.95,
+        "p50": 306790,
+        "p95": 325134,
+        "p99": 326950,
+        "min": 256138,
+        "max": 326950
+      },
+      "throughput_docs_per_s": 3.3425567954737825,
+      "sustained_total_ms": 29917,
+      "first_vec_head": [
+        -0.06777796149253845,
+        0.028766097500920296,
+        2.4114719417411834E-4,
+        -0.04042390361428261
+      ]
+    }
+  }
+}

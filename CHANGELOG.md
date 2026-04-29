@@ -4,6 +4,147 @@ All notable changes to the Dazzle SDK. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it hits
 `1.0.0`; pre-release builds use `1.0.0-beta.N` suffixes.
 
+## 1.0.0-beta.5 — 2026-04-29
+
+### Added (Android — multi-target build for ARMv8.2 chips)
+
+- **`DazzleNativeLoader.kt`** — runtime SoC dispatch. Reads
+  `/proc/cpuinfo`, looks for the `asimdhp` (FP16) and `asimddp`
+  (SDOT) feature flags, and selects between two ARM64 native
+  libraries shipped in the same APK:
+  - `libdazzle.so` — `-march=armv8-a -mcpu=generic` baseline
+    (cross-platform safe; the only build that runs on Cortex-A53
+    / A55 / A73 chips like Snapdragon 662, Kirin 659, MediaTek
+    Helio G80 small cores).
+  - `libdazzle_v82.so` —
+    `-march=armv8.2-a+fp16+dotprod -mcpu=cortex-a78`
+    (loaded only when both flags are present at runtime).
+  Idempotent `ensureLoaded()` is now called from every public
+  entry point (`DazzleServer`, `VectorIndex`, `LlamaNative`).
+  Override hook for cross-platform apples-to-apples bench runs:
+  the JVM property `dazzle.force_native_variant` (or the env var
+  `DAZZLE_FORCE_NATIVE_VARIANT`) accepts `baseline | v82 | auto`.
+- **CMake fan-out** in `sdk/android/src/main/cpp/CMakeLists.txt`.
+  A new `_dazzle_define_variant()` helper produces both shared
+  targets from one source list; per-language `COMPILE_OPTIONS`
+  via `$<COMPILE_LANGUAGE:...>` genex routes the per-target
+  `-march`/`-mcpu` flow into every translation unit. Both
+  variants share the same `llama.cpp` / `ggml` subdirectory
+  output (ggml-cpu has its own runtime feature dispatcher;
+  recompiling it twice would be cost without speedup).
+- **`strip_pac_bti.py`** — post-link hook that rewrites every
+  PAC / BTI HINT opcode in `libdazzle*.so` with a plain NOP, so
+  the binary runs on Cortex-A73-class chips (Kirin 659 / EMUI
+  Linux 4.9 kernel) that mis-decode the unallocated HINT space
+  ARMv8.0-A pre-dates. Compiler-rt-builtins ships these inside
+  `init_have_lse_atomics` / `__init_cpu_features_*`; the script
+  patches them at the ELF level.
+- **Userspace MRS-emulation `SIGILL` handler** in `dazzle_jni.c`.
+  Linux <4.11 (Kirin 659 on EMUI 8.2) does not trap-and-emulate
+  `MRS Xt, ID_AA64*_EL1` reads from EL0; the handler decodes the
+  faulting opcode, returns 0 (= "no extensions") in the target
+  register, and advances PC by 4. This unblocks the
+  `__aarch64_have_lse_atomics` flag initialisation on those
+  chips so the LSE outline-atomics fallback to the safe
+  LDXR / STXR path works correctly.
+- **Dispatched `simsimd` calls** in `valkeysearch_module.cc`.
+  `simsimd_dot_f32` / `simsimd_l2sq_f32` / `simsimd_cos_i8` /
+  `simsimd_dot_f16` (the runtime-dispatched entry points) replace
+  the previous direct `*_neon` calls. The dispatcher reads
+  `/proc/cpuinfo` once at first invocation and caches the chosen
+  kernel; chips that lack `asimdhp` / `asimddp` get the portable
+  scalar fallback instead of a SIGILL on the first SDOT or FP16
+  instruction.
+
+### Changed (iOS)
+
+- **`Package.swift` / `DazzleServer.swift` / `LiteRtLmClient.swift`**:
+  minor refresh that mirrors the Android behaviour for the
+  `LiteRtLmClient` lifecycle and lines up the cross-platform
+  parity rows in the paper §5.5.
+- `Dazzle.xcframework/ios-arm64{,-simulator}/libvalkey-server.a`
+  rebuilt against the same Valkey 9.0.3 tag the Android side
+  consumes; no behaviour change on the consumer-facing API.
+
+### Added (paper artefacts)
+
+- **`research/`** — first publication of the `dazzle-sdk` paper
+  source (`research/paper/paper_v2_en.md`), the arXiv build tree
+  (`research/paper/arxiv-build/` with `paper.tex`, `body.tex`,
+  `refs.bib`, `arxiv.sty`, `paper.pdf` 26 pp), the deterministic
+  bootstrap pipeline (`research/scripts/bootstrap_*.py` —
+  paired-query resampling at `B = 10 000`, `seed = 42`), the raw
+  JSON measurements under `research/benchmarks/results/` for the
+  five physical devices the paper covers (Moto G35 5G, Moto G30,
+  Huawei Y9a / FRL-L23, Huawei P20 Lite / ANE-LX3, iPhone 12
+  Pro), the multi-target evidence tree
+  (`research/benchmarks/results/multitarget/`, two rounds of
+  paper384-scale + a cortex-a76 hypothesis test), the dataset
+  builders (`research/scripts/nq_slice.py`,
+  `research/scripts/generate_dataset.py`), and the analysis
+  scripts (`research/scripts/analyze_*.py`,
+  `research/scripts/make_vector_bench_table.py`).
+- **`experiment/`** — first publication of the comparison-engine
+  wrappers and the on-device benchmark applications:
+  - `experiment/backends/{android,ios}/` — six wrappers per
+    platform (SQLite, LMDB, RocksDB, ObjectBox, in-memory,
+    Dazzle), Apache 2.0, listed in paper §5.6 (Table 9).
+  - `experiment/storage/{android,ios}/` — the storage-only
+    benchmark application (`StorageActivity`, `StorageOnlyTest`,
+    `VectorBenchmark`, `BenchForegroundService` for EMUI-resistant
+    runs).
+  - `experiment/llm/{android,ios}/` — the end-to-end RAG
+    application benchmark of paper §5.9 (Qwen 2.5 0.5B/1.5B with
+    BGE-small-en-v1.5 retrieval over 200 NQ queries).
+  - `experiment/multiagent/android/` — the multi-agent harness
+    referenced from the SDK settings.
+
+### Documented (paper §6.3)
+
+- **Cross-platform validation across four Android SoCs.** Paper
+  §6.3 now reports a 4-chip × 2-round (dispatched / baseline-
+  forced) sweep with 95 % paired-query bootstrap CIs. Headline
+  cell — `dazzle_sq8` `N = 20 000`, `dim = 384`:
+  - Moto G35 5G  (Unisoc T760, Cortex-A76):  269 µs (both rounds)
+  - Huawei Y9a   (Helio G80,   Cortex-A75):  671 µs / 588 µs
+  - Moto G30     (Snapdragon 662, A73):      445 µs / 519 µs
+  - P20 Lite     (Kirin 659, A53):          1054 µs / 1043 µs
+- **Honest null result documented.** On the only chip × engine
+  cell where v82 is directly comparable against baseline on the
+  same silicon (Unisoc T760), the two binaries are statistically
+  indistinguishable. The §6.3 footnote ² also reports a follow-up
+  experiment (`research/benchmarks/results/multitarget/round3_cortex_a76_test/`):
+  recompiling `libdazzle_v82.so` with `-mcpu=cortex-a76` instead
+  of `cortex-a78` reproduced the -12 % regression on Helio G80
+  (Cortex-A75) to within run-to-run noise. The regression is
+  therefore not scheduler-driven; the recommendation in §6.3 is
+  the `force_native_variant=baseline` override the multi-target
+  build already exposes.
+
+### Versioning policy (paper §8.2)
+
+- The paper now carries an explicit, numbered versioning policy
+  on arXiv (§8.2): each measurable change in any headline cell
+  triggers a new revision; new physical devices added to the
+  cross-platform table trigger a new revision; accepted external
+  PRs that improve any non-Dazzle backend's measured numbers
+  trigger a new revision with strikethrough preservation of the
+  previous numbers; raw JSONs under
+  `research/benchmarks/results/` are timestamped and never
+  overwritten across revisions; the repository main branch is
+  the source of truth, and the commit hash of head of main at
+  each arXiv submission is recorded in the paper.
+
+### No SDK API changes
+
+- The public Kotlin / Swift API surface is unchanged from
+  `1.0.0-beta.4`. Every behavioural change in this release lives
+  below the JNI / FFI boundary (native loader, build-tree
+  multi-target, post-link opcode rewriting, runtime SIGILL
+  emulation, simsimd dispatch). Existing apps consuming
+  `com.ivanaliaga:dazzle-sdk:1.0.0-beta.4` rebuild against
+  `1.0.0-beta.5` without source changes.
+
 ## 1.0.0-beta.3 — 2026-04-24
 
 ### Added

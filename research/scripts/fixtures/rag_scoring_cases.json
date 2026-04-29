@@ -1,0 +1,242 @@
+{
+  "description": "Cross-platform fixture for the RAG SQuAD-protocol scorer audit. Both research/scripts/recompute_rag_metrics.py (Python) and experiment/backends/android/core/RagE2EBench.kt (Kotlin) must produce these exact outputs. Drift in either implementation is a bug.",
+  "version": 1,
+  "cases": [
+    {
+      "name": "exact_match_simple",
+      "prediction": "Paris",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "Paris",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "exact_match_lowercase",
+      "prediction": "PARIS",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "PARIS",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "exact_match_with_punctuation",
+      "prediction": "Paris.",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "Paris.",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "exact_match_with_articles",
+      "prediction": "the Eiffel Tower",
+      "aliases": [
+        "Eiffel Tower"
+      ],
+      "expect": {
+        "extracted_span": "the Eiffel Tower",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "verbose_reply_contains_alias",
+      "prediction": "The answer is Paris.",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "The answer is Paris.",
+        "em_short": 0.0,
+        "em_contains": 1.0,
+        "f1_short": 0.5
+      }
+    },
+    {
+      "name": "verbose_with_articles_in_between",
+      "prediction": "in the New York City area",
+      "aliases": [
+        "New York City"
+      ],
+      "expect": {
+        "extracted_span": "in the New York City area",
+        "em_short": 0.0,
+        "em_contains": 1.0,
+        "f1_short": 0.7499999999999999
+      }
+    },
+    {
+      "name": "multi_alias_one_match",
+      "prediction": "New York",
+      "aliases": [
+        "New York City",
+        "New York"
+      ],
+      "expect": {
+        "extracted_span": "New York",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "multi_alias_no_match",
+      "prediction": "NYC",
+      "aliases": [
+        "New York City",
+        "New York"
+      ],
+      "expect": {
+        "extracted_span": "NYC",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.0
+      }
+    },
+    {
+      "name": "f1_partial_year_alias",
+      "prediction": "1957",
+      "aliases": [
+        "1 April 1957"
+      ],
+      "expect": {
+        "extracted_span": "1957",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.5
+      }
+    },
+    {
+      "name": "f1_two_of_three_tokens",
+      "prediction": "Mark Skaife won",
+      "aliases": [
+        "Mark Skaife"
+      ],
+      "expect": {
+        "extracted_span": "Mark Skaife won",
+        "em_short": 0.0,
+        "em_contains": 1.0,
+        "f1_short": 0.8
+      }
+    },
+    {
+      "name": "f1_no_overlap",
+      "prediction": "Aladdin",
+      "aliases": [
+        "The Little Mermaid"
+      ],
+      "expect": {
+        "extracted_span": "Aladdin",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.0
+      }
+    },
+    {
+      "name": "span_cut_at_newline",
+      "prediction": " Paris\nfoo",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "Paris",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "span_cut_at_question_marker",
+      "prediction": " Paris Question: foo",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "Paris",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "span_cut_at_answer_continuation",
+      "prediction": " Mark. Answer: Mark.",
+      "aliases": [
+        "Mark"
+      ],
+      "expect": {
+        "extracted_span": "Mark.",
+        "em_short": 1.0,
+        "em_contains": 1.0,
+        "f1_short": 1.0
+      }
+    },
+    {
+      "name": "empty_prediction",
+      "prediction": "",
+      "aliases": [
+        "Paris"
+      ],
+      "expect": {
+        "extracted_span": "",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.0
+      }
+    },
+    {
+      "name": "alias_longer_than_pred",
+      "prediction": "Paris",
+      "aliases": [
+        "The City of Paris in France"
+      ],
+      "expect": {
+        "extracted_span": "Paris",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.33333333333333337
+      }
+    },
+    {
+      "name": "repeated_alias_token",
+      "prediction": "Aladdin Aladdin Aladdin",
+      "aliases": [
+        "Aladdin"
+      ],
+      "expect": {
+        "extracted_span": "Aladdin Aladdin Aladdin",
+        "em_short": 0.0,
+        "em_contains": 1.0,
+        "f1_short": 0.5
+      }
+    },
+    {
+      "name": "articles_only_alias_skipped",
+      "prediction": "Paris",
+      "aliases": [
+        "the the the"
+      ],
+      "expect": {
+        "extracted_span": "Paris",
+        "em_short": 0.0,
+        "em_contains": 0.0,
+        "f1_short": 0.0
+      }
+    }
+  ]
+}

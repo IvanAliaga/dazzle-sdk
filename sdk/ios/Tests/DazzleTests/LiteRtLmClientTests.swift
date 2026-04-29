@@ -12,7 +12,7 @@ import XCTest
 /// the simulator test flow with re-signing issues.
 ///
 /// The real `LiteRtLmClient` integration is exercised in:
-///   - the chat samples that opt into LiteRT-LM via their adapter
+///   - the experiment apps (`experiment/llm/ios/`)
 ///   - dev machines that manually add the `DazzleLiteRTLM` product to a
 ///     throw-away target
 ///

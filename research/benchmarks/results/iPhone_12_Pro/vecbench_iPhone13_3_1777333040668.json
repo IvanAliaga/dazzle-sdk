@@ -1,0 +1,1337 @@
+{
+  "configs" : [
+    {
+      "dazzle_f16" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.99399999999999999,
+            "search_lat_us" : {
+              "avg" : 18,
+              "max" : 24,
+              "min" : 15,
+              "n" : 100,
+              "p50" : 18,
+              "p95" : 20,
+              "p99" : 24
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 32,
+              "max" : 38,
+              "min" : 31,
+              "n" : 100,
+              "p50" : 33,
+              "p95" : 35,
+              "p99" : 38
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 42,
+              "max" : 47,
+              "min" : 40,
+              "n" : 100,
+              "p50" : 42,
+              "p95" : 44,
+              "p99" : 47
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 51,
+              "max" : 57,
+              "min" : 50,
+              "n" : 100,
+              "p50" : 52,
+              "p95" : 54,
+              "p99" : 57
+            }
+          }
+        ],
+        "ingest_avg_us" : 25.42625,
+        "ingest_total_ms" : 5
+      },
+      "dazzle_hnsw" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.995,
+            "search_lat_us" : {
+              "avg" : 17,
+              "max" : 22,
+              "min" : 14,
+              "n" : 100,
+              "p50" : 18,
+              "p95" : 20,
+              "p99" : 22
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 32,
+              "max" : 36,
+              "min" : 30,
+              "n" : 100,
+              "p50" : 32,
+              "p95" : 34,
+              "p99" : 36
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 42,
+              "max" : 47,
+              "min" : 39,
+              "n" : 100,
+              "p50" : 42,
+              "p95" : 44,
+              "p99" : 47
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 51,
+              "max" : 57,
+              "min" : 49,
+              "n" : 100,
+              "p50" : 51,
+              "p95" : 52,
+              "p99" : 57
+            }
+          }
+        ],
+        "ingest_avg_us" : 25.925000000000001,
+        "ingest_total_ms" : 5
+      },
+      "dazzle_sq8" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.92400000000000004,
+            "search_lat_us" : {
+              "avg" : 7,
+              "max" : 18,
+              "min" : 6,
+              "n" : 100,
+              "p50" : 7,
+              "p95" : 9,
+              "p99" : 18
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 16,
+              "max" : 22,
+              "min" : 15,
+              "n" : 100,
+              "p50" : 17,
+              "p95" : 18,
+              "p99" : 22
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 24,
+              "max" : 30,
+              "min" : 22,
+              "n" : 100,
+              "p50" : 24,
+              "p95" : 26,
+              "p99" : 30
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 32,
+              "max" : 39,
+              "min" : 30,
+              "n" : 100,
+              "p50" : 33,
+              "p95" : 35,
+              "p99" : 39
+            }
+          }
+        ],
+        "ingest_avg_us" : 15.574169999999999,
+        "ingest_total_ms" : 3
+      },
+      "dazzle_sq8_rerank" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.995,
+            "search_lat_us" : {
+              "avg" : 13,
+              "max" : 17,
+              "min" : 11,
+              "n" : 100,
+              "p50" : 13,
+              "p95" : 17,
+              "p99" : 17
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 19,
+              "max" : 25,
+              "min" : 18,
+              "n" : 100,
+              "p50" : 19,
+              "p95" : 21,
+              "p99" : 25
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 27,
+              "max" : 32,
+              "min" : 25,
+              "n" : 100,
+              "p50" : 27,
+              "p95" : 29,
+              "p99" : 32
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 35,
+              "max" : 41,
+              "min" : 33,
+              "n" : 100,
+              "p50" : 35,
+              "p95" : 37,
+              "p99" : 41
+            }
+          }
+        ],
+        "ingest_avg_us" : 16.533955000000002,
+        "ingest_total_ms" : 3
+      },
+      "dim" : 384,
+      "k" : 10,
+      "n_docs" : 200,
+      "n_queries" : 100,
+      "sqlite_vec" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 24.724164999999999,
+        "ingest_total_ms" : 4,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 469,
+          "max" : 706,
+          "min" : 418,
+          "n" : 100,
+          "p50" : 437,
+          "p95" : 578,
+          "p99" : 706
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_default" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 24.724164999999999,
+        "ingest_total_ms" : 4,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 469,
+          "max" : 706,
+          "min" : 418,
+          "n" : 100,
+          "p50" : 437,
+          "p95" : 578,
+          "p99" : 706
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_optimized" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 16.826039999999999,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 425,
+          "max" : 435,
+          "min" : 417,
+          "n" : 100,
+          "p50" : 425,
+          "p95" : 431,
+          "p99" : 435
+        },
+        "variant" : "optimized"
+      },
+      "sqlite_vec_precompute" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 15.705830000000001,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 423,
+          "max" : 436,
+          "min" : 416,
+          "n" : 100,
+          "p50" : 423,
+          "p95" : 432,
+          "p99" : 436
+        },
+        "variant" : "precompute"
+      },
+      "sqlite_vector_ai" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_default" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_optimized" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "optimized"
+      },
+      "sqlite_vector_ai_precompute" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "precompute"
+      }
+    },
+    {
+      "dazzle_f16" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.97099999999999997,
+            "search_lat_us" : {
+              "avg" : 39,
+              "max" : 48,
+              "min" : 33,
+              "n" : 100,
+              "p50" : 40,
+              "p95" : 44,
+              "p99" : 48
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.995,
+            "search_lat_us" : {
+              "avg" : 91,
+              "max" : 100,
+              "min" : 85,
+              "n" : 100,
+              "p50" : 92,
+              "p95" : 98,
+              "p99" : 100
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.999,
+            "search_lat_us" : {
+              "avg" : 120,
+              "max" : 142,
+              "min" : 113,
+              "n" : 100,
+              "p50" : 120,
+              "p95" : 126,
+              "p99" : 142
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.999,
+            "search_lat_us" : {
+              "avg" : 154,
+              "max" : 166,
+              "min" : 144,
+              "n" : 100,
+              "p50" : 154,
+              "p95" : 160,
+              "p99" : 166
+            }
+          }
+        ],
+        "ingest_avg_us" : 75.529124999999993,
+        "ingest_total_ms" : 75
+      },
+      "dazzle_hnsw" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.96399999999999997,
+            "search_lat_us" : {
+              "avg" : 37,
+              "max" : 47,
+              "min" : 31,
+              "n" : 100,
+              "p50" : 38,
+              "p95" : 44,
+              "p99" : 47
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.996,
+            "search_lat_us" : {
+              "avg" : 89,
+              "max" : 102,
+              "min" : 82,
+              "n" : 100,
+              "p50" : 89,
+              "p95" : 95,
+              "p99" : 102
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 117,
+              "max" : 135,
+              "min" : 109,
+              "n" : 100,
+              "p50" : 117,
+              "p95" : 123,
+              "p99" : 135
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 153,
+              "max" : 180,
+              "min" : 141,
+              "n" : 100,
+              "p50" : 151,
+              "p95" : 171,
+              "p99" : 180
+            }
+          }
+        ],
+        "ingest_avg_us" : 75.205708000000001,
+        "ingest_total_ms" : 75
+      },
+      "dazzle_sq8" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.89300000000000002,
+            "search_lat_us" : {
+              "avg" : 12,
+              "max" : 19,
+              "min" : 10,
+              "n" : 100,
+              "p50" : 12,
+              "p95" : 15,
+              "p99" : 19
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.91300000000000003,
+            "search_lat_us" : {
+              "avg" : 34,
+              "max" : 40,
+              "min" : 27,
+              "n" : 100,
+              "p50" : 35,
+              "p95" : 38,
+              "p99" : 40
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.91300000000000003,
+            "search_lat_us" : {
+              "avg" : 52,
+              "max" : 58,
+              "min" : 45,
+              "n" : 100,
+              "p50" : 52,
+              "p95" : 56,
+              "p99" : 58
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.91300000000000003,
+            "search_lat_us" : {
+              "avg" : 78,
+              "max" : 87,
+              "min" : 71,
+              "n" : 100,
+              "p50" : 79,
+              "p95" : 82,
+              "p99" : 87
+            }
+          }
+        ],
+        "ingest_avg_us" : 43.986874999999998,
+        "ingest_total_ms" : 43
+      },
+      "dazzle_sq8_rerank" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.97999999999999998,
+            "search_lat_us" : {
+              "avg" : 22,
+              "max" : 31,
+              "min" : 19,
+              "n" : 100,
+              "p50" : 23,
+              "p95" : 26,
+              "p99" : 31
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.996,
+            "search_lat_us" : {
+              "avg" : 37,
+              "max" : 46,
+              "min" : 29,
+              "n" : 100,
+              "p50" : 37,
+              "p95" : 41,
+              "p99" : 46
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.999,
+            "search_lat_us" : {
+              "avg" : 55,
+              "max" : 61,
+              "min" : 46,
+              "n" : 100,
+              "p50" : 55,
+              "p95" : 59,
+              "p99" : 61
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 82,
+              "max" : 91,
+              "min" : 74,
+              "n" : 100,
+              "p50" : 82,
+              "p95" : 86,
+              "p99" : 91
+            }
+          }
+        ],
+        "ingest_avg_us" : 45.828707999999999,
+        "ingest_total_ms" : 45
+      },
+      "dim" : 384,
+      "k" : 10,
+      "n_docs" : 1000,
+      "n_queries" : 100,
+      "sqlite_vec" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 10.8095,
+        "ingest_total_ms" : 10,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 798,
+          "max" : 935,
+          "min" : 787,
+          "n" : 100,
+          "p50" : 796,
+          "p95" : 814,
+          "p99" : 935
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_default" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 10.8095,
+        "ingest_total_ms" : 10,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 798,
+          "max" : 935,
+          "min" : 787,
+          "n" : 100,
+          "p50" : 796,
+          "p95" : 814,
+          "p99" : 935
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_optimized" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 10.444375000000001,
+        "ingest_total_ms" : 10,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 800,
+          "max" : 814,
+          "min" : 791,
+          "n" : 100,
+          "p50" : 801,
+          "p95" : 809,
+          "p99" : 814
+        },
+        "variant" : "optimized"
+      },
+      "sqlite_vec_precompute" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 10.414875,
+        "ingest_total_ms" : 10,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 796,
+          "max" : 818,
+          "min" : 789,
+          "n" : 100,
+          "p50" : 796,
+          "p95" : 803,
+          "p99" : 818
+        },
+        "variant" : "precompute"
+      },
+      "sqlite_vector_ai" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_default" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_optimized" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "optimized"
+      },
+      "sqlite_vector_ai_precompute" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "precompute"
+      }
+    },
+    {
+      "dazzle_f16" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.91100000000000003,
+            "search_lat_us" : {
+              "avg" : 64,
+              "max" : 94,
+              "min" : 50,
+              "n" : 100,
+              "p50" : 63,
+              "p95" : 77,
+              "p99" : 94
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.97799999999999998,
+            "search_lat_us" : {
+              "avg" : 183,
+              "max" : 208,
+              "min" : 163,
+              "n" : 100,
+              "p50" : 183,
+              "p95" : 195,
+              "p99" : 208
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.99299999999999999,
+            "search_lat_us" : {
+              "avg" : 289,
+              "max" : 306,
+              "min" : 270,
+              "n" : 100,
+              "p50" : 291,
+              "p95" : 301,
+              "p99" : 306
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.997,
+            "search_lat_us" : {
+              "avg" : 422,
+              "max" : 451,
+              "min" : 410,
+              "n" : 100,
+              "p50" : 421,
+              "p95" : 434,
+              "p99" : 451
+            }
+          }
+        ],
+        "ingest_avg_us" : 222.68008339999997,
+        "ingest_total_ms" : 1113
+      },
+      "dazzle_hnsw" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.92300000000000004,
+            "search_lat_us" : {
+              "avg" : 62,
+              "max" : 104,
+              "min" : 44,
+              "n" : 100,
+              "p50" : 62,
+              "p95" : 79,
+              "p99" : 104
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.98299999999999998,
+            "search_lat_us" : {
+              "avg" : 193,
+              "max" : 230,
+              "min" : 166,
+              "n" : 100,
+              "p50" : 193,
+              "p95" : 209,
+              "p99" : 230
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.997,
+            "search_lat_us" : {
+              "avg" : 303,
+              "max" : 336,
+              "min" : 278,
+              "n" : 100,
+              "p50" : 302,
+              "p95" : 322,
+              "p99" : 336
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 451,
+              "max" : 479,
+              "min" : 430,
+              "n" : 100,
+              "p50" : 451,
+              "p95" : 468,
+              "p99" : 479
+            }
+          }
+        ],
+        "ingest_avg_us" : 217.486875,
+        "ingest_total_ms" : 1087
+      },
+      "dazzle_sq8" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.82899999999999996,
+            "search_lat_us" : {
+              "avg" : 20,
+              "max" : 28,
+              "min" : 15,
+              "n" : 100,
+              "p50" : 20,
+              "p95" : 26,
+              "p99" : 28
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.874,
+            "search_lat_us" : {
+              "avg" : 63,
+              "max" : 75,
+              "min" : 50,
+              "n" : 100,
+              "p50" : 64,
+              "p95" : 72,
+              "p99" : 75
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.88500000000000001,
+            "search_lat_us" : {
+              "avg" : 106,
+              "max" : 127,
+              "min" : 94,
+              "n" : 100,
+              "p50" : 106,
+              "p95" : 119,
+              "p99" : 127
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.88800000000000001,
+            "search_lat_us" : {
+              "avg" : 175,
+              "max" : 207,
+              "min" : 149,
+              "n" : 100,
+              "p50" : 175,
+              "p95" : 196,
+              "p99" : 207
+            }
+          }
+        ],
+        "ingest_avg_us" : 97.784916600000003,
+        "ingest_total_ms" : 488
+      },
+      "dazzle_sq8_rerank" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.93700000000000006,
+            "search_lat_us" : {
+              "avg" : 31,
+              "max" : 42,
+              "min" : 27,
+              "n" : 100,
+              "p50" : 32,
+              "p95" : 37,
+              "p99" : 42
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.97299999999999998,
+            "search_lat_us" : {
+              "avg" : 63,
+              "max" : 76,
+              "min" : 56,
+              "n" : 100,
+              "p50" : 64,
+              "p95" : 69,
+              "p99" : 76
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.99399999999999999,
+            "search_lat_us" : {
+              "avg" : 108,
+              "max" : 126,
+              "min" : 90,
+              "n" : 100,
+              "p50" : 108,
+              "p95" : 124,
+              "p99" : 126
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.998,
+            "search_lat_us" : {
+              "avg" : 171,
+              "max" : 195,
+              "min" : 152,
+              "n" : 100,
+              "p50" : 171,
+              "p95" : 185,
+              "p99" : 195
+            }
+          }
+        ],
+        "ingest_avg_us" : 99.161775000000006,
+        "ingest_total_ms" : 495
+      },
+      "dim" : 384,
+      "k" : 10,
+      "n_docs" : 5000,
+      "n_queries" : 100,
+      "sqlite_vec" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 8146944,
+        "ingest_avg_us" : 15.7547666,
+        "ingest_total_ms" : 78,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 3534,
+          "max" : 4001,
+          "min" : 3506,
+          "n" : 100,
+          "p50" : 3529,
+          "p95" : 3547,
+          "p99" : 4001
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_default" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 8146944,
+        "ingest_avg_us" : 15.7547666,
+        "ingest_total_ms" : 78,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 3534,
+          "max" : 4001,
+          "min" : 3506,
+          "n" : 100,
+          "p50" : 3529,
+          "p95" : 3547,
+          "p99" : 4001
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_optimized" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 8146944,
+        "ingest_avg_us" : 15.1981582,
+        "ingest_total_ms" : 75,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 3532,
+          "max" : 3685,
+          "min" : 3515,
+          "n" : 100,
+          "p50" : 3529,
+          "p95" : 3549,
+          "p99" : 3685
+        },
+        "variant" : "optimized"
+      },
+      "sqlite_vec_precompute" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 8146944,
+        "ingest_avg_us" : 14.5983918,
+        "ingest_total_ms" : 72,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 3530,
+          "max" : 3689,
+          "min" : 3511,
+          "n" : 100,
+          "p50" : 3526,
+          "p95" : 3548,
+          "p99" : 3689
+        },
+        "variant" : "precompute"
+      },
+      "sqlite_vector_ai" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_default" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_optimized" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "optimized"
+      },
+      "sqlite_vector_ai_precompute" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "precompute"
+      }
+    },
+    {
+      "dazzle_f16" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.72099999999999997,
+            "search_lat_us" : {
+              "avg" : 113,
+              "max" : 167,
+              "min" : 79,
+              "n" : 100,
+              "p50" : 110,
+              "p95" : 160,
+              "p99" : 167
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.89400000000000002,
+            "search_lat_us" : {
+              "avg" : 342,
+              "max" : 461,
+              "min" : 289,
+              "n" : 100,
+              "p50" : 340,
+              "p95" : 393,
+              "p99" : 461
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.93999999999999995,
+            "search_lat_us" : {
+              "avg" : 582,
+              "max" : 641,
+              "min" : 518,
+              "n" : 100,
+              "p50" : 588,
+              "p95" : 629,
+              "p99" : 641
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.97499999999999998,
+            "search_lat_us" : {
+              "avg" : 978,
+              "max" : 1067,
+              "min" : 866,
+              "n" : 100,
+              "p50" : 985,
+              "p95" : 1063,
+              "p99" : 1067
+            }
+          }
+        ],
+        "ingest_avg_us" : 699.17400625000005,
+        "ingest_total_ms" : 13983
+      },
+      "dazzle_hnsw" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.71499999999999997,
+            "search_lat_us" : {
+              "avg" : 135,
+              "max" : 216,
+              "min" : 97,
+              "n" : 100,
+              "p50" : 129,
+              "p95" : 186,
+              "p99" : 216
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.90100000000000002,
+            "search_lat_us" : {
+              "avg" : 442,
+              "max" : 508,
+              "min" : 390,
+              "n" : 100,
+              "p50" : 441,
+              "p95" : 485,
+              "p99" : 508
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.94399999999999995,
+            "search_lat_us" : {
+              "avg" : 764,
+              "max" : 910,
+              "min" : 688,
+              "n" : 100,
+              "p50" : 763,
+              "p95" : 826,
+              "p99" : 910
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.97799999999999998,
+            "search_lat_us" : {
+              "avg" : 1320,
+              "max" : 1420,
+              "min" : 1239,
+              "n" : 100,
+              "p50" : 1319,
+              "p95" : 1387,
+              "p99" : 1420
+            }
+          }
+        ],
+        "ingest_avg_us" : 754.64063540000006,
+        "ingest_total_ms" : 15092
+      },
+      "dazzle_sq8" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.67200000000000004,
+            "search_lat_us" : {
+              "avg" : 38,
+              "max" : 58,
+              "min" : 25,
+              "n" : 100,
+              "p50" : 39,
+              "p95" : 51,
+              "p99" : 58
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.84199999999999997,
+            "search_lat_us" : {
+              "avg" : 109,
+              "max" : 145,
+              "min" : 89,
+              "n" : 100,
+              "p50" : 108,
+              "p95" : 131,
+              "p99" : 145
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.873,
+            "search_lat_us" : {
+              "avg" : 196,
+              "max" : 228,
+              "min" : 168,
+              "n" : 100,
+              "p50" : 196,
+              "p95" : 214,
+              "p99" : 228
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.89400000000000002,
+            "search_lat_us" : {
+              "avg" : 363,
+              "max" : 384,
+              "min" : 337,
+              "n" : 100,
+              "p50" : 364,
+              "p95" : 382,
+              "p99" : 384
+            }
+          }
+        ],
+        "ingest_avg_us" : 260.09352705000003,
+        "ingest_total_ms" : 5201
+      },
+      "dazzle_sq8_rerank" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.80400000000000005,
+            "search_lat_us" : {
+              "avg" : 64,
+              "max" : 93,
+              "min" : 45,
+              "n" : 100,
+              "p50" : 62,
+              "p95" : 87,
+              "p99" : 93
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.89000000000000001,
+            "search_lat_us" : {
+              "avg" : 120,
+              "max" : 149,
+              "min" : 94,
+              "n" : 100,
+              "p50" : 118,
+              "p95" : 139,
+              "p99" : 149
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.93600000000000005,
+            "search_lat_us" : {
+              "avg" : 204,
+              "max" : 226,
+              "min" : 181,
+              "n" : 100,
+              "p50" : 204,
+              "p95" : 219,
+              "p99" : 226
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.97399999999999998,
+            "search_lat_us" : {
+              "avg" : 371,
+              "max" : 419,
+              "min" : 344,
+              "n" : 100,
+              "p50" : 370,
+              "p95" : 395,
+              "p99" : 419
+            }
+          }
+        ],
+        "ingest_avg_us" : 265.15559374999998,
+        "ingest_total_ms" : 5303
+      },
+      "dim" : 384,
+      "k" : 10,
+      "n_docs" : 20000,
+      "n_queries" : 100,
+      "sqlite_vec" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 32509952,
+        "ingest_avg_us" : 16.941981250000001,
+        "ingest_total_ms" : 338,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 15029,
+          "max" : 16564,
+          "min" : 14959,
+          "n" : 100,
+          "p50" : 14994,
+          "p95" : 15137,
+          "p99" : 16564
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_default" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 32509952,
+        "ingest_avg_us" : 16.941981250000001,
+        "ingest_total_ms" : 338,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 15029,
+          "max" : 16564,
+          "min" : 14959,
+          "n" : 100,
+          "p50" : 14994,
+          "p95" : 15137,
+          "p99" : 16564
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_optimized" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 32509952,
+        "ingest_avg_us" : 16.991091649999998,
+        "ingest_total_ms" : 339,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 15011,
+          "max" : 15674,
+          "min" : 14939,
+          "n" : 100,
+          "p50" : 14992,
+          "p95" : 15094,
+          "p99" : 15674
+        },
+        "variant" : "optimized"
+      },
+      "sqlite_vec_precompute" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 32509952,
+        "ingest_avg_us" : 16.397435399999999,
+        "ingest_total_ms" : 327,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 14950,
+          "max" : 16219,
+          "min" : 14869,
+          "n" : 100,
+          "p50" : 14937,
+          "p95" : 15017,
+          "p99" : 16219
+        },
+        "variant" : "precompute"
+      },
+      "sqlite_vector_ai" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_default" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_optimized" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "optimized"
+      },
+      "sqlite_vector_ai_precompute" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "precompute"
+      }
+    }
+  ],
+  "device" : {
+    "active_cpu_cores" : 6,
+    "cpu_cores" : 6,
+    "hw_model" : "iPhone13,3",
+    "model" : "iPhone",
+    "name" : "iPhone",
+    "platform" : "iOS",
+    "ram_total_bytes" : 5994528768,
+    "systemName" : "iOS",
+    "systemVersion" : "26.3"
+  },
+  "timestamp" : "2026-04-27T23:37:20Z",
+  "type" : "vector_benchmark"
+}

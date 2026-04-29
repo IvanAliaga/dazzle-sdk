@@ -1,0 +1,132 @@
+{
+  "type": "multiagent_bench",
+  "plan": "plan02",
+  "mode": "parallel_reads",
+  "backend": "dazzle",
+  "backend_key": "dazzle",
+  "cluster_enabled": false,
+  "agents": 8,
+  "duration_sec": 30,
+  "read_pct": 80,
+  "platform": "Android",
+  "timestamp": "2026-04-18T15:37:27.549145Z",
+  "device": "motorola moto g35 5G",
+  "device_info": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "hardware": "ums9620_2h10",
+    "cpu_cores": 8,
+    "cpu_max_freqs_khz": [
+      2002000,
+      2002000,
+      2002000,
+      2002000,
+      2210000,
+      2210000,
+      2210000,
+      2210000
+    ],
+    "ram_total_kb": 3497628,
+    "storage_total_bytes": 247416750080,
+    "storage_free_bytes": 224738168832,
+    "android_version": "14",
+    "sdk_int": 34,
+    "abi": "arm64-v8a",
+    "platform": "Android"
+  },
+  "battery_before": {
+    "level": 0.85,
+    "state": "unplugged",
+    "temperature_c": 26.5,
+    "voltage_mv": 4243,
+    "charge_counter_uah": 1,
+    "current_now_ua": -166000,
+    "timestamp": "2026-04-18T15:36:57.193974Z"
+  },
+  "battery_after": {
+    "level": 0.85,
+    "state": "unplugged",
+    "temperature_c": 26.5,
+    "voltage_mv": 4243,
+    "charge_counter_uah": 1,
+    "current_now_ua": -898000,
+    "timestamp": "2026-04-18T15:37:27.546044Z"
+  },
+  "total_ops": 190237,
+  "reads": 152392,
+  "writes": 37845,
+  "aggregate_ops_per_sec": 6341.233333333334,
+  "latency_us": {
+    "avg": 1257.6590975414879,
+    "p50": 1020.039,
+    "p95": 2175.193,
+    "p99": 4220.653
+  },
+  "per_agent": [
+    {
+      "agent": 0,
+      "ops": 23850,
+      "p50_us": 1020.461,
+      "p95_us": 2158.923,
+      "p99_us": 4124.693,
+      "avg_us": 1253.973997735849
+    },
+    {
+      "agent": 1,
+      "ops": 23815,
+      "p50_us": 1018.0,
+      "p95_us": 2159.193,
+      "p99_us": 4274.193,
+      "avg_us": 1255.6771926096997
+    },
+    {
+      "agent": 2,
+      "ops": 23724,
+      "p50_us": 1027.423,
+      "p95_us": 2162.153,
+      "p99_us": 4168.654,
+      "avg_us": 1260.57263952116
+    },
+    {
+      "agent": 3,
+      "ops": 23759,
+      "p50_us": 1023.154,
+      "p95_us": 2183.0,
+      "p99_us": 4218.423,
+      "avg_us": 1259.2904802390672
+    },
+    {
+      "agent": 4,
+      "ops": 23774,
+      "p50_us": 1020.346,
+      "p95_us": 2187.885,
+      "p99_us": 4188.577,
+      "avg_us": 1257.7655908134939
+    },
+    {
+      "agent": 5,
+      "ops": 23773,
+      "p50_us": 1016.77,
+      "p95_us": 2192.384,
+      "p99_us": 4375.461,
+      "avg_us": 1258.1351060026082
+    },
+    {
+      "agent": 6,
+      "ops": 23890,
+      "p50_us": 1016.038,
+      "p95_us": 2158.269,
+      "p99_us": 4213.077,
+      "avg_us": 1251.559161155295
+    },
+    {
+      "agent": 7,
+      "ops": 23652,
+      "p50_us": 1019.269,
+      "p95_us": 2194.808,
+      "p99_us": 4224.192,
+      "avg_us": 1264.3852672078472
+    }
+  ]
+}

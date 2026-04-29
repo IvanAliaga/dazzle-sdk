@@ -1,0 +1,67 @@
+{
+  "type": "rag_recall",
+  "timestamp": "2026-04-23T01:03:02.551302Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "model": {
+    "file": "bge-small-en-v1.5-q4_k_m.gguf",
+    "output_dim": 384,
+    "n_ctx": 512,
+    "size_bytes": 24808576
+  },
+  "slice": {
+    "n_passages": 2000,
+    "n_queries": 200
+  },
+  "index": {
+    "algorithm": "HNSW",
+    "metric": "COSINE",
+    "m": 16,
+    "ef_construction": 200,
+    "ef_runtime": 64,
+    "passage_embed_ms": 410844,
+    "passage_add_ms": 246,
+    "passage_embed_us": {
+      "n": 2000,
+      "avg": 205412.9195,
+      "p50": 175228,
+      "p95": 448353,
+      "p99": 672179,
+      "min": 21106,
+      "max": 819960
+    }
+  },
+  "query": {
+    "k": 10,
+    "embed_us": {
+      "n": 200,
+      "avg": 21957.405,
+      "p50": 21496,
+      "p95": 27846,
+      "p99": 31461,
+      "min": 18467,
+      "max": 32386
+    },
+    "search_us": {
+      "n": 200,
+      "avg": 631.61,
+      "p50": 590,
+      "p95": 881,
+      "p99": 1703,
+      "min": 467,
+      "max": 1744
+    }
+  },
+  "recall": {
+    "at_1": 0.89,
+    "at_5": 0.965,
+    "at_10": 0.98
+  }
+}

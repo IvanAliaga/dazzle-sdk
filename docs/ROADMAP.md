@@ -8,7 +8,7 @@ applies to both platforms unless a bullet says otherwise.
 
 ---
 
-## 🚀 Post v1.0.0-beta.4 priorities (closing gaps toward GA)
+## 🚀 Post v1.0.0-beta.5 priorities (closing gaps toward GA)
 
 The full beta surface + every gap is listed in
 [CHANGELOG.md](../CHANGELOG.md). Short list of what must close before
@@ -34,7 +34,7 @@ immediately.
 ### 0b. Anthropic-side follow-ups
 
 These didn't block the live verification but are open for the
-release after `1.0.0-beta.4`:
+release after `1.0.0-beta.5`:
 
 - **Tool calling end-to-end against `api.anthropic.com`** —
   the live verification matrix exercised tool calling via

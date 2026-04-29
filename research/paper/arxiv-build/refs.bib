@@ -1,0 +1,506 @@
+% References for paper_v2_en.md — Dazzle: An Embedded Database for On-Device LLM Agents
+% Version 2 — April 2026
+
+@misc{litertlm,
+  title  = {LiteRT-LM: On-Device Large Language Model Inference},
+  author = {{Google}},
+  year   = {2025},
+  url    = {https://ai.google.dev/edge/litert}
+}
+
+@misc{llamacpp,
+  title  = {llama.cpp: Inference of LLaMA model in pure C/C++},
+  author = {Gerganov, Georgi},
+  year   = {2023},
+  url    = {https://github.com/ggerganov/llama.cpp}
+}
+
+@misc{mlcllm,
+  title  = {MLC-LLM: Universal LLM Deployment in Production},
+  author = {Chen, Tianqi and others},
+  year   = {2023},
+  url    = {https://mlc.ai}
+}
+
+@misc{executorch,
+  title  = {ExecuTorch: On-Device AI across Mobile, Embedded and Edge for PyTorch},
+  author = {{Meta AI}},
+  year   = {2024},
+  url    = {https://pytorch.org/executorch}
+}
+
+@article{memgpt,
+  title   = {MemGPT: Towards LLMs as Operating Systems},
+  author  = {Packer, Charles and Fang, Vivian and Patil, Shishir G. and Lin, Kevin and Wooders, Sarah and Gonzalez, Joseph E.},
+  journal = {arXiv preprint arXiv:2310.08560},
+  year    = {2023}
+}
+
+@inproceedings{generativeagents,
+  title     = {Generative Agents: Interactive Simulacra of Human Behavior},
+  author    = {Park, Joon Sung and O'Brien, Joseph C. and Cai, Carrie J. and Morris, Meredith Ringel and Liang, Percy and Bernstein, Michael S.},
+  booktitle = {Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology (UIST '23)},
+  year      = {2023}
+}
+
+@article{amem,
+  title   = {A-MEM: Agentic Memory for LLM Agents},
+  author  = {Li, Wei and others},
+  journal = {arXiv preprint arXiv:2502.12110},
+  year    = {2025}
+}
+
+@misc{sqlite,
+  title  = {SQLite: A Self-Contained, Serverless, Zero-Configuration, Transactional SQL Database Engine},
+  author = {Hipp, D. Richard},
+  year   = {2000},
+  url    = {https://sqlite.org}
+}
+
+@techreport{lmdb,
+  title       = {Lightning Memory-Mapped Database: LMDB},
+  author      = {Chu, Howard and others},
+  institution = {OpenLDAP Foundation},
+  year        = {2012}
+}
+
+@article{rocksdb,
+  title   = {RocksDB: Evolution of Development Priorities in a Key-value Store Serving Large-scale Applications},
+  author  = {Dong, Siying and Kryczka, Andrew and Jin, Yanqin and Stumm, Michael},
+  journal = {ACM Transactions on Storage (TOS)},
+  year    = {2021}
+}
+
+@misc{valkey,
+  title  = {Valkey: High-performance data structures server},
+  author = {{Valkey Project} and {Linux Foundation}},
+  year   = {2024},
+  url    = {https://valkey.io}
+}
+
+@article{hnsw,
+  title   = {Efficient and Robust Approximate Nearest Neighbor Search Using Hierarchical Navigable Small World Graphs},
+  author  = {Malkov, Yu A. and Yashunin, D. A.},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2018},
+  doi     = {10.1109/TPAMI.2018.2889473}
+}
+
+@misc{sqliteaivector,
+  title  = {SQLiteAI sqlite-vector v0.9.95},
+  author = {{SQLiteAI Inc.}},
+  year   = {2026},
+  note   = {Commercial vector extension for SQLite, Elastic License 2.0},
+  url    = {https://github.com/sqliteai/sqlite-vector}
+}
+
+@misc{objectbox4,
+  title  = {ObjectBox 4.x: Mobile NoSQL Database with HNSW Vector Search},
+  author = {{ObjectBox Ltd.}},
+  year   = {2024},
+  url    = {https://objectbox.io/vector-search}
+}
+
+@misc{qwen25,
+  title  = {Qwen 2.5: A Party of Foundation Models},
+  author = {{Qwen Team, Alibaba Cloud}},
+  year   = {2024},
+  url    = {https://qwenlm.github.io/blog/qwen2.5/}
+}
+
+@misc{gemma4,
+  title  = {Gemma 4 E2B Instruction-Tuned (LiteRT-LM artifact)},
+  author = {{LiteRT Community}},
+  year   = {2026},
+  note   = {Filename \texttt{gemma-4-E2B-it.litertlm}; size 2{,}584{,}948{,}736 bytes (2.41~GB); SHA-256 \texttt{ab7838cdfc8f77e54d8ca45eadceb20452d9f01e4bfade03e5dce27911b27e42} (computed on the local artifact at \texttt{research/benchmarks/results/ios/}). Canonical download URL: \url{https://huggingface.co/litert-community/gemma-4-E2B-it/resolve/main/gemma-4-E2B-it.litertlm} (gated behind the Gemma license click-through; HEAD returns HTTP~401 to anonymous clients). The same URL and hash are pinned in the Dazzle SDK manifest at \texttt{docs/sdk/edge\_models.json}. ``E2B'' (Effective~2B) follows the LiteRT community naming convention; the file exposes a Matryoshka submodel inference-equivalent to a 2B-parameter dense model. This paper treats the file as a black-box runtime and makes no claim about its training corpus, tokenizer, or relationship to any specific Google-published Gemma~3 or Gemma~4 model card beyond the pinned filename + hash.},
+  url    = {https://huggingface.co/litert-community/gemma-4-E2B-it/resolve/main/gemma-4-E2B-it.litertlm}
+}
+
+@misc{bgesmall,
+  title  = {BGE: BAAI General Embedding},
+  author = {Xiao, Shitao and Liu, Zheng and Zhang, Peitian and Muennighoff, Niklas},
+  year   = {2023},
+  url    = {https://huggingface.co/BAAI/bge-small-en-v1.5}
+}
+
+@article{nq2019,
+  title   = {Natural Questions: A Benchmark for Question Answering Research},
+  author  = {Kwiatkowski, Tom and Palomaki, Jennimaria and Redfield, Olivia
+             and Collins, Michael and Parikh, Ankur and Alberti, Chris
+             and Epstein, Danielle and Polosukhin, Illia and Devlin, Jacob
+             and Lee, Kenton and Toutanova, Kristina and Jones, Llion
+             and Kelcey, Matthew and Chang, Ming-Wei and Dai, Andrew M.
+             and Uszkoreit, Jakob and Le, Quoc and Petrov, Slav},
+  journal = {Transactions of the Association for Computational Linguistics},
+  volume  = {7},
+  pages   = {453--466},
+  year    = {2019},
+  doi     = {10.1162/tacl_a_00276}
+}
+
+@inproceedings{leeorqa,
+  title     = {Latent Retrieval for Weakly Supervised Open Domain Question Answering},
+  author    = {Lee, Kenton and Chang, Ming-Wei and Toutanova, Kristina},
+  booktitle = {Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {6086--6096},
+  year      = {2019},
+  note      = {Introduces the NQ-open short-answer subset used here.},
+  doi       = {10.18653/v1/P19-1612}
+}
+
+@misc{sbertnq,
+  title  = {sentence-transformers/natural-questions (pair split)},
+  author = {{Sentence-Transformers}},
+  year   = {2023},
+  note   = {Anchor-positive pair format of Natural Questions for retrieval training.},
+  url    = {https://huggingface.co/datasets/sentence-transformers/natural-questions}
+}
+
+@misc{nqopen,
+  title  = {google-research-datasets/nq\_open},
+  author = {{Google Research}},
+  year   = {2019},
+  note   = {NQ-open: open-domain short-answer subset of Natural Questions with canonical alias lists per question.},
+  url    = {https://huggingface.co/datasets/google-research-datasets/nq_open}
+}
+
+@misc{anthropicapi,
+  title  = {Anthropic Messages API Reference},
+  author = {{Anthropic}},
+  year   = {2024},
+  url    = {https://docs.anthropic.com/en/api/messages}
+}
+
+@misc{dazzlesdk,
+  title  = {Dazzle SDK 1.0.0-beta.4 — Public Release},
+  author = {Aliaga, Ivan},
+  year   = {2026},
+  note   = {Distributed via Maven Central, pub.dev, npm, and Swift Package Manager},
+  url    = {https://github.com/IvanAliaga/dazzle-sdk}
+}
+
+@inproceedings{hyperloglog,
+  title     = {HyperLogLog: the analysis of a near-optimal cardinality
+               estimation algorithm},
+  author    = {Flajolet, Philippe and Fusy, {\'E}ric and Gandouet, Olivier
+               and Meunier, Fr{\'e}d{\'e}ric},
+  booktitle = {Conference on Analysis of Algorithms (AofA '07)},
+  series    = {Discrete Mathematics and Theoretical Computer Science},
+  year      = {2007},
+  pages     = {137--156},
+  note      = {Standard parameter setting ($m = 2^{14} = 16384$
+               6-bit registers) gives 12~KB memory and a relative
+               error of $1.04 / \sqrt{m} \approx 0.81\,\%$.},
+  url       = {https://dmtcs.episciences.org/3545}
+}
+
+@inproceedings{squad,
+  title     = {{SQuAD}: 100,000+ Questions for Machine Comprehension of Text},
+  author    = {Rajpurkar, Pranav and Zhang, Jian and Lopyrev, Konstantin
+               and Liang, Percy},
+  booktitle = {Proceedings of EMNLP 2016},
+  year      = {2016},
+  pages     = {2383--2392},
+  doi       = {10.18653/v1/D16-1264},
+  url       = {https://aclanthology.org/D16-1264/}
+}
+
+@inproceedings{diskann,
+  title     = {DiskANN: Fast Accurate Billion-point Nearest Neighbor Search
+               on a Single Node},
+  author    = {Subramanya, Suhas Jayaram and Devvrit and Kadekodi, Rohan and
+               Krishnaswamy, Ravishankar and Simhadri, Harsha Vardhan},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2019},
+  url       = {https://github.com/microsoft/DiskANN}
+}
+
+@article{faiss,
+  title   = {The Faiss library},
+  author  = {Douze, Matthijs and Guzhva, Alexandr and Deng, Chengqi and
+             Johnson, Jeff and Szilvasy, Gergely and Mazar{\'e}, Pierre-Emmanuel
+             and Lomeli, Maria and Hosseini, Lucas and J{\'e}gou, Herv{\'e}},
+  journal = {arXiv preprint arXiv:2401.08281},
+  year    = {2024},
+  url     = {https://github.com/facebookresearch/faiss}
+}
+
+@misc{realm,
+  title  = {Realm: A mobile database — alternative to SQLite},
+  author = {{MongoDB}},
+  year   = {2014},
+  url    = {https://realm.io}
+}
+
+@misc{wcdb,
+  title  = {WCDB: a cross-platform database framework developed by WeChat},
+  author = {{Tencent}},
+  year   = {2017},
+  url    = {https://github.com/Tencent/wcdb}
+}
+
+@inproceedings{ragtruth,
+  title     = {RAGTruth: A Hallucination Corpus for Developing Trustworthy
+               Retrieval-Augmented Language Models},
+  author    = {Niu, Cheng and Wu, Yuanhao and Zhu, Juno and Xu, Siliang
+               and Shum, Kashun and Zhong, Randy and Song, Juntong
+               and Zhang, Tong},
+  booktitle = {Proceedings of the 62nd Annual Meeting of the Association for
+               Computational Linguistics (ACL)},
+  year      = {2024},
+  url       = {https://aclanthology.org/2024.acl-long.585/}
+}
+
+% =====================================================================
+% Additional references — added 2026-04-29 to strengthen coverage of
+% the RAG, on-device LLM, vector-search, embedded-DB, vector-
+% quantisation, and statistical-method literature surfaces the paper
+% discusses.
+% =====================================================================
+
+% --- Retrieval-augmented generation: canonical work --------------------
+
+@inproceedings{lewisrag,
+  title     = {Retrieval-Augmented Generation for Knowledge-Intensive
+               {NLP} Tasks},
+  author    = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra
+               and Petroni, Fabio and Karpukhin, Vladimir and
+               Goyal, Naman and K{\"u}ttler, Heinrich and Lewis, Mike
+               and Yih, Wen-tau and Rockt{\"a}schel, Tim and
+               Riedel, Sebastian and Kiela, Douwe},
+  booktitle = {Advances in Neural Information Processing Systems
+               (NeurIPS)},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/2005.11401}
+}
+
+@inproceedings{karpukhindpr,
+  title     = {Dense Passage Retrieval for Open-Domain Question
+               Answering},
+  author    = {Karpukhin, Vladimir and O\u{g}uz, Barlas and Min, Sewon
+               and Lewis, Patrick and Wu, Ledell and Edunov, Sergey
+               and Chen, Danqi and Yih, Wen-tau},
+  booktitle = {Proceedings of EMNLP 2020},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.emnlp-main.550},
+  url       = {https://aclanthology.org/2020.emnlp-main.550/}
+}
+
+@inproceedings{liulostmiddle,
+  title     = {Lost in the Middle: How Language Models Use Long
+               Contexts},
+  author    = {Liu, Nelson F. and Lin, Kevin and Hewitt, John and
+               Paranjape, Ashwin and Bevilacqua, Michele and
+               Petroni, Fabio and Liang, Percy},
+  booktitle = {Transactions of the Association for Computational
+               Linguistics (TACL)},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2307.03172}
+}
+
+@misc{esragas,
+  title         = {{RAGAS}: Automated Evaluation of Retrieval Augmented
+                   Generation},
+  author        = {Es, Shahul and James, Jithin and Espinosa-Anke, Luis
+                   and Schockaert, Steven},
+  year          = {2024},
+  eprint        = {2309.15217},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL}
+}
+
+% --- On-device / mobile LLMs: landscape -------------------------------
+
+@misc{phi3,
+  title         = {Phi-3 Technical Report: A Highly Capable Language
+                   Model Locally on Your Phone},
+  author        = {{Microsoft}},
+  year          = {2024},
+  eprint        = {2404.14219},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL}
+}
+
+@misc{mobilellm,
+  title         = {{MobileLLM}: Optimizing Sub-billion Parameter Language
+                   Models for On-Device Use Cases},
+  author        = {Liu, Zechun and Zhao, Changsheng and Iandola, Forrest
+                   and Lai, Chen and Tian, Yuandong and Fedorov, Igor
+                   and Xiong, Yunyang and Chang, Ernie and Shi, Yangyang
+                   and Krishnamoorthi, Raghuraman and Chandra, Vikas},
+  year          = {2024},
+  eprint        = {2402.14905},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+
+@misc{llama3,
+  title         = {The Llama 3 Herd of Models},
+  author        = {{Meta AI}},
+  year          = {2024},
+  eprint        = {2407.21783},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI}
+}
+
+@misc{gemma2,
+  title         = {Gemma 2: Improving Open Language Models at a
+                   Practical Size},
+  author        = {{Gemma Team, Google DeepMind}},
+  year          = {2024},
+  eprint        = {2408.00118},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL}
+}
+
+@misc{gguf,
+  title  = {{GGUF}: GGML Universal File format specification},
+  author = {Gerganov, Georgi and {llama.cpp Contributors}},
+  year   = {2023},
+  url    = {https://github.com/ggerganov/ggml/blob/master/docs/gguf.md}
+}
+
+% --- Embedded databases: foundational + peers -------------------------
+
+@inproceedings{duckdb,
+  title     = {{DuckDB}: an Embeddable Analytical Database},
+  author    = {Raasveldt, Mark and M{\"u}hleisen, Hannes},
+  booktitle = {Proceedings of the 2019 International Conference on
+               Management of Data (SIGMOD)},
+  pages     = {1981--1984},
+  year      = {2019},
+  doi       = {10.1145/3299869.3320212}
+}
+
+@inproceedings{leveldb,
+  title  = {{LevelDB}: A fast key-value storage library by Google
+            providing an ordered mapping from string keys to string
+            values},
+  author = {Dean, Jeff and Ghemawat, Sanjay},
+  year   = {2011},
+  url    = {https://github.com/google/leveldb},
+  note   = {Original LSM-tree-based key-value store; design lineage
+            ancestor of RocksDB.}
+}
+
+% --- Vector search: peers + algorithmic background --------------------
+
+@inproceedings{milvus,
+  title     = {Milvus: A Purpose-Built Vector Data Management System},
+  author    = {Wang, Jianguo and Yi, Xiaomeng and Guo, Rentong and
+               Jin, Hai and Xu, Peng and Li, Shengjun and Wang, Xiangyu
+               and Guo, Xiangzhou and Li, Chengming and Xu, Xiaohai
+               and Yu, Kun and Yuan, Yuxing and Zou, Yinghao and
+               Long, Jiquan and Cai, Yudong and Li, Zhenxiang and
+               Zhang, Zhifeng and Mo, Yihua and Gu, Jun and Jiang, Ruiyi
+               and Wei, Yi and Xie, Charles},
+  booktitle = {Proceedings of the 2021 International Conference on
+               Management of Data (SIGMOD)},
+  pages     = {2614--2627},
+  year      = {2021},
+  doi       = {10.1145/3448016.3457550}
+}
+
+@article{jegoupq,
+  title   = {Product Quantization for Nearest Neighbor Search},
+  author  = {J\'egou, Herv\'e and Douze, Matthijs and Schmid, Cordelia},
+  journal = {IEEE Transactions on Pattern Analysis and Machine
+             Intelligence},
+  volume  = {33},
+  number  = {1},
+  pages   = {117--128},
+  year    = {2011},
+  doi     = {10.1109/TPAMI.2010.57}
+}
+
+@misc{simsimd,
+  title  = {{SimSIMD}: Hyper-Optimized SIMD Kernels for Vector and
+            String Operations across {NEON}, {SVE}, {AVX-512}, etc.},
+  author = {Vardanian, Ash},
+  year   = {2024},
+  url    = {https://github.com/ashvardanian/SimSIMD}
+}
+
+@misc{mteb,
+  title         = {{MTEB}: Massive Text Embedding Benchmark},
+  author        = {Muennighoff, Niklas and Tazi, Nouamane and
+                   Magne, Lo{\"\i}c and Reimers, Nils},
+  year          = {2023},
+  eprint        = {2210.07316},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL}
+}
+
+% --- Statistical methodology: bootstrap, paired resampling -----------
+
+@article{efronbootstrap,
+  title   = {Bootstrap Methods: Another Look at the Jackknife},
+  author  = {Efron, Bradley},
+  journal = {The Annals of Statistics},
+  volume  = {7},
+  number  = {1},
+  pages   = {1--26},
+  year    = {1979},
+  doi     = {10.1214/aos/1176344552}
+}
+
+@book{davisonhinkley,
+  title     = {Bootstrap Methods and their Application},
+  author    = {Davison, A. C. and Hinkley, D. V.},
+  publisher = {Cambridge University Press},
+  year      = {1997},
+  isbn      = {978-0-521-57391-7}
+}
+
+% --- Hardware: ARM microarchitecture documentation -------------------
+
+@misc{armcortexa75,
+  title  = {{ARM} Cortex-A75 Technical Reference Manual},
+  author = {{ARM Limited}},
+  year   = {2017},
+  url    = {https://developer.arm.com/documentation/100458/0301}
+}
+
+@misc{armcortexa76,
+  title  = {{ARM} Cortex-A76 Technical Reference Manual},
+  author = {{ARM Limited}},
+  year   = {2018},
+  url    = {https://developer.arm.com/documentation/100798/0401}
+}
+
+@misc{armcortexa78,
+  title  = {{ARM} Cortex-A78 Technical Reference Manual},
+  author = {{ARM Limited}},
+  year   = {2020},
+  url    = {https://developer.arm.com/documentation/101430/0103}
+}
+
+% --- Mobile / edge benchmarking methodology --------------------------
+
+@inproceedings{aibenchmark,
+  title  = {{AI} Benchmark: All About Deep Learning on Smartphones in
+            2019},
+  author = {Ignatov, Andrey and Timofte, Radu and Kulik, Andrei and
+            Yang, Seungsoo and Wang, Ke and Baum, Felix and Wu, Max
+            and Xu, Lirong and Van Gool, Luc},
+  booktitle = {{IEEE/CVF} International Conference on Computer Vision
+               Workshops (ICCVW)},
+  year      = {2019},
+  url       = {https://arxiv.org/abs/1910.06663}
+}
+
+@misc{mlperfmobile,
+  title  = {{MLPerf} Inference: Mobile Working Group},
+  author = {{MLCommons}},
+  year   = {2024},
+  url    = {https://mlcommons.org/working-groups/benchmarks/inference/}
+}
+
+@misc{urp,
+  title  = {Universidad Ricardo Palma},
+  author = {{Universidad Ricardo Palma}},
+  year   = {1969},
+  url    = {https://www.urp.edu.pe/},
+  note   = {Author affiliation; the institution does not endorse the
+            specific contents of this paper.}
+}

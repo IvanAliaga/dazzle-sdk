@@ -1,0 +1,16 @@
+\begin{table}[ht]
+\centering
+\caption{Storage-Only Retrieval Latency — iPhone}
+\label{tab:storage-only}
+\begin{tabular}{lrrrrrr}
+\toprule
+Backend & Retrieval ($\mu$s) & P50 & P95 & Ingest (ms) & Ctx Tokens & IO $\Delta$ (B) \\
+\midrule
+  SQLite & 170.9 $\pm$ 91.5 & 163.9 & 229.7 & 78.0 & 78 & 0 \\
+  Dazzle & 427.8 $\pm$ 10.9 & 368.1 & 703.6 & 70.9 & 78 & 0 \\
+  InMemory & 126.1 $\pm$ 67.5 & 119.3 & 184.2 & 1.6 & 78 & 0 \\
+  Dazzle & 164.0 $\pm$ 0.9 & 163.4 & 172.9 & 47.0 & 78 & 0 \\
+  Dazzle-Precompute & 102.5 $\pm$ 58.0 & 106.2 & 132.7 & 92.3 & 73 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}

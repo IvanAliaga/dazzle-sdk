@@ -471,7 +471,29 @@ public final class DazzleServer {
         defer { valkey_direct_free(rawResult) }
         let len = Int(strlen(rawResult))
         let data = Data(bytes: rawResult, count: len)
-        return parseRESP(data).map { $0.0 }
+        if let parsed = parseRESP(data).map({ $0.0 }) {
+            return parsed
+        }
+        // Fallback for bulk-string replies whose declared length plus
+        // trailing CRLF exceeds the strlen()-measured buffer (large INFO
+        // payloads can land here when extract_reply concatenated multiple
+        // reply blocks without a sentinel CRLF between them). Decode the
+        // body length from the header and return as much body as is
+        // actually present — strictly better than dropping the entire
+        // reply on the floor.
+        if data.first == UInt8(ascii: "$"),
+           let nl = data.range(of: Data([0x0D, 0x0A])),
+           let bodyLen = Int(String(data: data[(data.startIndex + 1)..<nl.lowerBound],
+                                    encoding: .utf8) ?? ""),
+           bodyLen >= 0 {
+            let bodyStart = nl.upperBound
+            let bodyEnd   = min(bodyStart + bodyLen, data.count)
+            if bodyEnd > bodyStart,
+               let str = String(data: data[bodyStart..<bodyEnd], encoding: .utf8) {
+                return str
+            }
+        }
+        return nil
     }
 
     /// Phase 5 typed direct-read — returns `[String?]` straight from the

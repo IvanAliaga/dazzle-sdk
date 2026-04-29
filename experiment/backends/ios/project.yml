@@ -1,0 +1,137 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DazzleBackends
+options:
+  bundleIdPrefix: io.dazzle
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+
+targets:
+  DazzleBackends:
+    type: application
+    platform: iOS
+    sources:
+      # App entry point
+      - path: App
+      - path: Resources
+      # Backend implementations (StorageBackend protocol + all context managers)
+      - path: StorageBackend.swift
+      - path: SensorDataset.swift
+      - path: SystemSnapshot.swift
+      - path: VectorSearchTest.swift
+      - path: dazzle
+      - path: valkey
+      - path: sqlite
+      - path: inmemory
+      # Vector benchmark: sqlite-vec vendored + tiny C shim + Swift wrapper.
+      - path: sqlitevec
+      # sqlite-vector-ai (commercial SQLiteAI extension, Elastic 2.0 —
+      # bench-only; the xcframework binary is NOT redistributed with the
+      # SDK). C shim + Swift wrapper, same API shape as sqlitevec/.
+      #
+      # `sqlite3.c` is the SQLite amalgamation (3.50.0) vendored locally
+      # so we can compile it with SQLITE_ENABLE_LOAD_EXTENSION=1. It is
+      # NOT compiled directly: svai_ios.c does `#include "sqlite3.c"`
+      # inside its translation unit (with SQLITE_API redefined to hidden
+      # visibility) so none of the bundled sqlite3 symbols leak out and
+      # collide with the system libsqlite3 the rest of the app uses.
+      - path: sqlitevectorai
+        excludes:
+          - "vector.xcframework"   # not a source; linked as framework below
+          - "sqlite3.c"            # included via #include from svai_ios.c
+          - "download_xcframework.sh"
+      - path: VectorBenchmark.swift
+      # StorageOnlyTest — the test harness that drives backends
+      - path: ../../storage/ios/StorageOnlyTest.swift
+      # Dazzle SDK (server + Swift primitives + C shim). Post-Phase 2
+      # the primitives reference types that live in separate files in
+      # the SDK's Sources/ dir — DazzleError / Transport / ExecutionPolicy
+      # / VectorIndex / ValkeyVersion — so those must compile alongside
+      # the three originally listed files.
+      - path: ../../../sdk/ios/Sources/DazzleConfig.swift
+      - path: ../../../sdk/ios/Sources/DazzleServer.swift
+      - path: ../../../sdk/ios/Sources/DazzlePrimitives.swift
+      - path: ../../../sdk/ios/Sources/Transport.swift
+      - path: ../../../sdk/ios/Sources/ExecutionPolicy.swift
+      - path: ../../../sdk/ios/Sources/VectorIndex.swift
+      - path: ../../../sdk/ios/Sources/ValkeyVersion.swift
+      - path: ../../../core/platform/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment.backends
+        INFOPLIST_FILE: Resources/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lz -lc++ -lsqlite3"
+        LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
+        CODE_SIGN_ENTITLEMENTS: Resources/DazzleBackends.entitlements
+        # Bridging header exposes sqlite-vec + sqlite-vector-ai C shims to Swift.
+        SWIFT_OBJC_BRIDGING_HEADER: Resources/DazzleBackends-Bridging-Header.h
+        HEADER_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/sqlitevec $(PROJECT_DIR)/sqlitevectorai $(PROJECT_DIR)/sqlitevectorai/vector.xcframework/ios-arm64/vector.framework/Headers"
+        # sqlite-vec build flags:
+        #   SQLITE_CORE=1        — compile against sqlite3.h directly (no
+        #                          extension-loader indirection through
+        #                          sqlite3_api_routines). Required when we
+        #                          statically link it and init manually.
+        #   SQLITE_VEC_STATIC=1  — drop __declspec on non-Windows.
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) SQLITE_CORE=1 SQLITE_VEC_STATIC=1"
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      # SQLiteAI sqlite-vector commercial extension (Elastic 2.0, benchmark-
+      # only, NOT distributed with the SDK). XCFramework from
+      # https://github.com/sqliteai/sqlite-vector 0.9.95; we embed+sign so
+      # the dylib is available at runtime on device.
+      - framework: sqlitevectorai/vector.xcframework
+        embed: true
+        codeSign: true
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: "Dazzle Backends"
+        CFBundleDisplayName: "Dazzle Backends"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        NSDocumentsBrowserUsageDescription: "Used to export benchmark results"
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+
+  # Unit tests for the SQLiteAI vector data path (svai_open →
+  # bundled sqlite3 → sqlite3_load_extension → vector.framework). The
+  # whole point of this target is to catch the "iPhone bench reports
+  # n/a for SQLiteAI" failure mode on the simulator in seconds instead
+  # of after a full device flash + bench run.
+  DazzleBackendsTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: DazzleBackends
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment.backends.tests
+        INFOPLIST_FILE: Tests/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/DazzleBackends.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DazzleBackends"

@@ -1,0 +1,171 @@
+{
+  "backend" : "LMDB",
+  "backend_key" : "lmdb",
+  "dataset_name" : "dataset_iot_baseline",
+  "device" : {
+    "active_cpu_cores" : 6,
+    "cpu_cores" : 6,
+    "model" : "iPhone",
+    "name" : "iPhone",
+    "platform" : "iOS",
+    "ram_total_bytes" : 5994528768,
+    "systemName" : "iOS",
+    "systemVersion" : "26.3"
+  },
+  "scale_points" : [
+    {
+      "backend_size_after_bytes" : 245760,
+      "backend_size_before_bytes" : 32768,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 212992,
+      "backend_size_method" : "lmdb:dir_st_blocks",
+      "concurrent_retrieval_avg_us" : 164.0521,
+      "concurrent_retrieval_p95_us" : 165.75,
+      "context_chars" : 257,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 10.751917000000001,
+      "io_write_bytes_delta" : -1,
+      "n" : 200,
+      "per_ingest_us" : 53.759585000000001,
+      "ram_after_kb" : 5905,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 15968,
+      "ram_before_kb" : 5809,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 15392,
+      "ram_delta_kb" : 96,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 576,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 164.0521,
+      "retrieval_p50_us" : 164,
+      "retrieval_p95_us" : 165.75,
+      "synth_chars" : 815,
+      "synth_tokens_est" : 203
+    },
+    {
+      "backend_size_after_bytes" : 245760,
+      "backend_size_before_bytes" : 32768,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 212992,
+      "backend_size_method" : "lmdb:dir_st_blocks",
+      "concurrent_retrieval_avg_us" : 67.337600000000009,
+      "concurrent_retrieval_p95_us" : 67.957999999999998,
+      "context_chars" : 258,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 47.931832999999997,
+      "io_write_bytes_delta" : -1,
+      "n" : 1000,
+      "per_ingest_us" : 47.931832999999997,
+      "ram_after_kb" : 6017,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 16304,
+      "ram_before_kb" : 5969,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 15824,
+      "ram_delta_kb" : 48,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 480,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 67.337600000000009,
+      "retrieval_p50_us" : 67.332999999999998,
+      "retrieval_p95_us" : 67.957999999999998,
+      "synth_chars" : 3256,
+      "synth_tokens_est" : 814
+    },
+    {
+      "backend_size_after_bytes" : 245760,
+      "backend_size_before_bytes" : 32768,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 212992,
+      "backend_size_method" : "lmdb:dir_st_blocks",
+      "concurrent_retrieval_avg_us" : 46.954050000000009,
+      "concurrent_retrieval_p95_us" : 47.167000000000002,
+      "context_chars" : 259,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 116.685333,
+      "io_write_bytes_delta" : -1,
+      "n" : 5000,
+      "per_ingest_us" : 23.3370666,
+      "ram_after_kb" : 6337,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 16656,
+      "ram_before_kb" : 6209,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 16288,
+      "ram_delta_kb" : 128,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 368,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 46.954050000000009,
+      "retrieval_p50_us" : 46.957999999999998,
+      "retrieval_p95_us" : 47.167000000000002,
+      "synth_chars" : 15828,
+      "synth_tokens_est" : 3957
+    },
+    {
+      "backend_size_after_bytes" : 458752,
+      "backend_size_before_bytes" : 32768,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 425984,
+      "backend_size_method" : "lmdb:dir_st_blocks",
+      "concurrent_retrieval_avg_us" : 85.687449999999984,
+      "concurrent_retrieval_p95_us" : 86.417000000000002,
+      "context_chars" : 261,
+      "context_tokens_est" : 65,
+      "ingest_total_ms" : 333.60858400000001,
+      "io_write_bytes_delta" : -1,
+      "n" : 20000,
+      "per_ingest_us" : 16.680429199999999,
+      "ram_after_kb" : 7297,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 17808,
+      "ram_before_kb" : 7041,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 17136,
+      "ram_delta_kb" : 256,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 672,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 85.687449999999984,
+      "retrieval_p50_us" : 85.667000000000002,
+      "retrieval_p95_us" : 86.417000000000002,
+      "synth_chars" : 63706,
+      "synth_tokens_est" : 15926
+    }
+  ],
+  "timestamp" : "2026-04-27T23:08:03Z",
+  "type" : "scale_benchmark"
+}

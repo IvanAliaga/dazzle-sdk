@@ -1,0 +1,1720 @@
+{
+  "meta": {
+    "seed": 42,
+    "num_readings": 200,
+    "anomaly_threshold_high": 28.0,
+    "anomaly_threshold_low": 5.0,
+    "normal_range": [
+      18.0,
+      27.0
+    ],
+    "injected_anomalies": [
+      {
+        "start": 45,
+        "duration": 1,
+        "type": "spike",
+        "description": "sudden spike to 32\u00b0C"
+      },
+      {
+        "start": 89,
+        "duration": 8,
+        "type": "drift",
+        "description": "gradual upward drift from 24 to 31\u00b0C"
+      },
+      {
+        "start": 110,
+        "duration": 3,
+        "type": "dropout",
+        "description": "sensor dropout: values near 0\u00b0C"
+      },
+      {
+        "start": 140,
+        "duration": 6,
+        "type": "oscillation",
+        "description": "rapid oscillation between 20 and 29\u00b0C"
+      },
+      {
+        "start": 175,
+        "duration": 1,
+        "type": "spike",
+        "description": "sudden spike to 34\u00b0C"
+      }
+    ]
+  },
+  "stats": {
+    "count": 200,
+    "avg_temp": 22.55,
+    "min_temp": 0.8,
+    "max_temp": 34.2,
+    "anomaly_count": 11,
+    "anomaly_minutes": [
+      45,
+      94,
+      95,
+      96,
+      110,
+      111,
+      112,
+      141,
+      143,
+      145,
+      175
+    ]
+  },
+  "readings": [
+    {
+      "minute": 0,
+      "timestamp": "2024-03-15T10:00:00",
+      "temp_c": 22.4,
+      "humidity": 44.5,
+      "anomalous": false
+    },
+    {
+      "minute": 1,
+      "timestamp": "2024-03-15T10:00:01",
+      "temp_c": 22.4,
+      "humidity": 47.1,
+      "anomalous": false
+    },
+    {
+      "minute": 2,
+      "timestamp": "2024-03-15T10:00:02",
+      "temp_c": 22.4,
+      "humidity": 40.5,
+      "anomalous": false
+    },
+    {
+      "minute": 3,
+      "timestamp": "2024-03-15T10:00:03",
+      "temp_c": 22.8,
+      "humidity": 44.2,
+      "anomalous": false
+    },
+    {
+      "minute": 4,
+      "timestamp": "2024-03-15T10:00:04",
+      "temp_c": 22.3,
+      "humidity": 45.3,
+      "anomalous": false
+    },
+    {
+      "minute": 5,
+      "timestamp": "2024-03-15T10:00:05",
+      "temp_c": 22.7,
+      "humidity": 48.5,
+      "anomalous": false
+    },
+    {
+      "minute": 6,
+      "timestamp": "2024-03-15T10:00:06",
+      "temp_c": 23.0,
+      "humidity": 45.3,
+      "anomalous": false
+    },
+    {
+      "minute": 7,
+      "timestamp": "2024-03-15T10:00:07",
+      "temp_c": 21.9,
+      "humidity": 42.0,
+      "anomalous": false
+    },
+    {
+      "minute": 8,
+      "timestamp": "2024-03-15T10:00:08",
+      "temp_c": 22.7,
+      "humidity": 48.9,
+      "anomalous": false
+    },
+    {
+      "minute": 9,
+      "timestamp": "2024-03-15T10:00:09",
+      "temp_c": 22.5,
+      "humidity": 44.7,
+      "anomalous": false
+    },
+    {
+      "minute": 10,
+      "timestamp": "2024-03-15T10:00:10",
+      "temp_c": 22.9,
+      "humidity": 40.6,
+      "anomalous": false
+    },
+    {
+      "minute": 11,
+      "timestamp": "2024-03-15T10:00:11",
+      "temp_c": 22.3,
+      "humidity": 46.5,
+      "anomalous": false
+    },
+    {
+      "minute": 12,
+      "timestamp": "2024-03-15T10:00:12",
+      "temp_c": 23.2,
+      "humidity": 44.3,
+      "anomalous": false
+    },
+    {
+      "minute": 13,
+      "timestamp": "2024-03-15T10:00:13",
+      "temp_c": 22.8,
+      "humidity": 45.7,
+      "anomalous": false
+    },
+    {
+      "minute": 14,
+      "timestamp": "2024-03-15T10:00:14",
+      "temp_c": 23.1,
+      "humidity": 41.7,
+      "anomalous": false
+    },
+    {
+      "minute": 15,
+      "timestamp": "2024-03-15T10:00:15",
+      "temp_c": 23.0,
+      "humidity": 40.5,
+      "anomalous": false
+    },
+    {
+      "minute": 16,
+      "timestamp": "2024-03-15T10:00:16",
+      "temp_c": 20.4,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 17,
+      "timestamp": "2024-03-15T10:00:17",
+      "temp_c": 21.8,
+      "humidity": 47.6,
+      "anomalous": false
+    },
+    {
+      "minute": 18,
+      "timestamp": "2024-03-15T10:00:18",
+      "temp_c": 23.0,
+      "humidity": 41.3,
+      "anomalous": false
+    },
+    {
+      "minute": 19,
+      "timestamp": "2024-03-15T10:00:19",
+      "temp_c": 23.2,
+      "humidity": 42.0,
+      "anomalous": false
+    },
+    {
+      "minute": 20,
+      "timestamp": "2024-03-15T10:00:20",
+      "temp_c": 22.4,
+      "humidity": 44.1,
+      "anomalous": false
+    },
+    {
+      "minute": 21,
+      "timestamp": "2024-03-15T10:00:21",
+      "temp_c": 22.6,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 22,
+      "timestamp": "2024-03-15T10:00:22",
+      "temp_c": 23.0,
+      "humidity": 46.0,
+      "anomalous": false
+    },
+    {
+      "minute": 23,
+      "timestamp": "2024-03-15T10:00:23",
+      "temp_c": 23.0,
+      "humidity": 46.4,
+      "anomalous": false
+    },
+    {
+      "minute": 24,
+      "timestamp": "2024-03-15T10:00:24",
+      "temp_c": 22.0,
+      "humidity": 42.8,
+      "anomalous": false
+    },
+    {
+      "minute": 25,
+      "timestamp": "2024-03-15T10:00:25",
+      "temp_c": 22.1,
+      "humidity": 46.5,
+      "anomalous": false
+    },
+    {
+      "minute": 26,
+      "timestamp": "2024-03-15T10:00:26",
+      "temp_c": 22.3,
+      "humidity": 52.0,
+      "anomalous": false
+    },
+    {
+      "minute": 27,
+      "timestamp": "2024-03-15T10:00:27",
+      "temp_c": 21.8,
+      "humidity": 41.7,
+      "anomalous": false
+    },
+    {
+      "minute": 28,
+      "timestamp": "2024-03-15T10:00:28",
+      "temp_c": 23.1,
+      "humidity": 49.3,
+      "anomalous": false
+    },
+    {
+      "minute": 29,
+      "timestamp": "2024-03-15T10:00:29",
+      "temp_c": 22.9,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 30,
+      "timestamp": "2024-03-15T10:00:30",
+      "temp_c": 23.6,
+      "humidity": 44.7,
+      "anomalous": false
+    },
+    {
+      "minute": 31,
+      "timestamp": "2024-03-15T10:00:31",
+      "temp_c": 21.4,
+      "humidity": 43.4,
+      "anomalous": false
+    },
+    {
+      "minute": 32,
+      "timestamp": "2024-03-15T10:00:32",
+      "temp_c": 23.3,
+      "humidity": 40.7,
+      "anomalous": false
+    },
+    {
+      "minute": 33,
+      "timestamp": "2024-03-15T10:00:33",
+      "temp_c": 22.5,
+      "humidity": 45.8,
+      "anomalous": false
+    },
+    {
+      "minute": 34,
+      "timestamp": "2024-03-15T10:00:34",
+      "temp_c": 22.2,
+      "humidity": 47.2,
+      "anomalous": false
+    },
+    {
+      "minute": 35,
+      "timestamp": "2024-03-15T10:00:35",
+      "temp_c": 23.0,
+      "humidity": 52.0,
+      "anomalous": false
+    },
+    {
+      "minute": 36,
+      "timestamp": "2024-03-15T10:00:36",
+      "temp_c": 23.0,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 37,
+      "timestamp": "2024-03-15T10:00:37",
+      "temp_c": 22.1,
+      "humidity": 42.5,
+      "anomalous": false
+    },
+    {
+      "minute": 38,
+      "timestamp": "2024-03-15T10:00:38",
+      "temp_c": 23.3,
+      "humidity": 43.3,
+      "anomalous": false
+    },
+    {
+      "minute": 39,
+      "timestamp": "2024-03-15T10:00:39",
+      "temp_c": 22.4,
+      "humidity": 47.2,
+      "anomalous": false
+    },
+    {
+      "minute": 40,
+      "timestamp": "2024-03-15T10:00:40",
+      "temp_c": 21.9,
+      "humidity": 44.1,
+      "anomalous": false
+    },
+    {
+      "minute": 41,
+      "timestamp": "2024-03-15T10:00:41",
+      "temp_c": 21.0,
+      "humidity": 41.8,
+      "anomalous": false
+    },
+    {
+      "minute": 42,
+      "timestamp": "2024-03-15T10:00:42",
+      "temp_c": 22.0,
+      "humidity": 46.2,
+      "anomalous": false
+    },
+    {
+      "minute": 43,
+      "timestamp": "2024-03-15T10:00:43",
+      "temp_c": 23.5,
+      "humidity": 44.9,
+      "anomalous": false
+    },
+    {
+      "minute": 44,
+      "timestamp": "2024-03-15T10:00:44",
+      "temp_c": 22.7,
+      "humidity": 45.5,
+      "anomalous": false
+    },
+    {
+      "minute": 45,
+      "timestamp": "2024-03-15T10:00:45",
+      "temp_c": 34.2,
+      "humidity": 47.7,
+      "anomalous": true
+    },
+    {
+      "minute": 46,
+      "timestamp": "2024-03-15T10:00:46",
+      "temp_c": 22.2,
+      "humidity": 45.5,
+      "anomalous": false
+    },
+    {
+      "minute": 47,
+      "timestamp": "2024-03-15T10:00:47",
+      "temp_c": 20.5,
+      "humidity": 51.8,
+      "anomalous": false
+    },
+    {
+      "minute": 48,
+      "timestamp": "2024-03-15T10:00:48",
+      "temp_c": 20.4,
+      "humidity": 43.5,
+      "anomalous": false
+    },
+    {
+      "minute": 49,
+      "timestamp": "2024-03-15T10:00:49",
+      "temp_c": 22.6,
+      "humidity": 44.7,
+      "anomalous": false
+    },
+    {
+      "minute": 50,
+      "timestamp": "2024-03-15T10:00:50",
+      "temp_c": 22.3,
+      "humidity": 40.5,
+      "anomalous": false
+    },
+    {
+      "minute": 51,
+      "timestamp": "2024-03-15T10:00:51",
+      "temp_c": 21.9,
+      "humidity": 44.5,
+      "anomalous": false
+    },
+    {
+      "minute": 52,
+      "timestamp": "2024-03-15T10:00:52",
+      "temp_c": 22.3,
+      "humidity": 43.9,
+      "anomalous": false
+    },
+    {
+      "minute": 53,
+      "timestamp": "2024-03-15T10:00:53",
+      "temp_c": 21.7,
+      "humidity": 46.3,
+      "anomalous": false
+    },
+    {
+      "minute": 54,
+      "timestamp": "2024-03-15T10:00:54",
+      "temp_c": 24.1,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 55,
+      "timestamp": "2024-03-15T10:00:55",
+      "temp_c": 22.4,
+      "humidity": 48.5,
+      "anomalous": false
+    },
+    {
+      "minute": 56,
+      "timestamp": "2024-03-15T10:00:56",
+      "temp_c": 23.3,
+      "humidity": 51.0,
+      "anomalous": false
+    },
+    {
+      "minute": 57,
+      "timestamp": "2024-03-15T10:00:57",
+      "temp_c": 23.0,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 58,
+      "timestamp": "2024-03-15T10:00:58",
+      "temp_c": 21.8,
+      "humidity": 41.8,
+      "anomalous": false
+    },
+    {
+      "minute": 59,
+      "timestamp": "2024-03-15T10:00:59",
+      "temp_c": 23.3,
+      "humidity": 49.2,
+      "anomalous": false
+    },
+    {
+      "minute": 60,
+      "timestamp": "2024-03-15T10:01:00",
+      "temp_c": 21.2,
+      "humidity": 43.7,
+      "anomalous": false
+    },
+    {
+      "minute": 61,
+      "timestamp": "2024-03-15T10:01:01",
+      "temp_c": 22.5,
+      "humidity": 45.0,
+      "anomalous": false
+    },
+    {
+      "minute": 62,
+      "timestamp": "2024-03-15T10:01:02",
+      "temp_c": 22.4,
+      "humidity": 45.5,
+      "anomalous": false
+    },
+    {
+      "minute": 63,
+      "timestamp": "2024-03-15T10:01:03",
+      "temp_c": 24.0,
+      "humidity": 42.3,
+      "anomalous": false
+    },
+    {
+      "minute": 64,
+      "timestamp": "2024-03-15T10:01:04",
+      "temp_c": 22.8,
+      "humidity": 42.8,
+      "anomalous": false
+    },
+    {
+      "minute": 65,
+      "timestamp": "2024-03-15T10:01:05",
+      "temp_c": 24.0,
+      "humidity": 47.2,
+      "anomalous": false
+    },
+    {
+      "minute": 66,
+      "timestamp": "2024-03-15T10:01:06",
+      "temp_c": 22.8,
+      "humidity": 44.6,
+      "anomalous": false
+    },
+    {
+      "minute": 67,
+      "timestamp": "2024-03-15T10:01:07",
+      "temp_c": 22.2,
+      "humidity": 45.1,
+      "anomalous": false
+    },
+    {
+      "minute": 68,
+      "timestamp": "2024-03-15T10:01:08",
+      "temp_c": 22.6,
+      "humidity": 39.9,
+      "anomalous": false
+    },
+    {
+      "minute": 69,
+      "timestamp": "2024-03-15T10:01:09",
+      "temp_c": 23.1,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 70,
+      "timestamp": "2024-03-15T10:01:10",
+      "temp_c": 21.9,
+      "humidity": 44.3,
+      "anomalous": false
+    },
+    {
+      "minute": 71,
+      "timestamp": "2024-03-15T10:01:11",
+      "temp_c": 23.1,
+      "humidity": 42.7,
+      "anomalous": false
+    },
+    {
+      "minute": 72,
+      "timestamp": "2024-03-15T10:01:12",
+      "temp_c": 22.7,
+      "humidity": 48.6,
+      "anomalous": false
+    },
+    {
+      "minute": 73,
+      "timestamp": "2024-03-15T10:01:13",
+      "temp_c": 22.4,
+      "humidity": 43.0,
+      "anomalous": false
+    },
+    {
+      "minute": 74,
+      "timestamp": "2024-03-15T10:01:14",
+      "temp_c": 21.5,
+      "humidity": 54.1,
+      "anomalous": false
+    },
+    {
+      "minute": 75,
+      "timestamp": "2024-03-15T10:01:15",
+      "temp_c": 22.0,
+      "humidity": 42.4,
+      "anomalous": false
+    },
+    {
+      "minute": 76,
+      "timestamp": "2024-03-15T10:01:16",
+      "temp_c": 22.1,
+      "humidity": 44.8,
+      "anomalous": false
+    },
+    {
+      "minute": 77,
+      "timestamp": "2024-03-15T10:01:17",
+      "temp_c": 22.6,
+      "humidity": 47.7,
+      "anomalous": false
+    },
+    {
+      "minute": 78,
+      "timestamp": "2024-03-15T10:01:18",
+      "temp_c": 22.0,
+      "humidity": 43.9,
+      "anomalous": false
+    },
+    {
+      "minute": 79,
+      "timestamp": "2024-03-15T10:01:19",
+      "temp_c": 22.6,
+      "humidity": 46.1,
+      "anomalous": false
+    },
+    {
+      "minute": 80,
+      "timestamp": "2024-03-15T10:01:20",
+      "temp_c": 22.1,
+      "humidity": 43.4,
+      "anomalous": false
+    },
+    {
+      "minute": 81,
+      "timestamp": "2024-03-15T10:01:21",
+      "temp_c": 23.8,
+      "humidity": 41.7,
+      "anomalous": false
+    },
+    {
+      "minute": 82,
+      "timestamp": "2024-03-15T10:01:22",
+      "temp_c": 23.0,
+      "humidity": 46.0,
+      "anomalous": false
+    },
+    {
+      "minute": 83,
+      "timestamp": "2024-03-15T10:01:23",
+      "temp_c": 22.2,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 84,
+      "timestamp": "2024-03-15T10:01:24",
+      "temp_c": 23.8,
+      "humidity": 50.2,
+      "anomalous": false
+    },
+    {
+      "minute": 85,
+      "timestamp": "2024-03-15T10:01:25",
+      "temp_c": 21.7,
+      "humidity": 43.5,
+      "anomalous": false
+    },
+    {
+      "minute": 86,
+      "timestamp": "2024-03-15T10:01:26",
+      "temp_c": 22.8,
+      "humidity": 39.7,
+      "anomalous": false
+    },
+    {
+      "minute": 87,
+      "timestamp": "2024-03-15T10:01:27",
+      "temp_c": 22.6,
+      "humidity": 46.3,
+      "anomalous": false
+    },
+    {
+      "minute": 88,
+      "timestamp": "2024-03-15T10:01:28",
+      "temp_c": 21.7,
+      "humidity": 46.3,
+      "anomalous": false
+    },
+    {
+      "minute": 89,
+      "timestamp": "2024-03-15T10:01:29",
+      "temp_c": 22.1,
+      "humidity": 46.0,
+      "anomalous": false
+    },
+    {
+      "minute": 90,
+      "timestamp": "2024-03-15T10:01:30",
+      "temp_c": 23.9,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 91,
+      "timestamp": "2024-03-15T10:01:31",
+      "temp_c": 24.9,
+      "humidity": 50.1,
+      "anomalous": false
+    },
+    {
+      "minute": 92,
+      "timestamp": "2024-03-15T10:01:32",
+      "temp_c": 26.2,
+      "humidity": 42.0,
+      "anomalous": false
+    },
+    {
+      "minute": 93,
+      "timestamp": "2024-03-15T10:01:33",
+      "temp_c": 27.6,
+      "humidity": 47.2,
+      "anomalous": false
+    },
+    {
+      "minute": 94,
+      "timestamp": "2024-03-15T10:01:34",
+      "temp_c": 28.3,
+      "humidity": 47.4,
+      "anomalous": true
+    },
+    {
+      "minute": 95,
+      "timestamp": "2024-03-15T10:01:35",
+      "temp_c": 30.2,
+      "humidity": 48.6,
+      "anomalous": true
+    },
+    {
+      "minute": 96,
+      "timestamp": "2024-03-15T10:01:36",
+      "temp_c": 30.7,
+      "humidity": 50.2,
+      "anomalous": true
+    },
+    {
+      "minute": 97,
+      "timestamp": "2024-03-15T10:01:37",
+      "temp_c": 23.0,
+      "humidity": 48.0,
+      "anomalous": false
+    },
+    {
+      "minute": 98,
+      "timestamp": "2024-03-15T10:01:38",
+      "temp_c": 22.7,
+      "humidity": 48.0,
+      "anomalous": false
+    },
+    {
+      "minute": 99,
+      "timestamp": "2024-03-15T10:01:39",
+      "temp_c": 23.2,
+      "humidity": 46.1,
+      "anomalous": false
+    },
+    {
+      "minute": 100,
+      "timestamp": "2024-03-15T10:01:40",
+      "temp_c": 23.1,
+      "humidity": 44.8,
+      "anomalous": false
+    },
+    {
+      "minute": 101,
+      "timestamp": "2024-03-15T10:01:41",
+      "temp_c": 22.7,
+      "humidity": 41.8,
+      "anomalous": false
+    },
+    {
+      "minute": 102,
+      "timestamp": "2024-03-15T10:01:42",
+      "temp_c": 20.7,
+      "humidity": 48.5,
+      "anomalous": false
+    },
+    {
+      "minute": 103,
+      "timestamp": "2024-03-15T10:01:43",
+      "temp_c": 23.5,
+      "humidity": 44.9,
+      "anomalous": false
+    },
+    {
+      "minute": 104,
+      "timestamp": "2024-03-15T10:01:44",
+      "temp_c": 22.4,
+      "humidity": 43.3,
+      "anomalous": false
+    },
+    {
+      "minute": 105,
+      "timestamp": "2024-03-15T10:01:45",
+      "temp_c": 21.9,
+      "humidity": 52.6,
+      "anomalous": false
+    },
+    {
+      "minute": 106,
+      "timestamp": "2024-03-15T10:01:46",
+      "temp_c": 21.6,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 107,
+      "timestamp": "2024-03-15T10:01:47",
+      "temp_c": 22.5,
+      "humidity": 44.0,
+      "anomalous": false
+    },
+    {
+      "minute": 108,
+      "timestamp": "2024-03-15T10:01:48",
+      "temp_c": 21.7,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 109,
+      "timestamp": "2024-03-15T10:01:49",
+      "temp_c": 22.8,
+      "humidity": 43.6,
+      "anomalous": false
+    },
+    {
+      "minute": 110,
+      "timestamp": "2024-03-15T10:01:50",
+      "temp_c": 1.0,
+      "humidity": 3.0,
+      "anomalous": true
+    },
+    {
+      "minute": 111,
+      "timestamp": "2024-03-15T10:01:51",
+      "temp_c": 0.8,
+      "humidity": 4.5,
+      "anomalous": true
+    },
+    {
+      "minute": 112,
+      "timestamp": "2024-03-15T10:01:52",
+      "temp_c": 2.0,
+      "humidity": 2.1,
+      "anomalous": true
+    },
+    {
+      "minute": 113,
+      "timestamp": "2024-03-15T10:01:53",
+      "temp_c": 21.7,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 114,
+      "timestamp": "2024-03-15T10:01:54",
+      "temp_c": 23.0,
+      "humidity": 44.2,
+      "anomalous": false
+    },
+    {
+      "minute": 115,
+      "timestamp": "2024-03-15T10:01:55",
+      "temp_c": 22.4,
+      "humidity": 42.8,
+      "anomalous": false
+    },
+    {
+      "minute": 116,
+      "timestamp": "2024-03-15T10:01:56",
+      "temp_c": 21.6,
+      "humidity": 47.7,
+      "anomalous": false
+    },
+    {
+      "minute": 117,
+      "timestamp": "2024-03-15T10:01:57",
+      "temp_c": 22.3,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 118,
+      "timestamp": "2024-03-15T10:01:58",
+      "temp_c": 22.5,
+      "humidity": 43.8,
+      "anomalous": false
+    },
+    {
+      "minute": 119,
+      "timestamp": "2024-03-15T10:01:59",
+      "temp_c": 19.7,
+      "humidity": 47.8,
+      "anomalous": false
+    },
+    {
+      "minute": 120,
+      "timestamp": "2024-03-15T10:02:00",
+      "temp_c": 22.8,
+      "humidity": 45.0,
+      "anomalous": false
+    },
+    {
+      "minute": 121,
+      "timestamp": "2024-03-15T10:02:01",
+      "temp_c": 22.6,
+      "humidity": 47.3,
+      "anomalous": false
+    },
+    {
+      "minute": 122,
+      "timestamp": "2024-03-15T10:02:02",
+      "temp_c": 24.0,
+      "humidity": 42.5,
+      "anomalous": false
+    },
+    {
+      "minute": 123,
+      "timestamp": "2024-03-15T10:02:03",
+      "temp_c": 23.1,
+      "humidity": 43.0,
+      "anomalous": false
+    },
+    {
+      "minute": 124,
+      "timestamp": "2024-03-15T10:02:04",
+      "temp_c": 23.3,
+      "humidity": 49.8,
+      "anomalous": false
+    },
+    {
+      "minute": 125,
+      "timestamp": "2024-03-15T10:02:05",
+      "temp_c": 22.2,
+      "humidity": 41.0,
+      "anomalous": false
+    },
+    {
+      "minute": 126,
+      "timestamp": "2024-03-15T10:02:06",
+      "temp_c": 23.7,
+      "humidity": 44.6,
+      "anomalous": false
+    },
+    {
+      "minute": 127,
+      "timestamp": "2024-03-15T10:02:07",
+      "temp_c": 24.0,
+      "humidity": 45.3,
+      "anomalous": false
+    },
+    {
+      "minute": 128,
+      "timestamp": "2024-03-15T10:02:08",
+      "temp_c": 22.1,
+      "humidity": 49.2,
+      "anomalous": false
+    },
+    {
+      "minute": 129,
+      "timestamp": "2024-03-15T10:02:09",
+      "temp_c": 22.9,
+      "humidity": 44.4,
+      "anomalous": false
+    },
+    {
+      "minute": 130,
+      "timestamp": "2024-03-15T10:02:10",
+      "temp_c": 22.8,
+      "humidity": 45.9,
+      "anomalous": false
+    },
+    {
+      "minute": 131,
+      "timestamp": "2024-03-15T10:02:11",
+      "temp_c": 21.9,
+      "humidity": 44.2,
+      "anomalous": false
+    },
+    {
+      "minute": 132,
+      "timestamp": "2024-03-15T10:02:12",
+      "temp_c": 21.5,
+      "humidity": 42.1,
+      "anomalous": false
+    },
+    {
+      "minute": 133,
+      "timestamp": "2024-03-15T10:02:13",
+      "temp_c": 22.8,
+      "humidity": 49.1,
+      "anomalous": false
+    },
+    {
+      "minute": 134,
+      "timestamp": "2024-03-15T10:02:14",
+      "temp_c": 22.4,
+      "humidity": 48.5,
+      "anomalous": false
+    },
+    {
+      "minute": 135,
+      "timestamp": "2024-03-15T10:02:15",
+      "temp_c": 23.8,
+      "humidity": 41.7,
+      "anomalous": false
+    },
+    {
+      "minute": 136,
+      "timestamp": "2024-03-15T10:02:16",
+      "temp_c": 23.2,
+      "humidity": 46.7,
+      "anomalous": false
+    },
+    {
+      "minute": 137,
+      "timestamp": "2024-03-15T10:02:17",
+      "temp_c": 22.5,
+      "humidity": 45.2,
+      "anomalous": false
+    },
+    {
+      "minute": 138,
+      "timestamp": "2024-03-15T10:02:18",
+      "temp_c": 22.7,
+      "humidity": 40.8,
+      "anomalous": false
+    },
+    {
+      "minute": 139,
+      "timestamp": "2024-03-15T10:02:19",
+      "temp_c": 22.4,
+      "humidity": 49.9,
+      "anomalous": false
+    },
+    {
+      "minute": 140,
+      "timestamp": "2024-03-15T10:02:20",
+      "temp_c": 20.1,
+      "humidity": 44.0,
+      "anomalous": false
+    },
+    {
+      "minute": 141,
+      "timestamp": "2024-03-15T10:02:21",
+      "temp_c": 28.6,
+      "humidity": 49.8,
+      "anomalous": true
+    },
+    {
+      "minute": 142,
+      "timestamp": "2024-03-15T10:02:22",
+      "temp_c": 19.9,
+      "humidity": 43.4,
+      "anomalous": false
+    },
+    {
+      "minute": 143,
+      "timestamp": "2024-03-15T10:02:23",
+      "temp_c": 29.2,
+      "humidity": 46.8,
+      "anomalous": true
+    },
+    {
+      "minute": 144,
+      "timestamp": "2024-03-15T10:02:24",
+      "temp_c": 20.4,
+      "humidity": 41.8,
+      "anomalous": false
+    },
+    {
+      "minute": 145,
+      "timestamp": "2024-03-15T10:02:25",
+      "temp_c": 29.2,
+      "humidity": 45.6,
+      "anomalous": true
+    },
+    {
+      "minute": 146,
+      "timestamp": "2024-03-15T10:02:26",
+      "temp_c": 23.6,
+      "humidity": 48.1,
+      "anomalous": false
+    },
+    {
+      "minute": 147,
+      "timestamp": "2024-03-15T10:02:27",
+      "temp_c": 23.1,
+      "humidity": 43.0,
+      "anomalous": false
+    },
+    {
+      "minute": 148,
+      "timestamp": "2024-03-15T10:02:28",
+      "temp_c": 22.2,
+      "humidity": 43.8,
+      "anomalous": false
+    },
+    {
+      "minute": 149,
+      "timestamp": "2024-03-15T10:02:29",
+      "temp_c": 23.9,
+      "humidity": 42.4,
+      "anomalous": false
+    },
+    {
+      "minute": 150,
+      "timestamp": "2024-03-15T10:02:30",
+      "temp_c": 23.9,
+      "humidity": 44.2,
+      "anomalous": false
+    },
+    {
+      "minute": 151,
+      "timestamp": "2024-03-15T10:02:31",
+      "temp_c": 22.6,
+      "humidity": 44.5,
+      "anomalous": false
+    },
+    {
+      "minute": 152,
+      "timestamp": "2024-03-15T10:02:32",
+      "temp_c": 22.4,
+      "humidity": 42.3,
+      "anomalous": false
+    },
+    {
+      "minute": 153,
+      "timestamp": "2024-03-15T10:02:33",
+      "temp_c": 23.8,
+      "humidity": 42.7,
+      "anomalous": false
+    },
+    {
+      "minute": 154,
+      "timestamp": "2024-03-15T10:02:34",
+      "temp_c": 23.5,
+      "humidity": 40.9,
+      "anomalous": false
+    },
+    {
+      "minute": 155,
+      "timestamp": "2024-03-15T10:02:35",
+      "temp_c": 22.4,
+      "humidity": 50.2,
+      "anomalous": false
+    },
+    {
+      "minute": 156,
+      "timestamp": "2024-03-15T10:02:36",
+      "temp_c": 23.8,
+      "humidity": 48.8,
+      "anomalous": false
+    },
+    {
+      "minute": 157,
+      "timestamp": "2024-03-15T10:02:37",
+      "temp_c": 22.9,
+      "humidity": 43.3,
+      "anomalous": false
+    },
+    {
+      "minute": 158,
+      "timestamp": "2024-03-15T10:02:38",
+      "temp_c": 22.9,
+      "humidity": 42.0,
+      "anomalous": false
+    },
+    {
+      "minute": 159,
+      "timestamp": "2024-03-15T10:02:39",
+      "temp_c": 22.0,
+      "humidity": 50.0,
+      "anomalous": false
+    },
+    {
+      "minute": 160,
+      "timestamp": "2024-03-15T10:02:40",
+      "temp_c": 22.5,
+      "humidity": 45.7,
+      "anomalous": false
+    },
+    {
+      "minute": 161,
+      "timestamp": "2024-03-15T10:02:41",
+      "temp_c": 22.7,
+      "humidity": 47.5,
+      "anomalous": false
+    },
+    {
+      "minute": 162,
+      "timestamp": "2024-03-15T10:02:42",
+      "temp_c": 23.9,
+      "humidity": 39.1,
+      "anomalous": false
+    },
+    {
+      "minute": 163,
+      "timestamp": "2024-03-15T10:02:43",
+      "temp_c": 22.3,
+      "humidity": 49.2,
+      "anomalous": false
+    },
+    {
+      "minute": 164,
+      "timestamp": "2024-03-15T10:02:44",
+      "temp_c": 20.7,
+      "humidity": 50.0,
+      "anomalous": false
+    },
+    {
+      "minute": 165,
+      "timestamp": "2024-03-15T10:02:45",
+      "temp_c": 20.7,
+      "humidity": 43.4,
+      "anomalous": false
+    },
+    {
+      "minute": 166,
+      "timestamp": "2024-03-15T10:02:46",
+      "temp_c": 24.1,
+      "humidity": 50.3,
+      "anomalous": false
+    },
+    {
+      "minute": 167,
+      "timestamp": "2024-03-15T10:02:47",
+      "temp_c": 23.4,
+      "humidity": 51.9,
+      "anomalous": false
+    },
+    {
+      "minute": 168,
+      "timestamp": "2024-03-15T10:02:48",
+      "temp_c": 22.5,
+      "humidity": 46.4,
+      "anomalous": false
+    },
+    {
+      "minute": 169,
+      "timestamp": "2024-03-15T10:02:49",
+      "temp_c": 21.3,
+      "humidity": 46.9,
+      "anomalous": false
+    },
+    {
+      "minute": 170,
+      "timestamp": "2024-03-15T10:02:50",
+      "temp_c": 22.1,
+      "humidity": 48.8,
+      "anomalous": false
+    },
+    {
+      "minute": 171,
+      "timestamp": "2024-03-15T10:02:51",
+      "temp_c": 21.7,
+      "humidity": 44.8,
+      "anomalous": false
+    },
+    {
+      "minute": 172,
+      "timestamp": "2024-03-15T10:02:52",
+      "temp_c": 22.0,
+      "humidity": 43.9,
+      "anomalous": false
+    },
+    {
+      "minute": 173,
+      "timestamp": "2024-03-15T10:02:53",
+      "temp_c": 22.5,
+      "humidity": 44.8,
+      "anomalous": false
+    },
+    {
+      "minute": 174,
+      "timestamp": "2024-03-15T10:02:54",
+      "temp_c": 23.4,
+      "humidity": 43.3,
+      "anomalous": false
+    },
+    {
+      "minute": 175,
+      "timestamp": "2024-03-15T10:02:55",
+      "temp_c": 33.7,
+      "humidity": 40.2,
+      "anomalous": true
+    },
+    {
+      "minute": 176,
+      "timestamp": "2024-03-15T10:02:56",
+      "temp_c": 22.3,
+      "humidity": 45.9,
+      "anomalous": false
+    },
+    {
+      "minute": 177,
+      "timestamp": "2024-03-15T10:02:57",
+      "temp_c": 22.1,
+      "humidity": 42.7,
+      "anomalous": false
+    },
+    {
+      "minute": 178,
+      "timestamp": "2024-03-15T10:02:58",
+      "temp_c": 21.9,
+      "humidity": 50.4,
+      "anomalous": false
+    },
+    {
+      "minute": 179,
+      "timestamp": "2024-03-15T10:02:59",
+      "temp_c": 22.4,
+      "humidity": 42.5,
+      "anomalous": false
+    },
+    {
+      "minute": 180,
+      "timestamp": "2024-03-15T10:03:00",
+      "temp_c": 22.2,
+      "humidity": 47.9,
+      "anomalous": false
+    },
+    {
+      "minute": 181,
+      "timestamp": "2024-03-15T10:03:01",
+      "temp_c": 22.0,
+      "humidity": 46.4,
+      "anomalous": false
+    },
+    {
+      "minute": 182,
+      "timestamp": "2024-03-15T10:03:02",
+      "temp_c": 23.1,
+      "humidity": 47.2,
+      "anomalous": false
+    },
+    {
+      "minute": 183,
+      "timestamp": "2024-03-15T10:03:03",
+      "temp_c": 23.6,
+      "humidity": 43.3,
+      "anomalous": false
+    },
+    {
+      "minute": 184,
+      "timestamp": "2024-03-15T10:03:04",
+      "temp_c": 23.4,
+      "humidity": 42.6,
+      "anomalous": false
+    },
+    {
+      "minute": 185,
+      "timestamp": "2024-03-15T10:03:05",
+      "temp_c": 22.2,
+      "humidity": 48.6,
+      "anomalous": false
+    },
+    {
+      "minute": 186,
+      "timestamp": "2024-03-15T10:03:06",
+      "temp_c": 23.2,
+      "humidity": 45.0,
+      "anomalous": false
+    },
+    {
+      "minute": 187,
+      "timestamp": "2024-03-15T10:03:07",
+      "temp_c": 21.5,
+      "humidity": 46.7,
+      "anomalous": false
+    },
+    {
+      "minute": 188,
+      "timestamp": "2024-03-15T10:03:08",
+      "temp_c": 22.0,
+      "humidity": 42.2,
+      "anomalous": false
+    },
+    {
+      "minute": 189,
+      "timestamp": "2024-03-15T10:03:09",
+      "temp_c": 22.0,
+      "humidity": 45.7,
+      "anomalous": false
+    },
+    {
+      "minute": 190,
+      "timestamp": "2024-03-15T10:03:10",
+      "temp_c": 20.8,
+      "humidity": 46.1,
+      "anomalous": false
+    },
+    {
+      "minute": 191,
+      "timestamp": "2024-03-15T10:03:11",
+      "temp_c": 22.6,
+      "humidity": 43.2,
+      "anomalous": false
+    },
+    {
+      "minute": 192,
+      "timestamp": "2024-03-15T10:03:12",
+      "temp_c": 23.3,
+      "humidity": 46.8,
+      "anomalous": false
+    },
+    {
+      "minute": 193,
+      "timestamp": "2024-03-15T10:03:13",
+      "temp_c": 22.0,
+      "humidity": 43.0,
+      "anomalous": false
+    },
+    {
+      "minute": 194,
+      "timestamp": "2024-03-15T10:03:14",
+      "temp_c": 23.1,
+      "humidity": 40.5,
+      "anomalous": false
+    },
+    {
+      "minute": 195,
+      "timestamp": "2024-03-15T10:03:15",
+      "temp_c": 22.2,
+      "humidity": 43.1,
+      "anomalous": false
+    },
+    {
+      "minute": 196,
+      "timestamp": "2024-03-15T10:03:16",
+      "temp_c": 22.6,
+      "humidity": 45.6,
+      "anomalous": false
+    },
+    {
+      "minute": 197,
+      "timestamp": "2024-03-15T10:03:17",
+      "temp_c": 22.5,
+      "humidity": 48.4,
+      "anomalous": false
+    },
+    {
+      "minute": 198,
+      "timestamp": "2024-03-15T10:03:18",
+      "temp_c": 22.7,
+      "humidity": 44.1,
+      "anomalous": false
+    },
+    {
+      "minute": 199,
+      "timestamp": "2024-03-15T10:03:19",
+      "temp_c": 21.5,
+      "humidity": 47.2,
+      "anomalous": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "cur_01",
+      "category": "current",
+      "probe_index": 150,
+      "text": "What is the current temperature in Celsius? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 23.9,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "cur_02",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is the current temperature above 25\u00b0C? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_03",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is the current humidity above 50%? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_04",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is the current temperature in the normal operating range (18\u201327\u00b0C)? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "yes",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_05",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Round the current temperature to the nearest integer. Reply as JSON: {\"answer\": <integer>}",
+      "ground_truth": 24,
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_06",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is the current temperature above or below 20\u00b0C? Reply as JSON: {\"answer\": \"above\" or \"below\"}",
+      "ground_truth": "above",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_07",
+      "category": "current",
+      "probe_index": 150,
+      "text": "What is the difference between current temperature and 22\u00b0C? Reply as JSON: {\"answer\": <number>} (positive = above 22, negative = below 22)",
+      "ground_truth": 1.9,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "cur_08",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is this reading likely to be an anomaly? An anomaly is defined as temperature above 28\u00b0C or below 5\u00b0C. Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_09",
+      "category": "current",
+      "probe_index": 150,
+      "text": "Is humidity within the acceptable range of 30\u201370%? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "yes",
+      "score_type": "exact"
+    },
+    {
+      "id": "cur_10",
+      "category": "current",
+      "probe_index": 150,
+      "text": "What category best describes the current temperature: cold (<18\u00b0C), normal (18\u201327\u00b0C), or hot (>27\u00b0C)? Reply as JSON: {\"answer\": \"cold\", \"normal\", or \"hot\"}",
+      "ground_truth": "normal",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_01",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "What is the temperature trend over the last 10 readings: increasing, decreasing, or stable? Reply as JSON: {\"answer\": \"increasing\", \"decreasing\", or \"stable\"}",
+      "ground_truth": "stable",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_02",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "Has there been any anomaly (temperature above 28\u00b0C or below 5\u00b0C) in the last 10 readings? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_03",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "How many anomalies occurred in the last 10 readings? Reply as JSON: {\"answer\": <integer>}",
+      "ground_truth": 0,
+      "score_type": "number_tolerance",
+      "tolerance": 0
+    },
+    {
+      "id": "rec_04",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "What was the maximum temperature in the last 10 readings? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 23.9,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "rec_05",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "What is the average temperature over the last 10 readings? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 23.0,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "rec_06",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "Is the temperature trend over the last 5 readings increasing, decreasing, or stable? Reply as JSON: {\"answer\": \"increasing\", \"decreasing\", or \"stable\"}",
+      "ground_truth": "decreasing",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_07",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "Were all of the last 10 readings within the normal range (18\u201327\u00b0C)? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "yes",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_08",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "Was the previous reading (one minute ago) higher or lower than the current reading? Reply as JSON: {\"answer\": \"higher\" or \"lower\"}",
+      "ground_truth": "lower",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_09",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "Is the current temperature above the average of the last 10 readings? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "rec_10",
+      "category": "recent",
+      "probe_index": 160,
+      "text": "How many of the last 10 readings were above 23\u00b0C? Reply as JSON: {\"answer\": <integer>}",
+      "ground_truth": 4,
+      "score_type": "number_tolerance",
+      "tolerance": 0
+    },
+    {
+      "id": "lng_01",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "How many total anomalies (temperature above 28\u00b0C or below 5\u00b0C) have been detected across all readings? Reply as JSON: {\"answer\": <integer>}",
+      "ground_truth": 11,
+      "score_type": "number_tolerance",
+      "tolerance": 2
+    },
+    {
+      "id": "lng_02",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "What is the overall average temperature across all readings? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 22.55,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "lng_03",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "What is the highest temperature ever recorded? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 34.2,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "lng_04",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "What is the lowest temperature ever recorded? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 0.8,
+      "score_type": "number_tolerance",
+      "tolerance": 1.0
+    },
+    {
+      "id": "lng_05",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "Has there been an anomaly in the last 20 readings (minutes 180 to 199)? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "lng_06",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "How many readings were above 28\u00b0C in total? Reply as JSON: {\"answer\": <integer>}",
+      "ground_truth": 8,
+      "score_type": "number_tolerance",
+      "tolerance": 3
+    },
+    {
+      "id": "lng_07",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "Is the overall average temperature above 23\u00b0C? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "no",
+      "score_type": "exact"
+    },
+    {
+      "id": "lng_08",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "Have there been more than 5 anomalous readings overall? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "yes",
+      "score_type": "exact"
+    },
+    {
+      "id": "lng_09",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "What is the temperature range (max minus min) across all readings? Reply as JSON: {\"answer\": <number>}",
+      "ground_truth": 33.4,
+      "score_type": "number_tolerance",
+      "tolerance": 1.5
+    },
+    {
+      "id": "lng_10",
+      "category": "longterm",
+      "probe_index": 199,
+      "text": "Has the sensor ever recorded a dropout (temperature below 5\u00b0C)? Reply as JSON: {\"answer\": \"yes\" or \"no\"}",
+      "ground_truth": "yes",
+      "score_type": "exact"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DazzleStorage
+options:
+  bundleIdPrefix: io.dazzle
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+
+targets:
+  DazzleStorage:
+    type: application
+    platform: iOS
+    sources:
+      # App entry point and UI
+      - path: App
+      - path: Resources
+      # Storage test runner (this project)
+      - path: StorageOnlyTest.swift
+      # Sensor dataset (shared across all three experiment projects)
+      # Bundle both: SensorDataset.load() prefers v3 (400 readings, NAMUR
+      # status codes) and falls back to baseline (200 readings, legacy)
+      # when v3 is missing. Keeping baseline for backward compatibility
+      # with older test variants that hard-code that filename.
+      - path: ../../backends/ios/Resources/dataset_iot_baseline.json
+      - path: ../../backends/ios/Resources/dataset_v3.json
+      # Backend implementations (StorageBackend protocol + all context managers)
+      - path: ../../backends/ios/StorageBackend.swift
+      - path: ../../backends/ios/SensorDataset.swift
+      - path: ../../backends/ios/SystemSnapshot.swift
+      - path: ../../backends/ios/dazzle
+      - path: ../../backends/ios/valkey
+      - path: ../../backends/ios/sqlite
+      - path: ../../backends/ios/inmemory
+      # LMDB ported from Android (mdb.c + midl.c + thin C shim).
+      - path: ../../backends/ios/lmdb
+      # RocksDB ported from Android (xcframework + thin C shim mirroring
+      # rocksdb_jni.cpp). The .xcframework binary is gitignored and is
+      # rebuilt from source via backends/ios/rocksdb/build_rocksdb_ios.sh.
+      - path: ../../backends/ios/rocksdb
+        excludes:
+          - "RocksDB.xcframework"
+          - "build_rocksdb_ios.sh"
+      # ObjectBox 5.3.0-beta.4 native iOS port. Entities.swift +
+      # ObjectBoxContextManager.swift compile against the bundled
+      # ObjectBox.xcframework. Generated/EntityInfo.generated.swift is
+      # produced by Sourcery (preBuildScripts hook below) reading the
+      # `// objectbox: entity` annotations on the model classes.
+      - path: ../../backends/ios/objectbox
+        excludes:
+          - "Frameworks"   # not source; linked as framework below
+          - "CodeGen"      # macOS-only Sourcery binary, run-script only
+      # Dazzle SDK (server + Swift primitives + C shim)
+      - path: ../../../sdk/ios/Sources/DazzleConfig.swift
+      - path: ../../../sdk/ios/Sources/DazzleServer.swift
+      - path: ../../../sdk/ios/Sources/DazzlePrimitives.swift
+      # ExecutionPolicy is referenced by DazzleConfig (`execution:` arg);
+      # without it the storage app fails to compile after a fresh xcodegen.
+      - path: ../../../sdk/ios/Sources/ExecutionPolicy.swift
+      # Needed by the vector-search backend managers that live under
+      # backends/ios/dazzle/ (auto-included via the directory path above).
+      - path: ../../../sdk/ios/Sources/VectorIndex.swift
+      - path: ../../../core/platform/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment.storage
+        INFOPLIST_FILE: Resources/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lz -lc++ -lsqlite3"
+        LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
+        CODE_SIGN_ENTITLEMENTS: Resources/DazzleStorage.entitlements
+        # Bridging header — exposes the LMDB / ObjectBox / RocksDB C
+        # shims under backends/ios/<backend>/ to Swift code in this app.
+        SWIFT_OBJC_BRIDGING_HEADER: StorageBridging-Header.h
+        HEADER_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/../../backends/ios/lmdb $(PROJECT_DIR)/../../backends/ios/rocksdb"
+        # mdb.c default-enables robust pthread mutexes on non-Android POSIX
+        # platforms, but Darwin's libpthread doesn't ship `pthread_mutexattr_-
+        # setrobust` / `PTHREAD_MUTEX_ROBUST`. Force MDB_USE_ROBUST=0 to
+        # mirror the Android NDK build path. Also relax a few warnings the
+        # 30-year-old OpenLDAP source trips under Xcode's default flags.
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) MDB_USE_ROBUST=0"
+        GCC_WARN_INHIBIT_ALL_WARNINGS: NO
+        GCC_TREAT_WARNINGS_AS_ERRORS: NO
+        OTHER_CFLAGS: "$(inherited) -Wno-shorten-64-to-32 -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable -Wno-sign-compare -Wno-implicit-int-conversion"
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      # RocksDB v9.10.0 prebuilt static archive (device + sim). Linked but
+      # not embedded — the xcframework is gitignored, so a fresh checkout
+      # must run backends/ios/rocksdb/build_rocksdb_ios.sh first.
+      - framework: ../../backends/ios/rocksdb/RocksDB.xcframework
+        embed: false
+      # ObjectBox 5.3.0-beta.4 (XCFramework, embed+sign so the Swift
+      # `import ObjectBox` resolves at runtime on device + simulator).
+      # Vendored in this repo because ObjectBox-Swift's CocoaPods/SPM
+      # workflows assume a Pods dir we don't have under xcodegen.
+      - framework: ../../backends/ios/objectbox/Frameworks/ObjectBox.xcframework
+        embed: true
+        codeSign: true
+    preBuildScripts:
+      # Generate ObjectBox entity bindings from `// objectbox: entity`
+      # annotations in objectbox/Entities.swift. Output goes into
+      # objectbox/Generated/EntityInfo.generated.swift, which is in the
+      # `objectbox` source directory above and gets picked up by xcodegen
+      # automatically. Re-runs on every build but Sourcery is fast and
+      # caches by mtime.
+      - script: |
+          cd "${SRCROOT}/../../backends/ios/objectbox/CodeGen/Mac/OBXCodeGen.framework/Versions/A/Resources"
+          mkdir -p "${SRCROOT}/../../backends/ios/objectbox/Generated"
+          ./generate_sources.sh -- --output "${SRCROOT}/../../backends/ios/objectbox/Generated"
+        name: "Run ObjectBox Code Generator (Sourcery)"
+        outputFiles:
+          - "${SRCROOT}/../../backends/ios/objectbox/Generated/EntityInfo.generated.swift"
+        inputFiles:
+          - "${SRCROOT}/../../backends/ios/objectbox/Entities.swift"
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: "Dazzle Storage"
+        CFBundleDisplayName: "Dazzle Storage"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        NSDocumentsBrowserUsageDescription: "Used to export benchmark results"
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+
+  # Unit tests for the iOS-only backend managers (SqlitePrecompute, etc.).
+  # Run on simulator before any device flash so we catch null/typo/SQL
+  # bind regressions in seconds instead of after a full bench cycle.
+  DazzleStorageTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: DazzleStorage
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment.storage.tests
+        INFOPLIST_FILE: Tests/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/DazzleStorage.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/DazzleStorage"

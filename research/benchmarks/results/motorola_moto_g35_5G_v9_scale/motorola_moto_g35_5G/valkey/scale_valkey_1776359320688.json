@@ -1,0 +1,51 @@
+{
+  "type": "scale_benchmark",
+  "timestamp": "2026-04-16T17:08:40.663750Z",
+  "backend": "valkey",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "ram_total_kb": 3497628,
+    "android_version": "14",
+    "abi": "arm64-v8a"
+  },
+  "scale_points": [
+    {
+      "n": 200,
+      "retrieval_avg_us": 11767.055699999999,
+      "retrieval_p50_us": 11507.885,
+      "retrieval_p95_us": 15112.192,
+      "ingest_total_ms": 473.97223,
+      "per_ingest_us": 2369.86115,
+      "ram_before_kb": 155952,
+      "ram_after_kb": 160064,
+      "ram_delta_kb": 4112,
+      "context_chars": 257,
+      "context_tokens_est": 64,
+      "synth_chars": 810,
+      "synth_tokens_est": 202,
+      "io_write_bytes_delta": 0,
+      "concurrent_retrieval_avg_us": 8904.16535,
+      "concurrent_retrieval_p95_us": 12143.846
+    },
+    {
+      "n": 1000,
+      "retrieval_avg_us": 10478.994149999997,
+      "retrieval_p50_us": 10104.538,
+      "retrieval_p95_us": 16816.0,
+      "ingest_total_ms": 2529.217306,
+      "per_ingest_us": 2529.217306,
+      "ram_before_kb": 158668,
+      "ram_after_kb": 161040,
+      "ram_delta_kb": 2372,
+      "context_chars": 258,
+      "context_tokens_est": 64,
+      "synth_chars": 1031,
+      "synth_tokens_est": 257,
+      "io_write_bytes_delta": 0,
+      "concurrent_retrieval_avg_us": 10060.088549999999,
+      "concurrent_retrieval_p95_us": 14914.462
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Required by DazzleServer (loopback TCP socket) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Write results to shared storage -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application
+        android:allowBackup="false"
+        android:label="Dazzle Experiment"
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <activity
+            android:name=".ExperimentActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Valkey 8 (precursor) variant — launch with:
+             adb shell am start -n dev.dazzle.experiment/.ExperimentActivityValkey8 -->
+        <activity
+            android:name=".ExperimentActivityValkey8"
+            android:exported="true" />
+
+        <!-- Paper 2 (TFI) variant — launch with:
+             adb shell am start -n dev.dazzle.experiment/.ExperimentActivityPaper2 -->
+        <activity
+            android:name=".ExperimentActivityPaper2"
+            android:exported="true" />
+
+    </application>
+
+</manifest>

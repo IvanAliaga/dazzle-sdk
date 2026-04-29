@@ -1,0 +1,142 @@
+\documentclass[11pt]{article}
+
+% --- arxiv-style template (kourgeorge/arxiv-style) ---
+\usepackage{arxiv}
+
+% --- engine: xelatex (Unicode-friendly) ---
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setmonofont{Menlo}[Scale=0.85]
+
+% --- core packages ---
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{caption}
+
+% --- code listings ---
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+}
+
+% --- bibliography (bibtex, more portable than biber) ---
+\usepackage[numbers]{natbib}
+
+% --- pandoc compatibility helpers ---
+\usepackage{calc}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\real}[1]{#1}
+\providecommand{\passthrough}[1]{\texttt{#1}}
+% pandoc emits \def\LTcaptype{none} around longtables to suppress
+% caption numbering; longtable then tries \addtocounter{\LTcaptype}.
+% Define the dummy counter so tectonic does not bail.
+\newcounter{none}
+
+% --- title block ---
+\title{Dazzle: An Embedded Database for On-Device LLM Agents}
+
+\author{
+    Ivan Aliaga \\
+    Universidad Ricardo Palma \\
+    Lima, Peru \\
+    \texttt{ivan.aliaga@urp.edu.pe}
+}
+
+\date{April 2026}
+
+% --- arxiv metadata ---
+\renewcommand{\headeright}{Preprint}
+\renewcommand{\undertitle}{Preprint}
+\renewcommand{\shorttitle}{Dazzle: An Embedded Database for On-Device LLM Agents}
+
+% --- begin document ---
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+LLM agents on mobile devices need a persistent state layer between
+inference calls --- sensor windows, materialized aggregates,
+approximate counts, vector indices over recent context. Existing
+embedded databases for the platform (SQLite, RocksDB, LMDB,
+ObjectBox) expose flat key-value or relational primitives, forcing
+developers to reimplement higher-order data structures on top, in
+application code, per app.
+
+We present \textbf{Dazzle}, a fork of Valkey (the Linux Foundation's
+Redis-compatible store) whose server runs \emph{inside} the process
+of Android and iOS applications rather than as a daemon over TCP
+loopback. Dazzle exposes ten native primitives --- strings, hashes,
+lists, sets, sorted sets, streams, HyperLogLog, bitmaps, per-field
+expiration, and HNSW vector search --- against $\leq 4$ in any
+embedded competitor on the same platforms.
+
+We characterize the latency envelope across twelve backends on two
+physical devices (Moto G35 5G, iPhone 12 Pro). The Write-Heavy /
+Read-Light path lands retrieval at 50~µs steady-state on Moto G35
+5G and 7.24~µs on iPhone 12 Pro; the HNSW vector primitive stays
+in the sub-millisecond search envelope at recall $\geq 0.95$ across
+the 9-configuration grid measured in §5.8 (per-cell numbers in
+Tables 11--14). At a 50~µs
+retrieval against a $\sim\!2.84$~s Gemma 4 E2B \cite{gemma4}
+inference turn ($\sim$30 prompt + $\sim$60 decoded tokens,
+q4\_k\_m, on-device on the same Moto G35 5G), retrieval is
+\textbf{0.00176\,\%} of the LLM cost --- below the noise floor of
+the inference loop. \textbf{For an on-device agent backend the
+deciding axis is therefore primitive surface and developer
+ergonomics, not microbenchmark deltas; we report the per-engine
+microsecond numbers because the same engines also serve non-LLM
+workloads (analytics, sync, indexing) where the microsecond
+column \emph{is} the selection criterion} (§5.2).
+
+A 2$\times$2 ablation on 200 NQ queries (Moto G35 5G, §5.9)
+confirms that the retrieval primitive is what drives factual
+accuracy at this scale: Qwen 2.5 0.5B + Dazzle RAG reaches
+\texttt{EM\_contains} 0.630 vs 0.105 without RAG ($6.0\times$);
+Qwen 2.5 1.5B + Dazzle RAG reaches 0.735 vs 0.110 without RAG
+($6.7\times$). A 380~MB model with retrieval beats a $3\times$
+larger 940~MB model without retrieval on every factual metric,
+and a 1.5B model with retrieval is the global maximum on factual
+accuracy (at 49~s p50 per turn, $\sim$17$\times$ the non-RAG
+baseline; §5.9.3 characterises the latency-vs-accuracy frontier).
+The result speaks to primitive surface: whether the backend lets
+a small on-device model close capacity gaps via
+retrieval-augmented patterns at all.
+
+Dazzle ships as \texttt{dazzle-sdk} 1.0.0-beta.4 across four standard
+registries (Maven Central, pub.dev, npm, Swift Package Manager);
+five LLM adapters (\texttt{LlamaCppClient}, \texttt{LiteRtLmClient},
+\texttt{FoundationModelsClient}, \texttt{OpenAICompatibleClient},
+\texttt{AnthropicClient}) implement a common \texttt{LLMClient}
+interface (Appendix~A). Dazzle's original code is released under
+Apache-2.0; derivative Valkey portions retain BSD-3-Clause.
+\end{abstract}
+
+\keywords{embedded database \and on-device LLM \and mobile agents
+  \and Valkey \and HNSW vector search \and Apache 2.0}
+
+% --- body content (generated from paper_v2_en.md by pandoc) ---
+\input{body.tex}
+
+% --- bibliography ---
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

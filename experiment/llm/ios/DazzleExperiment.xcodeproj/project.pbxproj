@@ -1,0 +1,628 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0F465EFD913567D97B161E85 /* VectorIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B395E65F6E04BD1DCDB77EF /* VectorIndex.swift */; };
+		1161D2CD4F19F219A50F526C /* SystemSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9C9380683A101E0C15BCF /* SystemSnapshot.swift */; };
+		19E18FE72E884A3A0EB20415 /* DazzleServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0911357F5CF7E397CCC346B /* DazzleServer.swift */; };
+		1DBF990D56248BE2E4902FC1 /* SqliteContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1297D5175297750B5D8382ED /* SqliteContextManager.swift */; };
+		24AF7450D3CC98DC104C17FD /* DazzleHFEContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB91E4A7477B0F186789F8D /* DazzleHFEContextManager.swift */; };
+		288E4CEA3EE60E4486AACFB2 /* DazzleContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89AAB9BABE7467498DD3BE0E /* DazzleContextManager.swift */; };
+		30E5113721FD8E935C722BF9 /* DazzleExperimentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5096F8AADAB818EB31C43B6B /* DazzleExperimentApp.swift */; };
+		3425811BCFE1027C8975A08A /* LiteRTLMSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DD56FF4C6A115B4A384212B4 /* LiteRTLMSwift */; };
+		35FC760787C8C408BAB050BE /* ValkeyContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A6AC72A68236C1E4E7F1C2 /* ValkeyContextManager.swift */; };
+		39548C22427F1C3EDA02769C /* DazzlePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81210CD290FEF4B50BDD697 /* DazzlePrimitives.swift */; };
+		3FBB26B529BF6B6B0AF30226 /* Dazzle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 388C5B875ACFBEFBEF2B4BA2 /* Dazzle.xcframework */; };
+		41658FBB4AEEDD5BB52541ED /* ExperimentPipelineIoTPaper2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF6F493966C0109C76E01B78 /* ExperimentPipelineIoTPaper2.swift */; };
+		42B009D80AABFBB1D9A6D727 /* dataset_iot_valkey8.json in Resources */ = {isa = PBXBuildFile; fileRef = 8EAA4FA39A12CE471EFFFDE6 /* dataset_iot_valkey8.json */; };
+		514671D1F7FA4139B3EC7F7C /* InMemoryContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4F8C8D885F45971F91D9ECB /* InMemoryContextManager.swift */; };
+		5879AEADADF5B5EF8DB0A04C /* DazzlePrecomputeIoTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 866F057CB597E0B256D8B7FE /* DazzlePrecomputeIoTManager.swift */; };
+		5A13C291AC9464FFEEC65329 /* ExperimentViewValkey8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C34BC56DB6ED08E15840CDE /* ExperimentViewValkey8.swift */; };
+		5DC7309AE6BEDC4780DB7689 /* StorageBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CFCE2D1207132D2F885B2E4 /* StorageBackend.swift */; };
+		603919A3A9032DF53676FF2F /* dataset_iot_baseline.json in Resources */ = {isa = PBXBuildFile; fileRef = D616B4D7C12412609F8A2761 /* dataset_iot_baseline.json */; };
+		60B4AA70202E725D355DA899 /* SensorDataset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53F1FE5604A1A83705FCE71 /* SensorDataset.swift */; };
+		6A843C46EFD4213186BB48C7 /* DazzleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E021358282035ED46BA01DFF /* DazzleConfig.swift */; };
+		6FEAAEA0CB48F17F59804C20 /* DazzleLuaContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 321598D3010C43F00932F91B /* DazzleLuaContextManager.swift */; };
+		72D8365912161886E50D1E8F /* dazzle_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 88A69D67F3CAE859D288B480 /* dazzle_ios.c */; };
+		77282BAA380E24AE22C9141A /* DazzleHLLContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759500645F9C0CEA97793648 /* DazzleHLLContextManager.swift */; };
+		779E8C26E74F3069435A05B5 /* ExperimentPipelineIoTValkey8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E22A4CB24066AEAE43C238 /* ExperimentPipelineIoTValkey8.swift */; };
+		8C871EDEDBBC6CE0806AFE4D /* DazzlePipelineContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1611812C1C5BF8BFF63497E2 /* DazzlePipelineContextManager.swift */; };
+		8D8D9F247815BC5843CD6A8A /* StorageOnlyTestValkey8.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE67859FCE1411D3EF3DFA2 /* StorageOnlyTestValkey8.swift */; };
+		8F28B4256CF04261F7A6DB11 /* ExperimentViewPaper2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0814DF73EB70687F823113 /* ExperimentViewPaper2.swift */; };
+		94F397F99420FDCE21B00525 /* ExperimentPipelineIoT.swift in Sources */ = {isa = PBXBuildFile; fileRef = C24D878697ACE462EB592FBA /* ExperimentPipelineIoT.swift */; };
+		9BBAB3D8C3A44C7EB192A35B /* ExperimentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE07280D2A1FCB9502456D35 /* ExperimentView.swift */; };
+		A70040D681D34C4D115CF536 /* ResultsExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3202343557E67668AF6908F9 /* ResultsExporter.swift */; };
+		BD94DEDE93474F0EF36A3545 /* DazzleVectorIoTValkey8Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6D91B60F89BC3603F959A6B /* DazzleVectorIoTValkey8Manager.swift */; };
+		CDF9C97D04BEEE5DA83E95F8 /* Paper2Namespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF7E546D38E54D627D74E5C7 /* Paper2Namespace.swift */; };
+		DC9DD20ACDAEABA59EC53F7C /* DazzleVectorIoTValkey9Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E96C8DD9ED392FAAEE3575F6 /* DazzleVectorIoTValkey9Manager.swift */; };
+		DEC2AFD5584BDBF9BE2CB609 /* Valkey8Namespace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49F0C90DE7B3ACA85D282DE /* Valkey8Namespace.swift */; };
+		E8397930E1295EF04B207187 /* GemmaEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617C7BCA8A29CD5DA1132207 /* GemmaEngine.swift */; };
+		F713FB4922BC6EA4F9BE63C9 /* StorageOnlyTestPaper2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CB94E2D38C462CD7BFEDD5A /* StorageOnlyTestPaper2.swift */; };
+		F99786E65DBAFF92F7074DF3 /* StorageOnlyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211D01D1DE28459375EFCC48 /* StorageOnlyTest.swift */; };
+		FA1C1658C0813F1EDE69A471 /* DazzleVectorIoTValkey9Paper2Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E28701809A6C0B2212896C /* DazzleVectorIoTValkey9Paper2Manager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1297D5175297750B5D8382ED /* SqliteContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SqliteContextManager.swift; sourceTree = "<group>"; };
+		13A6AC72A68236C1E4E7F1C2 /* ValkeyContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValkeyContextManager.swift; sourceTree = "<group>"; };
+		1611812C1C5BF8BFF63497E2 /* DazzlePipelineContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePipelineContextManager.swift; sourceTree = "<group>"; };
+		165FBF2F36455ECE8648061D /* DazzleExperiment.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DazzleExperiment.entitlements; sourceTree = "<group>"; };
+		1B395E65F6E04BD1DCDB77EF /* VectorIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorIndex.swift; sourceTree = "<group>"; };
+		2083D7996E318C05FA714099 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		211D01D1DE28459375EFCC48 /* StorageOnlyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageOnlyTest.swift; sourceTree = "<group>"; };
+		2CB91E4A7477B0F186789F8D /* DazzleHFEContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleHFEContextManager.swift; sourceTree = "<group>"; };
+		2CFCE2D1207132D2F885B2E4 /* StorageBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageBackend.swift; sourceTree = "<group>"; };
+		3202343557E67668AF6908F9 /* ResultsExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsExporter.swift; sourceTree = "<group>"; };
+		321598D3010C43F00932F91B /* DazzleLuaContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleLuaContextManager.swift; sourceTree = "<group>"; };
+		388C5B875ACFBEFBEF2B4BA2 /* Dazzle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Dazzle.xcframework; path = ../../../sdk/ios/Dazzle.xcframework; sourceTree = "<group>"; };
+		3CB94E2D38C462CD7BFEDD5A /* StorageOnlyTestPaper2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageOnlyTestPaper2.swift; sourceTree = "<group>"; };
+		4832CEC9F1925D29A9945ECD /* DazzleExperiment.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DazzleExperiment.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5096F8AADAB818EB31C43B6B /* DazzleExperimentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleExperimentApp.swift; sourceTree = "<group>"; };
+		5E0814DF73EB70687F823113 /* ExperimentViewPaper2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentViewPaper2.swift; sourceTree = "<group>"; };
+		617C7BCA8A29CD5DA1132207 /* GemmaEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaEngine.swift; sourceTree = "<group>"; };
+		66B9C9380683A101E0C15BCF /* SystemSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSnapshot.swift; sourceTree = "<group>"; };
+		6C34BC56DB6ED08E15840CDE /* ExperimentViewValkey8.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentViewValkey8.swift; sourceTree = "<group>"; };
+		759500645F9C0CEA97793648 /* DazzleHLLContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleHLLContextManager.swift; sourceTree = "<group>"; };
+		866F057CB597E0B256D8B7FE /* DazzlePrecomputeIoTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePrecomputeIoTManager.swift; sourceTree = "<group>"; };
+		88A69D67F3CAE859D288B480 /* dazzle_ios.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dazzle_ios.c; sourceTree = "<group>"; };
+		89AAB9BABE7467498DD3BE0E /* DazzleContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleContextManager.swift; sourceTree = "<group>"; };
+		8EAA4FA39A12CE471EFFFDE6 /* dataset_iot_valkey8.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dataset_iot_valkey8.json; sourceTree = "<group>"; };
+		96E22A4CB24066AEAE43C238 /* ExperimentPipelineIoTValkey8.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentPipelineIoTValkey8.swift; sourceTree = "<group>"; };
+		9BE67859FCE1411D3EF3DFA2 /* StorageOnlyTestValkey8.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageOnlyTestValkey8.swift; sourceTree = "<group>"; };
+		A1E28701809A6C0B2212896C /* DazzleVectorIoTValkey9Paper2Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey9Paper2Manager.swift; sourceTree = "<group>"; };
+		A49F0C90DE7B3ACA85D282DE /* Valkey8Namespace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Valkey8Namespace.swift; sourceTree = "<group>"; };
+		B6D91B60F89BC3603F959A6B /* DazzleVectorIoTValkey8Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey8Manager.swift; sourceTree = "<group>"; };
+		C24D878697ACE462EB592FBA /* ExperimentPipelineIoT.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentPipelineIoT.swift; sourceTree = "<group>"; };
+		C4F8C8D885F45971F91D9ECB /* InMemoryContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryContextManager.swift; sourceTree = "<group>"; };
+		D0911357F5CF7E397CCC346B /* DazzleServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleServer.swift; sourceTree = "<group>"; };
+		D616B4D7C12412609F8A2761 /* dataset_iot_baseline.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dataset_iot_baseline.json; sourceTree = "<group>"; };
+		DF6F493966C0109C76E01B78 /* ExperimentPipelineIoTPaper2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentPipelineIoTPaper2.swift; sourceTree = "<group>"; };
+		E021358282035ED46BA01DFF /* DazzleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleConfig.swift; sourceTree = "<group>"; };
+		E81210CD290FEF4B50BDD697 /* DazzlePrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePrimitives.swift; sourceTree = "<group>"; };
+		E96C8DD9ED392FAAEE3575F6 /* DazzleVectorIoTValkey9Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey9Manager.swift; sourceTree = "<group>"; };
+		F53F1FE5604A1A83705FCE71 /* SensorDataset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorDataset.swift; sourceTree = "<group>"; };
+		FE07280D2A1FCB9502456D35 /* ExperimentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentView.swift; sourceTree = "<group>"; };
+		FF7E546D38E54D627D74E5C7 /* Paper2Namespace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paper2Namespace.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6314358E7E10B3A070EF27EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3FBB26B529BF6B6B0AF30226 /* Dazzle.xcframework in Frameworks */,
+				3425811BCFE1027C8975A08A /* LiteRTLMSwift in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0183142041F925ED623FD510 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D616B4D7C12412609F8A2761 /* dataset_iot_baseline.json */,
+				8EAA4FA39A12CE471EFFFDE6 /* dataset_iot_valkey8.json */,
+			);
+			name = Resources;
+			path = ../../backends/ios/Resources;
+			sourceTree = "<group>";
+		};
+		052BDE497DC3059E5CB2A0AA /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				3202343557E67668AF6908F9 /* ResultsExporter.swift */,
+				F53F1FE5604A1A83705FCE71 /* SensorDataset.swift */,
+				2CFCE2D1207132D2F885B2E4 /* StorageBackend.swift */,
+				66B9C9380683A101E0C15BCF /* SystemSnapshot.swift */,
+			);
+			name = ios;
+			path = ../../backends/ios;
+			sourceTree = "<group>";
+		};
+		14FDAB57704A98EAE2D70784 /* valkey */ = {
+			isa = PBXGroup;
+			children = (
+				13A6AC72A68236C1E4E7F1C2 /* ValkeyContextManager.swift */,
+			);
+			name = valkey;
+			path = ../../backends/ios/valkey;
+			sourceTree = "<group>";
+		};
+		371528A517821BB89B19AB2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4832CEC9F1925D29A9945ECD /* DazzleExperiment.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4C14B8644B02744523003E27 = {
+			isa = PBXGroup;
+			children = (
+				C24D878697ACE462EB592FBA /* ExperimentPipelineIoT.swift */,
+				DF6F493966C0109C76E01B78 /* ExperimentPipelineIoTPaper2.swift */,
+				96E22A4CB24066AEAE43C238 /* ExperimentPipelineIoTValkey8.swift */,
+				FF7E546D38E54D627D74E5C7 /* Paper2Namespace.swift */,
+				A49F0C90DE7B3ACA85D282DE /* Valkey8Namespace.swift */,
+				95844635DCE6B017B0687CD6 /* App */,
+				869A1C045C335F2E3131E844 /* dazzle */,
+				B6FCE2F399702E3AFF0C7FD4 /* Inference */,
+				87478CB12700E8800F2215FC /* inmemory */,
+				052BDE497DC3059E5CB2A0AA /* ios */,
+				EF0A629C362D0EC202ABBC4C /* ios */,
+				DAC9FE25217E7E75728B7AB7 /* platform */,
+				A4EEAFF6EAD995EC7CEDA734 /* Resources */,
+				0183142041F925ED623FD510 /* Resources */,
+				F1704D42F96CB8E8C3BB9B4C /* Sources */,
+				F0B77405E2330CBBDC5E37E4 /* sqlite */,
+				14FDAB57704A98EAE2D70784 /* valkey */,
+				BEA2B898FED086CFEB1A9374 /* Frameworks */,
+				371528A517821BB89B19AB2C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		869A1C045C335F2E3131E844 /* dazzle */ = {
+			isa = PBXGroup;
+			children = (
+				89AAB9BABE7467498DD3BE0E /* DazzleContextManager.swift */,
+				2CB91E4A7477B0F186789F8D /* DazzleHFEContextManager.swift */,
+				759500645F9C0CEA97793648 /* DazzleHLLContextManager.swift */,
+				321598D3010C43F00932F91B /* DazzleLuaContextManager.swift */,
+				1611812C1C5BF8BFF63497E2 /* DazzlePipelineContextManager.swift */,
+				866F057CB597E0B256D8B7FE /* DazzlePrecomputeIoTManager.swift */,
+				B6D91B60F89BC3603F959A6B /* DazzleVectorIoTValkey8Manager.swift */,
+				E96C8DD9ED392FAAEE3575F6 /* DazzleVectorIoTValkey9Manager.swift */,
+				A1E28701809A6C0B2212896C /* DazzleVectorIoTValkey9Paper2Manager.swift */,
+			);
+			name = dazzle;
+			path = ../../backends/ios/dazzle;
+			sourceTree = "<group>";
+		};
+		87478CB12700E8800F2215FC /* inmemory */ = {
+			isa = PBXGroup;
+			children = (
+				C4F8C8D885F45971F91D9ECB /* InMemoryContextManager.swift */,
+			);
+			name = inmemory;
+			path = ../../backends/ios/inmemory;
+			sourceTree = "<group>";
+		};
+		95844635DCE6B017B0687CD6 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5096F8AADAB818EB31C43B6B /* DazzleExperimentApp.swift */,
+				FE07280D2A1FCB9502456D35 /* ExperimentView.swift */,
+				5E0814DF73EB70687F823113 /* ExperimentViewPaper2.swift */,
+				6C34BC56DB6ED08E15840CDE /* ExperimentViewValkey8.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A4EEAFF6EAD995EC7CEDA734 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				165FBF2F36455ECE8648061D /* DazzleExperiment.entitlements */,
+				2083D7996E318C05FA714099 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B6FCE2F399702E3AFF0C7FD4 /* Inference */ = {
+			isa = PBXGroup;
+			children = (
+				617C7BCA8A29CD5DA1132207 /* GemmaEngine.swift */,
+			);
+			path = Inference;
+			sourceTree = "<group>";
+		};
+		BEA2B898FED086CFEB1A9374 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				388C5B875ACFBEFBEF2B4BA2 /* Dazzle.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DAC9FE25217E7E75728B7AB7 /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				88A69D67F3CAE859D288B480 /* dazzle_ios.c */,
+			);
+			name = platform;
+			path = ../../../core/platform;
+			sourceTree = "<group>";
+		};
+		EF0A629C362D0EC202ABBC4C /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				211D01D1DE28459375EFCC48 /* StorageOnlyTest.swift */,
+				3CB94E2D38C462CD7BFEDD5A /* StorageOnlyTestPaper2.swift */,
+				9BE67859FCE1411D3EF3DFA2 /* StorageOnlyTestValkey8.swift */,
+			);
+			name = ios;
+			path = ../../storage/ios;
+			sourceTree = "<group>";
+		};
+		F0B77405E2330CBBDC5E37E4 /* sqlite */ = {
+			isa = PBXGroup;
+			children = (
+				1297D5175297750B5D8382ED /* SqliteContextManager.swift */,
+			);
+			name = sqlite;
+			path = ../../backends/ios/sqlite;
+			sourceTree = "<group>";
+		};
+		F1704D42F96CB8E8C3BB9B4C /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E021358282035ED46BA01DFF /* DazzleConfig.swift */,
+				E81210CD290FEF4B50BDD697 /* DazzlePrimitives.swift */,
+				D0911357F5CF7E397CCC346B /* DazzleServer.swift */,
+				1B395E65F6E04BD1DCDB77EF /* VectorIndex.swift */,
+			);
+			name = Sources;
+			path = ../../../sdk/ios/Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F97B1AA9029774F4115DF031 /* DazzleExperiment */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3AB8B2202F81FD52E39403FE /* Build configuration list for PBXNativeTarget "DazzleExperiment" */;
+			buildPhases = (
+				5553BE3F6C7CD185ECAEB11E /* Sources */,
+				E7568598C049ACEAB104AAFE /* Resources */,
+				6314358E7E10B3A070EF27EA /* Frameworks */,
+				C7571CF88EEC422BE9CE305B /* Re-sign nested CLiteRTLM dylibs */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DazzleExperiment;
+			packageProductDependencies = (
+				DD56FF4C6A115B4A384212B4 /* LiteRTLMSwift */,
+			);
+			productName = DazzleExperiment;
+			productReference = 4832CEC9F1925D29A9945ECD /* DazzleExperiment.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5B9A6FF6A687678E86352B95 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					F97B1AA9029774F4115DF031 = {
+						DevelopmentTeam = H886H7AS9G;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 60124B168D7472AFF0E21CB2 /* Build configuration list for PBXProject "DazzleExperiment" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 4C14B8644B02744523003E27;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				011DEDB018CF214F9652437C /* XCRemoteSwiftPackageReference "LiteRTLM-Swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 371528A517821BB89B19AB2C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F97B1AA9029774F4115DF031 /* DazzleExperiment */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E7568598C049ACEAB104AAFE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				603919A3A9032DF53676FF2F /* dataset_iot_baseline.json in Resources */,
+				42B009D80AABFBB1D9A6D727 /* dataset_iot_valkey8.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C7571CF88EEC422BE9CE305B /* Re-sign nested CLiteRTLM dylibs */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Re-sign nested CLiteRTLM dylibs";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -e\nFW=\"${CODESIGNING_FOLDER_PATH}/Frameworks/CLiteRTLM.framework\"\nif [ ! -d \"$FW\" ]; then\n  echo \"CLiteRTLM.framework not found at $FW — skipping\"\n  exit 0\nfi\nif [ -z \"${EXPANDED_CODE_SIGN_IDENTITY}\" ]; then\n  echo \"No code sign identity — skipping (likely a simulator/unsigned build)\"\n  exit 0\nfi\nIDENTITY=\"${EXPANDED_CODE_SIGN_IDENTITY}\"\necho \"Re-signing nested dylibs in CLiteRTLM.framework with $IDENTITY\"\nfor DYLIB in \"$FW\"/*.dylib; do\n  [ -f \"$DYLIB\" ] || continue\n  echo \"  codesign $(basename \"$DYLIB\")\"\n  /usr/bin/codesign --force --sign \"$IDENTITY\" \\\n    --preserve-metadata=identifier,entitlements,flags \\\n    --timestamp=none \"$DYLIB\"\ndone\necho \"Re-sealing CLiteRTLM.framework\"\n/usr/bin/codesign --force --sign \"$IDENTITY\" \\\n  --preserve-metadata=identifier,entitlements,flags \\\n  --timestamp=none \"$FW\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5553BE3F6C7CD185ECAEB11E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A843C46EFD4213186BB48C7 /* DazzleConfig.swift in Sources */,
+				288E4CEA3EE60E4486AACFB2 /* DazzleContextManager.swift in Sources */,
+				30E5113721FD8E935C722BF9 /* DazzleExperimentApp.swift in Sources */,
+				24AF7450D3CC98DC104C17FD /* DazzleHFEContextManager.swift in Sources */,
+				77282BAA380E24AE22C9141A /* DazzleHLLContextManager.swift in Sources */,
+				6FEAAEA0CB48F17F59804C20 /* DazzleLuaContextManager.swift in Sources */,
+				8C871EDEDBBC6CE0806AFE4D /* DazzlePipelineContextManager.swift in Sources */,
+				5879AEADADF5B5EF8DB0A04C /* DazzlePrecomputeIoTManager.swift in Sources */,
+				39548C22427F1C3EDA02769C /* DazzlePrimitives.swift in Sources */,
+				19E18FE72E884A3A0EB20415 /* DazzleServer.swift in Sources */,
+				BD94DEDE93474F0EF36A3545 /* DazzleVectorIoTValkey8Manager.swift in Sources */,
+				DC9DD20ACDAEABA59EC53F7C /* DazzleVectorIoTValkey9Manager.swift in Sources */,
+				FA1C1658C0813F1EDE69A471 /* DazzleVectorIoTValkey9Paper2Manager.swift in Sources */,
+				94F397F99420FDCE21B00525 /* ExperimentPipelineIoT.swift in Sources */,
+				41658FBB4AEEDD5BB52541ED /* ExperimentPipelineIoTPaper2.swift in Sources */,
+				779E8C26E74F3069435A05B5 /* ExperimentPipelineIoTValkey8.swift in Sources */,
+				9BBAB3D8C3A44C7EB192A35B /* ExperimentView.swift in Sources */,
+				8F28B4256CF04261F7A6DB11 /* ExperimentViewPaper2.swift in Sources */,
+				5A13C291AC9464FFEEC65329 /* ExperimentViewValkey8.swift in Sources */,
+				E8397930E1295EF04B207187 /* GemmaEngine.swift in Sources */,
+				514671D1F7FA4139B3EC7F7C /* InMemoryContextManager.swift in Sources */,
+				CDF9C97D04BEEE5DA83E95F8 /* Paper2Namespace.swift in Sources */,
+				A70040D681D34C4D115CF536 /* ResultsExporter.swift in Sources */,
+				60B4AA70202E725D355DA899 /* SensorDataset.swift in Sources */,
+				1DBF990D56248BE2E4902FC1 /* SqliteContextManager.swift in Sources */,
+				5DC7309AE6BEDC4780DB7689 /* StorageBackend.swift in Sources */,
+				F99786E65DBAFF92F7074DF3 /* StorageOnlyTest.swift in Sources */,
+				F713FB4922BC6EA4F9BE63C9 /* StorageOnlyTestPaper2.swift in Sources */,
+				8D8D9F247815BC5843CD6A8A /* StorageOnlyTestValkey8.swift in Sources */,
+				1161D2CD4F19F219A50F526C /* SystemSnapshot.swift in Sources */,
+				DEC2AFD5584BDBF9BE2CB609 /* Valkey8Namespace.swift in Sources */,
+				35FC760787C8C408BAB050BE /* ValkeyContextManager.swift in Sources */,
+				0F465EFD913567D97B161E85 /* VectorIndex.swift in Sources */,
+				72D8365912161886E50D1E8F /* dazzle_ios.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5736219FC3EB8FA74766A550 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A7FA8CADBB2265CA48DABC45 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		AF003577746EEC84648AD8F2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/DazzleExperiment.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H886H7AS9G;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../../sdk/ios\"",
+				);
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(PROJECT_DIR)/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -lz -lc++ -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = io.dazzle.experiment;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CF793F1025A3E3408CAC51D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/DazzleExperiment.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H886H7AS9G;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../../sdk/ios\"",
+				);
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(PROJECT_DIR)/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -lz -lc++ -lsqlite3";
+				PRODUCT_BUNDLE_IDENTIFIER = io.dazzle.experiment;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3AB8B2202F81FD52E39403FE /* Build configuration list for PBXNativeTarget "DazzleExperiment" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CF793F1025A3E3408CAC51D9 /* Debug */,
+				AF003577746EEC84648AD8F2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		60124B168D7472AFF0E21CB2 /* Build configuration list for PBXProject "DazzleExperiment" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7FA8CADBB2265CA48DABC45 /* Debug */,
+				5736219FC3EB8FA74766A550 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		011DEDB018CF214F9652437C /* XCRemoteSwiftPackageReference "LiteRTLM-Swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mylovelycodes/LiteRTLM-Swift.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DD56FF4C6A115B4A384212B4 /* LiteRTLMSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 011DEDB018CF214F9652437C /* XCRemoteSwiftPackageReference "LiteRTLM-Swift" */;
+			productName = LiteRTLMSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 5B9A6FF6A687678E86352B95 /* Project object */;
+}

@@ -16,11 +16,11 @@ package dev.dazzle.sdk.edge
  */
 internal object LlamaNative {
     init {
-        // libdazzle.so is already loaded by DazzleServer.init, so
-        // this is a no-op most of the time — but calling it here
-        // gives a clean error if the AAR was stripped of its native
-        // lib. Mirrors the VectorIndex.companion pattern.
-        try { System.loadLibrary("dazzle") } catch (_: UnsatisfiedLinkError) {}
+        // libdazzle.so / libdazzle_v82.so is normally loaded by
+        // DazzleServer.init via DazzleNativeLoader.ensureLoaded();
+        // calling the loader here gives a clean error path if the
+        // AAR was stripped of its native libs. Mirrors VectorIndex.
+        try { dev.dazzle.sdk.DazzleNativeLoader.ensureLoaded() } catch (_: UnsatisfiedLinkError) {}
     }
 
     @JvmStatic external fun nBackendInit()

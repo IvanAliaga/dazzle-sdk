@@ -1,0 +1,485 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0134A7F25C7754815753701C /* DazzlePrecomputeIoTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 212AA92DA7BE31BC1953D60B /* DazzlePrecomputeIoTManager.swift */; };
+		0DEF9418760F9234AEE2D437 /* StorageBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED889A2A058B2CF0C168030 /* StorageBackend.swift */; };
+		11366762218420E1FE98538A /* dazzle_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = F1CD3240E3EFB265217B1408 /* dazzle_ios.c */; };
+		136326DD813CE7E53883B030 /* dataset_iot_baseline.json in Resources */ = {isa = PBXBuildFile; fileRef = F3E62ACFE07D1E8FD1EBC55E /* dataset_iot_baseline.json */; };
+		1E892323196D38B5DF70F3D2 /* DazzlePrimitives.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A7FF8CEFA87595F4DB33927 /* DazzlePrimitives.swift */; };
+		200F793919A2C28C27802815 /* DazzlePrecomputeIoTBaselineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A08D4BAB2F83F3E7F537C9A /* DazzlePrecomputeIoTBaselineManager.swift */; };
+		222CAA91CAE140834274C9D4 /* DazzleVectorIoTValkey9Paper2Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6175349242E9867CA1F36913 /* DazzleVectorIoTValkey9Paper2Manager.swift */; };
+		2CC26C8F15CDA58FF73CB136 /* DazzleContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400445BCCF7DCE2CC673543A /* DazzleContextManager.swift */; };
+		40E09E3FE793800E094B5318 /* DazzleLuaContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332AAF76D5B3028BB8DDC3FB /* DazzleLuaContextManager.swift */; };
+		4E6E1EB1F660098171C1A5DE /* DazzleConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55520EC14656E05532085501 /* DazzleConfig.swift */; };
+		5C49B992E2E4B28CC06677CB /* Dazzle.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3FBB71F569B19B23CBD0DA /* Dazzle.xcframework */; };
+		70FD94E12326778E84A9C2DF /* SensorDataset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99FCB0222B9F6848681694EB /* SensorDataset.swift */; };
+		71E1B49A877314D143132EE2 /* DazzleVectorIoTValkey9Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7773FFE9C10A4B5E4A0C /* DazzleVectorIoTValkey9Manager.swift */; };
+		79458AF845E5DAFD2015E1AF /* MultiAgentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26CE3AE286B065E426F4CC04 /* MultiAgentView.swift */; };
+		83A3478A0AE3867C5EB6D7EF /* DazzlePipelineContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEB2C2D27D4A6BC265B57CA /* DazzlePipelineContextManager.swift */; };
+		862EFCEF9DBE3385209A36B8 /* DazzleVectorIoTValkey8Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37A5F4AB48EB68156E342A8E /* DazzleVectorIoTValkey8Manager.swift */; };
+		B0020039E3F07D0A25230B60 /* MultiAgentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF9D1AFE6EE99EE13E96067E /* MultiAgentApp.swift */; };
+		B32C5C11D63718071663B1CD /* DazzleHLLContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3624E761ED71D90C6CCC86E /* DazzleHLLContextManager.swift */; };
+		C3F57F61B279C06FA92FBD66 /* SystemSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25168376036A5A3A7E4DA29D /* SystemSnapshot.swift */; };
+		D4CACA60B06DC94E73F2CBED /* DazzleServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19D25688D398B791C171F705 /* DazzleServer.swift */; };
+		DD74D4C5C1F985978DD161DA /* MultiAgentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E558261702898143AAC8BB /* MultiAgentTest.swift */; };
+		F74CDE3B22ED2D7E63435331 /* DazzleHFEContextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD23D871EC33BFCEEECABF2B /* DazzleHFEContextManager.swift */; };
+		FC223FE7ED7A343C5542BDC7 /* VectorIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = F362D14C894C8E6938150288 /* VectorIndex.swift */; };
+		FF7C7FF86FEC3053E374F6EE /* DazzleIncrementalIoTManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD1B76D68F36F82182F1C898 /* DazzleIncrementalIoTManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0ED889A2A058B2CF0C168030 /* StorageBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageBackend.swift; sourceTree = "<group>"; };
+		13E558261702898143AAC8BB /* MultiAgentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAgentTest.swift; sourceTree = "<group>"; };
+		19D25688D398B791C171F705 /* DazzleServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleServer.swift; sourceTree = "<group>"; };
+		1AEB2C2D27D4A6BC265B57CA /* DazzlePipelineContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePipelineContextManager.swift; sourceTree = "<group>"; };
+		212AA92DA7BE31BC1953D60B /* DazzlePrecomputeIoTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePrecomputeIoTManager.swift; sourceTree = "<group>"; };
+		25168376036A5A3A7E4DA29D /* SystemSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemSnapshot.swift; sourceTree = "<group>"; };
+		26CE3AE286B065E426F4CC04 /* MultiAgentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAgentView.swift; sourceTree = "<group>"; };
+		332AAF76D5B3028BB8DDC3FB /* DazzleLuaContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleLuaContextManager.swift; sourceTree = "<group>"; };
+		37A5F4AB48EB68156E342A8E /* DazzleVectorIoTValkey8Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey8Manager.swift; sourceTree = "<group>"; };
+		400445BCCF7DCE2CC673543A /* DazzleContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleContextManager.swift; sourceTree = "<group>"; };
+		4A7FF8CEFA87595F4DB33927 /* DazzlePrimitives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePrimitives.swift; sourceTree = "<group>"; };
+		55520EC14656E05532085501 /* DazzleConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleConfig.swift; sourceTree = "<group>"; };
+		6175349242E9867CA1F36913 /* DazzleVectorIoTValkey9Paper2Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey9Paper2Manager.swift; sourceTree = "<group>"; };
+		8A08D4BAB2F83F3E7F537C9A /* DazzlePrecomputeIoTBaselineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzlePrecomputeIoTBaselineManager.swift; sourceTree = "<group>"; };
+		99FCB0222B9F6848681694EB /* SensorDataset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorDataset.swift; sourceTree = "<group>"; };
+		9C3FBB71F569B19B23CBD0DA /* Dazzle.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Dazzle.xcframework; path = ../../../sdk/ios/Dazzle.xcframework; sourceTree = "<group>"; };
+		9F93903D899537A2B7BA4423 /* DazzleMultiAgent.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DazzleMultiAgent.entitlements; sourceTree = "<group>"; };
+		AF9752A9A509F6944348EAA0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		B40E7773FFE9C10A4B5E4A0C /* DazzleVectorIoTValkey9Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleVectorIoTValkey9Manager.swift; sourceTree = "<group>"; };
+		BF9D1AFE6EE99EE13E96067E /* MultiAgentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiAgentApp.swift; sourceTree = "<group>"; };
+		CD1B76D68F36F82182F1C898 /* DazzleIncrementalIoTManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleIncrementalIoTManager.swift; sourceTree = "<group>"; };
+		DD23D871EC33BFCEEECABF2B /* DazzleHFEContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleHFEContextManager.swift; sourceTree = "<group>"; };
+		DD56D5664FAF43919745D4FC /* DazzleMultiAgent.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DazzleMultiAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F1CD3240E3EFB265217B1408 /* dazzle_ios.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dazzle_ios.c; sourceTree = "<group>"; };
+		F3624E761ED71D90C6CCC86E /* DazzleHLLContextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DazzleHLLContextManager.swift; sourceTree = "<group>"; };
+		F362D14C894C8E6938150288 /* VectorIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorIndex.swift; sourceTree = "<group>"; };
+		F3E62ACFE07D1E8FD1EBC55E /* dataset_iot_baseline.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = dataset_iot_baseline.json; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7251839AA99252CDF76E6BE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C49B992E2E4B28CC06677CB /* Dazzle.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02FC5718C0C11660463BDB37 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9C3FBB71F569B19B23CBD0DA /* Dazzle.xcframework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1F7D8924DC18EB3F5705AD7A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DD56D5664FAF43919745D4FC /* DazzleMultiAgent.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D04CC585299B425832C41F9 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				BF9D1AFE6EE99EE13E96067E /* MultiAgentApp.swift */,
+				26CE3AE286B065E426F4CC04 /* MultiAgentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5F8218A2E5DDB7866829ECB2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9F93903D899537A2B7BA4423 /* DazzleMultiAgent.entitlements */,
+				AF9752A9A509F6944348EAA0 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		5FEEB4FEEB5D1BCCEB886420 /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				F1CD3240E3EFB265217B1408 /* dazzle_ios.c */,
+			);
+			name = platform;
+			path = ../../../core/platform;
+			sourceTree = "<group>";
+		};
+		6903F6D900D3934A48237FAA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F3E62ACFE07D1E8FD1EBC55E /* dataset_iot_baseline.json */,
+			);
+			name = Resources;
+			path = ../../backends/ios/Resources;
+			sourceTree = "<group>";
+		};
+		7EE0CD2DFD827248AE3C673E /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				55520EC14656E05532085501 /* DazzleConfig.swift */,
+				4A7FF8CEFA87595F4DB33927 /* DazzlePrimitives.swift */,
+				19D25688D398B791C171F705 /* DazzleServer.swift */,
+				F362D14C894C8E6938150288 /* VectorIndex.swift */,
+			);
+			name = Sources;
+			path = ../../../sdk/ios/Sources;
+			sourceTree = "<group>";
+		};
+		A13DAB3FB41E591A50FDC1D4 /* dazzle */ = {
+			isa = PBXGroup;
+			children = (
+				400445BCCF7DCE2CC673543A /* DazzleContextManager.swift */,
+				DD23D871EC33BFCEEECABF2B /* DazzleHFEContextManager.swift */,
+				F3624E761ED71D90C6CCC86E /* DazzleHLLContextManager.swift */,
+				CD1B76D68F36F82182F1C898 /* DazzleIncrementalIoTManager.swift */,
+				332AAF76D5B3028BB8DDC3FB /* DazzleLuaContextManager.swift */,
+				1AEB2C2D27D4A6BC265B57CA /* DazzlePipelineContextManager.swift */,
+				8A08D4BAB2F83F3E7F537C9A /* DazzlePrecomputeIoTBaselineManager.swift */,
+				212AA92DA7BE31BC1953D60B /* DazzlePrecomputeIoTManager.swift */,
+				37A5F4AB48EB68156E342A8E /* DazzleVectorIoTValkey8Manager.swift */,
+				B40E7773FFE9C10A4B5E4A0C /* DazzleVectorIoTValkey9Manager.swift */,
+				6175349242E9867CA1F36913 /* DazzleVectorIoTValkey9Paper2Manager.swift */,
+			);
+			name = dazzle;
+			path = ../../backends/ios/dazzle;
+			sourceTree = "<group>";
+		};
+		E030C71C9B7B913FB4BC1409 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				99FCB0222B9F6848681694EB /* SensorDataset.swift */,
+				0ED889A2A058B2CF0C168030 /* StorageBackend.swift */,
+				25168376036A5A3A7E4DA29D /* SystemSnapshot.swift */,
+			);
+			name = ios;
+			path = ../../backends/ios;
+			sourceTree = "<group>";
+		};
+		E7AB3801CD7163FF4791DBAE = {
+			isa = PBXGroup;
+			children = (
+				13E558261702898143AAC8BB /* MultiAgentTest.swift */,
+				3D04CC585299B425832C41F9 /* App */,
+				A13DAB3FB41E591A50FDC1D4 /* dazzle */,
+				E030C71C9B7B913FB4BC1409 /* ios */,
+				5FEEB4FEEB5D1BCCEB886420 /* platform */,
+				5F8218A2E5DDB7866829ECB2 /* Resources */,
+				6903F6D900D3934A48237FAA /* Resources */,
+				7EE0CD2DFD827248AE3C673E /* Sources */,
+				02FC5718C0C11660463BDB37 /* Frameworks */,
+				1F7D8924DC18EB3F5705AD7A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4FF6CF8ED5521B59103F063E /* DazzleMultiAgent */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2F47D393AFFAE6140092C50 /* Build configuration list for PBXNativeTarget "DazzleMultiAgent" */;
+			buildPhases = (
+				CA7654139D4D6D3D72512920 /* Sources */,
+				A204405AB06A74250365CB51 /* Resources */,
+				A7251839AA99252CDF76E6BE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DazzleMultiAgent;
+			packageProductDependencies = (
+			);
+			productName = DazzleMultiAgent;
+			productReference = DD56D5664FAF43919745D4FC /* DazzleMultiAgent.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2E3FB3E7AB7E0909B97E50A6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					4FF6CF8ED5521B59103F063E = {
+						DevelopmentTeam = H886H7AS9G;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 219F92791E26971447525D4C /* Build configuration list for PBXProject "DazzleMultiAgent" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = E7AB3801CD7163FF4791DBAE;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 1F7D8924DC18EB3F5705AD7A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4FF6CF8ED5521B59103F063E /* DazzleMultiAgent */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A204405AB06A74250365CB51 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				136326DD813CE7E53883B030 /* dataset_iot_baseline.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CA7654139D4D6D3D72512920 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4E6E1EB1F660098171C1A5DE /* DazzleConfig.swift in Sources */,
+				2CC26C8F15CDA58FF73CB136 /* DazzleContextManager.swift in Sources */,
+				F74CDE3B22ED2D7E63435331 /* DazzleHFEContextManager.swift in Sources */,
+				B32C5C11D63718071663B1CD /* DazzleHLLContextManager.swift in Sources */,
+				FF7C7FF86FEC3053E374F6EE /* DazzleIncrementalIoTManager.swift in Sources */,
+				40E09E3FE793800E094B5318 /* DazzleLuaContextManager.swift in Sources */,
+				83A3478A0AE3867C5EB6D7EF /* DazzlePipelineContextManager.swift in Sources */,
+				200F793919A2C28C27802815 /* DazzlePrecomputeIoTBaselineManager.swift in Sources */,
+				0134A7F25C7754815753701C /* DazzlePrecomputeIoTManager.swift in Sources */,
+				1E892323196D38B5DF70F3D2 /* DazzlePrimitives.swift in Sources */,
+				D4CACA60B06DC94E73F2CBED /* DazzleServer.swift in Sources */,
+				862EFCEF9DBE3385209A36B8 /* DazzleVectorIoTValkey8Manager.swift in Sources */,
+				71E1B49A877314D143132EE2 /* DazzleVectorIoTValkey9Manager.swift in Sources */,
+				222CAA91CAE140834274C9D4 /* DazzleVectorIoTValkey9Paper2Manager.swift in Sources */,
+				B0020039E3F07D0A25230B60 /* MultiAgentApp.swift in Sources */,
+				DD74D4C5C1F985978DD161DA /* MultiAgentTest.swift in Sources */,
+				79458AF845E5DAFD2015E1AF /* MultiAgentView.swift in Sources */,
+				70FD94E12326778E84A9C2DF /* SensorDataset.swift in Sources */,
+				0DEF9418760F9234AEE2D437 /* StorageBackend.swift in Sources */,
+				C3F57F61B279C06FA92FBD66 /* SystemSnapshot.swift in Sources */,
+				FC223FE7ED7A343C5542BDC7 /* VectorIndex.swift in Sources */,
+				11366762218420E1FE98538A /* dazzle_ios.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0C081CA07EEE61900F0359BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		3B837A49514B92AECF311445 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/DazzleMultiAgent.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H886H7AS9G;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../../sdk/ios\"",
+				);
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(PROJECT_DIR)/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -lz -lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = io.dazzle.experiment.multiagent;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		40784DBA3E3BAA05E75367C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C1A27433A87146E9A6717225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Resources/DazzleMultiAgent.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = H886H7AS9G;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../../sdk/ios\"",
+				);
+				INFOPLIST_FILE = Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "$(inherited) $(PROJECT_DIR)/Frameworks";
+				OTHER_LDFLAGS = "$(inherited) -lz -lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = io.dazzle.experiment.multiagent;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.9;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		219F92791E26971447525D4C /* Build configuration list for PBXProject "DazzleMultiAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0C081CA07EEE61900F0359BA /* Debug */,
+				40784DBA3E3BAA05E75367C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D2F47D393AFFAE6140092C50 /* Build configuration list for PBXNativeTarget "DazzleMultiAgent" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1A27433A87146E9A6717225 /* Debug */,
+				3B837A49514B92AECF311445 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2E3FB3E7AB7E0909B97E50A6 /* Project object */;
+}

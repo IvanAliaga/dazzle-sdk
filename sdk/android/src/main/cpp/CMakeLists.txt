@@ -340,28 +340,53 @@ set(GGML_CPU               ON  CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS      OFF CACHE BOOL "" FORCE)
 # llama.cpp installs headers / exports by default; we embed it, so skip.
 set(LLAMA_SKIP_INSTALL     ON  CACHE BOOL "" FORCE)
+# Force ARMv8-A baseline + branch-protection=none down into llama.cpp's
+# own targets too. add_subdirectory() means llama / ggml / ggml-base /
+# ggml-cpu are SEPARATE targets — `target_compile_options(dazzle ...)`
+# does NOT propagate to them. Outline atomics stay enabled (NDK 27
+# default): the runtime helpers `__aarch64_have_lse_atomics` flag
+# selects between the LSE fast path on chips that support it and the
+# safe LDXR/STXR fallback on chips that don't. The MRS-emulation
+# handler in dazzle_jni.c keeps that selection working on Kirin 659
+# where Linux 4.9 doesn't emulate the underlying ID_AA64* MRS reads.
+add_compile_options(-mbranch-protection=none -march=armv8-a -mcpu=generic)
 add_subdirectory(${llama_src_SOURCE_DIR} llama_build EXCLUDE_FROM_ALL)
 
-# ===== Main library: dazzle.so ============================================
+# ===== Main library: dazzle.so + dazzle_v82.so ============================
 # Everything — Valkey server, JNI bridge, transport layer, and ALL shipped
-# modules — compiles into a single libdazzle.so. Modules are loaded via
+# modules — compiles into a single libdazzle*.so. Modules are loaded via
 # --loadmodule @static:<name> which the patched module.c resolves to
-# RTLD_DEFAULT + ValkeyModule_OnLoad_<name>. This keeps the consumer APK to
-# a single native library, mirrors the iOS xcframework layout, and sidesteps
-# Android's extractNativeLibs packaging quirk for per-module .so files.
-add_library(dazzle SHARED
-    ${VALKEY_SERVER_SOURCES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_jni.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/valkeysearch_module.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/simsimd_lib.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/tfi_module.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_llama_jni.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_transport.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_worker_pool.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/platform/dazzle_llama.cpp
-)
+# RTLD_DEFAULT + ValkeyModule_OnLoad_<name>.
+#
+# Multi-target dispatch: we now produce TWO variants of the shared
+# library and ship both inside the APK. The runtime loader
+# (`dev.dazzle.sdk.DazzleNativeLoader`) reads /proc/cpuinfo and picks
+# the right one:
+#
+#   libdazzle.so      `-march=armv8-a -mcpu=generic`
+#                     Cross-platform safe baseline. Runs on any
+#                     ARMv8.0-A chip — Cortex-A53/A55/A73 — including
+#                     Snapdragon 662, Kirin 659, Kirin 710F, MediaTek
+#                     Helio G80 small cores. The MRS-emulation handler
+#                     in dazzle_jni.c covers Linux 4.9 (Kirin 659).
+#
+#   libdazzle_v82.so  `-march=armv8.2-a+fp16+dotprod -mcpu=cortex-a78`
+#                     Recovers the ~31 % HNSW-search speedup we
+#                     measured on the Unisoc T760 reference build
+#                     (208 µs vs 306 µs at N = 20 000). Compiles
+#                     hnswlib's L2Sqr / InnerProductDistance template
+#                     loops with fp16 + dotprod intrinsics that the
+#                     baseline target cannot auto-vectorise to. Loaded
+#                     only when /proc/cpuinfo advertises both `asimdhp`
+#                     and `asimddp` (so the chip can actually execute
+#                     the SDOT / fp16 opcodes).
+#
+# Both variants link against the SAME llama.cpp / ggml subdirectory
+# output. ggml-cpu has its own runtime feature dispatcher, so the
+# baseline -march on llama is not a perf cost.
 
-target_include_directories(dazzle PRIVATE
+# Ordered list of common include directories shared by both variants.
+set(_DAZZLE_COMMON_INCLUDES
     ${VALKEY_SRC}
     ${VALKEY_SRC}/lua
     ${VALKEY_DEPS}/libvalkey/include/valkey
@@ -380,77 +405,115 @@ target_include_directories(dazzle PRIVATE
     ${llama_src_SOURCE_DIR}/ggml/include
 )
 
-target_compile_options(dazzle PRIVATE
-    -O2
-    -D__ANDROID__
-    -D_GNU_SOURCE
-    -DUSE_EPOLL
-    # Per-module gating macros: flip the anti-dead-strip block in
-    # core/transport/dazzle_transport.c (iOS-only — Android uses -Wl,-u)
-    # and satisfy #if defined(DAZZLE_VECTOR_SIMSIMD) inside
-    # valkeysearch_module.cc / simsimd_lib.c (arm64 NEON kernels).
-    -DDAZZLE_VECTORSEARCH=1
-    -DDAZZLE_TFI=1
-    -DDAZZLE_VECTOR_SIMSIMD=1
-    -Wall
-    -Wno-unused-function
-    -Wno-unused-variable
-    -Wno-deprecated-declarations
-    -Wno-unknown-pragmas
-    # Patch 04 — TLS model decision deferred (see docs/plans/02 Addendum §TlsMode).
-    # Keeping emulated TLS (the NDK default for dlopen'd .so) because the native
-    # model (-fno-emulated-tls -ftls-model=global-dynamic) crashed with SIGSEGV
-    # at dazzle_tls_current_client-dependent paths on arm64 bionic when the lib
-    # is System.loadLibrary'd.  Exposing TlsMode.{Emulated,Native,Auto} as an
-    # SDK config is tracked for paper 2.
+# Ordered list of source files shared by both variants.
+set(_DAZZLE_COMMON_SOURCES
+    ${VALKEY_SERVER_SOURCES}
+    ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_jni.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/valkeysearch_module.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/simsimd_lib.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/tfi_module.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_llama_jni.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_transport.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_worker_pool.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/platform/dazzle_llama.cpp
 )
 
-# Per-language flags — Valkey & co. need gnu11 C; valkeysearch_module.cc needs
-# C++17 with hnswlib's arm64 NEON features. simsimd_lib.c stays C but needs
-# the same target arch to unlock its runtime dispatcher.
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/valkeysearch_module.cc
-    PROPERTIES COMPILE_FLAGS "-std=c++17 -O3 -fPIC -fno-plt -fvisibility=hidden -fvisibility-inlines-hidden -ffunction-sections -fdata-sections -march=armv8.2-a+fp16+dotprod -mcpu=generic")
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/simsimd_lib.c
-    PROPERTIES COMPILE_FLAGS "-O3 -fPIC -march=armv8.2-a+fp16+dotprod -mcpu=generic")
-# dazzle_llama.cpp wraps llama.cpp's C++ API — C++17 like the search module.
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/platform/dazzle_llama.cpp
-    PROPERTIES COMPILE_FLAGS "-std=c++17 -O2 -fPIC")
-foreach(_src ${VALKEY_SERVER_SOURCES}
-        ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_jni.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/dazzle_llama_jni.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/tfi_module.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_transport.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../../core/transport/dazzle_worker_pool.c)
-    set_source_files_properties(${_src} PROPERTIES COMPILE_FLAGS "-std=gnu11")
-endforeach()
+# Helper that defines one shared-library variant of dazzle.
+#
+# Args:
+#   TARGET     CMake target name (also the resulting libNAME.so basename)
+#   MARCH      value passed as -march=<MARCH>
+#   MCPU       value passed as -mcpu=<MCPU>
+#
+# The ${TARGET}-cxx-flags / ${TARGET}-c-flags string variables let us
+# attach per-source COMPILE_OPTIONS that follow the variant's -march /
+# -mcpu rather than the global ones. CMake's `set_source_files_properties`
+# is global per source path, so we route per-target overrides via
+# `target_compile_options($<COMPILE_LANGUAGE:...>)` instead.
+function(_dazzle_define_variant TARGET MARCH MCPU)
+    add_library(${TARGET} SHARED ${_DAZZLE_COMMON_SOURCES})
 
-target_link_libraries(dazzle
-    libvalkey_dep
-    lua_dep
-    linenoise_dep
-    hdr_histogram_dep
-    fpconv_dep
-    # llama.cpp inference stack — `llama` depends transitively on
-    # ggml, ggml-base and ggml-cpu, but listing them explicitly keeps
-    # the link line order stable across CMake versions.
-    llama
-    ggml
-    ggml-base
-    ggml-cpu
-    m dl log
-)
+    target_include_directories(${TARGET} PRIVATE ${_DAZZLE_COMMON_INCLUDES})
 
-# 16KB page alignment for Android 15+.
-# --export-dynamic exposes symbols the patched module.c resolves via
-# dlsym(RTLD_DEFAULT, "ValkeyModule_OnLoad_<name>"). Undefined refs (-u)
-# pin the per-module OnLoad symbols so --gc-sections can't drop them:
-# the linker has no visible caller of those functions inside libdazzle.so.
-target_link_options(dazzle PRIVATE
-    -Wl,-z,max-page-size=16384
-    -Wl,-z,separate-loadable-segments
-    -Wl,--export-dynamic
-    -Wl,-u,ValkeyModule_OnLoad_vectorsearch
-    -Wl,-u,ValkeyModule_OnLoad_tfi
-    -Wl,-u,dazzle_vectorsearch_onload_ref
-    -Wl,-u,dazzle_tfi_onload_ref
-)
+    target_compile_options(${TARGET} PRIVATE
+        -O2
+        -D__ANDROID__
+        -D_GNU_SOURCE
+        -DUSE_EPOLL
+        -DDAZZLE_VECTORSEARCH=1
+        -DDAZZLE_TFI=1
+        -DDAZZLE_VECTOR_SIMSIMD=1
+        -Wall
+        -Wno-unused-function
+        -Wno-unused-variable
+        -Wno-deprecated-declarations
+        -Wno-unknown-pragmas
+        # PAC/BTI off in user code — Cortex-A73 mis-decodes the HINT
+        # opcodes the NDK 27 default emits (see strip_pac_bti.py).
+        -mbranch-protection=none
+        -march=${MARCH}
+        -mcpu=${MCPU}
+    )
+    # Per-language extras. `set_source_files_properties` is global, so we
+    # route per-target overrides through target_compile_options + genex.
+    target_compile_options(${TARGET} PRIVATE
+        $<$<COMPILE_LANGUAGE:CXX>:-std=c++17 -O3 -fPIC -fno-plt
+            -fvisibility=hidden -fvisibility-inlines-hidden
+            -ffunction-sections -fdata-sections>
+        $<$<COMPILE_LANGUAGE:C>:-std=gnu11>
+    )
+
+    target_link_libraries(${TARGET}
+        libvalkey_dep
+        lua_dep
+        linenoise_dep
+        hdr_histogram_dep
+        fpconv_dep
+        llama ggml ggml-base ggml-cpu
+        m dl log
+    )
+
+    # 16 KB page alignment + force-export the per-module OnLoad symbols
+    # the patched module.c resolves via dlsym(RTLD_DEFAULT, ...).
+    target_link_options(${TARGET} PRIVATE
+        -Wl,-z,max-page-size=16384
+        -Wl,-z,separate-loadable-segments
+        -Wl,--export-dynamic
+        -Wl,-u,ValkeyModule_OnLoad_vectorsearch
+        -Wl,-u,ValkeyModule_OnLoad_tfi
+        -Wl,-u,dazzle_vectorsearch_onload_ref
+        -Wl,-u,dazzle_tfi_onload_ref
+    )
+
+    # Post-link hook: rewrite PAC/BTI HINT opcodes in this variant.
+    add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/strip_pac_bti.py" "$<TARGET_FILE:${TARGET}>"
+        COMMENT "post-link: stripping PAC/BTI HINT opcodes from $<TARGET_FILE_NAME:${TARGET}>"
+        VERBATIM
+    )
+endfunction()
+
+# Baseline variant: cross-platform safe (every Android arm64 chip).
+_dazzle_define_variant(dazzle "armv8-a" "generic")
+
+# Tuned variant: armv8.2-a + fp16 + dotprod, scheduled for Cortex-A78.
+# A78 produces the best code for the Unisoc T760 reference device's
+# Cortex-A76 big core (only one pipeline generation older). A
+# subsequent test with `-mcpu=cortex-a76` showed the same -12 % p50
+# regression on Helio G80 (Cortex-A75) as `-mcpu=cortex-a78` — see
+# `research/benchmarks/results/multitarget/round3_cortex_a76_test/`
+# and §6.3. The conclusion is that the regression is not scheduler-
+# model-driven; it lives somewhere in the global codegen the
+# ARMv8.2-A + fp16 + dotprod target enables that the Cortex-A75
+# microarchitecture executes inefficiently. The current mitigation
+# is `force_native_variant=baseline` for chips with known-A75 big
+# cores, surfaced through DazzleNativeLoader.
+#
+# `-mcpu` only controls scheduler/tuning, not the instruction set
+# (`-march` does that), so newer chips (A78, A710, X1, etc.) still
+# execute every NEON / fp16 / dotprod opcode at hardware speed; they
+# just may schedule a marginally narrower instruction window than
+# their native model would, which is the right trade-off for a
+# cross-chip release binary. Loaded only when /proc/cpuinfo carries
+# both asimdhp + asimddp.
+_dazzle_define_variant(dazzle_v82 "armv8.2-a+fp16+dotprod" "cortex-a78")

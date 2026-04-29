@@ -36,13 +36,13 @@ plugins {
 // Library coordinates — these are the strings users put into their
 // `build.gradle.kts`:
 //
-//     implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+//     implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.5")
 //
 // `com.ivanaliaga` is the reverse-DNS of the maintainer's domain
 // (verified via DNS TXT record on Sonatype Central Portal).
 val dazzleGroupId = "com.ivanaliaga"
 val dazzleArtifactId = "dazzle-sdk"
-val dazzleVersion = "1.0.0-beta.4"
+val dazzleVersion = "1.0.0-beta.5"
 
 group = dazzleGroupId
 version = dazzleVersion
