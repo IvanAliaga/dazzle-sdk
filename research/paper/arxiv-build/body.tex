@@ -2,15 +2,16 @@
 
 Quantized language models under 3 GB now run at interactive rates on
 smartphone-class ARM64 hardware: Gemma 2 \citep{gemma2} and Gemma 4
-\citep{gemma4}; Phi-3 mini \citep{phi3}; the Llama 3 herd \citep{llama3}
-including Llama 3.2 1B/3B; MobileLLM \citep{mobilellm}; and the Qwen 2.5 series
-\citep{qwen25} used in §5.9. The runtime stack --- \texttt{llama.cpp}
+\citep{gemma4}, Phi-3 mini \citep{phi3}, the Llama 3 herd \citep{llama3}
+(including Llama 3.2 1B and 3B), MobileLLM \citep{mobilellm}, and the Qwen 2.5
+series \citep{qwen25} we use in §5.9. The runtime stack --- \texttt{llama.cpp}
 \citep{llamacpp} with its GGUF quantised-weight format \citep{gguf}, LiteRT-LM
 \citep{litertlm}, MLC-LLM \citep{mlcllm}, ExecuTorch \citep{executorch} --- is
 mature and reaches sub-second decoded-token latency on \$150-class handsets.
-What has not matured at the same pace is the \textbf{state layer} an agent needs
---- a place to hold what it has seen between inference calls, coordinate across
-turns, and survive process restarts.
+
+The \textbf{state layer} an agent needs has not matured at the same pace. By
+state layer we mean the place an agent holds what it has seen between inference
+calls, coordinates across turns, and survives process restarts.
 
 Consider a mobile IoT monitoring agent: it collects temperature, humidity,
 pressure, and battery readings at intervals; an LLM processes batches at
@@ -23,40 +24,39 @@ to a specific data structure --- bounded streams, sorted sets and hashes,
 HyperLogLog, TTL on hash fields. None of these are exotic. None are research
 problems.
 
-What is missing is a backend that offers them. On Android and iOS, the dominant
-embedded options --- SQLite \citep{sqlite}, RocksDB \citep{rocksdb} (an LSM-tree
-descendant of LevelDB \citep{leveldb}), LMDB \citep{lmdb}, ObjectBox
-\citep{objectbox4} --- and the analytical embedded peer DuckDB \citep{duckdb}
---- expose between two and four data structures total: rows, key-value pairs,
-blob stores, occasionally a vector index. Every higher-order construct (bounded
-streams, materialized aggregates, approximate counts, TTL semantics, similarity
-search) has to be reimplemented in application code, on top of those primitives,
-by every team that needs them. The resulting code is fragile under concurrent
-access, the atomicity guarantees that come for free with a mature in-process
-server are silently lost, and the same handful of bugs is rediscovered in app
-after app.
+No backend on the platform offers them as native primitives. On Android and iOS
+the dominant embedded options --- SQLite \citep{sqlite}, RocksDB \citep{rocksdb}
+(an LSM-tree descendant of LevelDB \citep{leveldb}), LMDB \citep{lmdb},
+ObjectBox \citep{objectbox4}, and the analytical embedded peer DuckDB
+\citep{duckdb} --- expose between two and four data structures total: rows,
+key-value pairs, blob stores, occasionally a vector index. Every higher-order
+construct (bounded streams, materialized aggregates, approximate counts, TTL
+semantics, similarity search) has to be reimplemented in application code on top
+of those primitives, by every team that needs them. The resulting code is
+fragile under concurrent access. The atomicity guarantees that come for free
+with a mature in-process server are silently lost. The same handful of bugs gets
+rediscovered in app after app.
 
 The latency math frees the argument from the usual microbenchmark race. Even the
 slowest embedded backend in our evaluation --- SQLite at roughly 3 ms retrieval
 at N = 20 000 under concurrent load on a \$150 Android handset --- sits three
 orders of magnitude below a single on-device LLM inference turn (1--3 seconds
-for a 1--3 B-parameter model). Optimizing microseconds of retrieval is not what
-moves the product needle. What does is which primitives the backend exposes, how
-ergonomic they are to invoke, and how much glue code the agent author has to
-write before the state layer behaves.
+for a 1--3 B-parameter model). Microsecond retrieval is not what moves the
+product needle. What moves it is which primitives the backend exposes, how
+ergonomic they are to invoke, and how much glue code the agent author writes
+before the state layer behaves.
 
-We argue that the right axis of comparison for on-device agent backends is
+The right axis of comparison for on-device agent backends, we argue, is
 \textbf{primitive surface and developer ergonomics}, not raw microbenchmark
-throughput. We support this thesis with four pieces of evidence: (a) a
-characterization of Dazzle's latency envelope showing it sits comfortably within
-the LLM-noise floor across all configurations tested; (b) a
-primitive-by-primitive comparison showing \textbf{ten native primitives in
-Dazzle against \(\leq\) 4 in any embedded competitor on the same platforms}; (c)
-a development-complexity comparison in lines of code for the same agent state
-layer; and (d) an end-to-end demonstration that the primitives Dazzle exposes
-enable qualitatively new patterns --- small-model + on-device
-retrieval-augmented generation \citep{lewisrag, karpukhindpr} --- that are not
-achievable when the only available primitive is a flat key-value or row store.
+throughput. Four pieces of evidence support that position: (a) Dazzle's latency
+envelope sits comfortably within the LLM-noise floor across every configuration
+we tested; (b) primitive-by-primitive Dazzle exposes \textbf{ten native
+primitives against \(\leq 4\) in any embedded competitor on the same platforms};
+(c) a lines-of-code comparison for the same agent state layer; and (d) an
+end-to-end demonstration that the primitives Dazzle exposes enable qualitatively
+new patterns --- small-model + on-device retrieval-augmented generation
+\citep{lewisrag, karpukhindpr} --- that are not achievable when the only
+available primitive is a flat key-value or row store.
 
 \textbf{Contributions.}
 
@@ -135,9 +135,9 @@ An LLM-as-agent differs from single-turn inference in that it must:
   Signal between components (Pub/Sub without polling).
 \end{itemize}
 
-These primitives have existed for a decade in Redis/Valkey. What is new is
-embedding them \textbf{inside a mobile app process}, eliminating the network hop
-between agent and store.
+These primitives have existed for a decade in Redis/Valkey. The new part is
+embedding them \textbf{inside a mobile app process} so the network hop between
+agent and store disappears.
 
 \subsection{Native Primitives by Backend}\label{native-primitives-by-backend}
 
@@ -206,35 +206,34 @@ third-party extensions (commercial \texttt{sqliteai/sqlite-vector}, open-source
 \texttt{asg017/sqlite-vec}), which we benchmark separately in §5.8 as commercial
 peers rather than as a SQLite native feature.
 
-The headline count (10 vs \(\leq\) 4 native) measures \textbf{how many
+The headline count (10 vs \(\leq 4\) native) measures \textbf{how many
 primitives the agent author can reach with a single typed library call} --- the
 ``primitive surface'' axis of the Dazzle thesis. Primitives marked \textbf{E},
 \textbf{A} or \textbf{T} in non-Dazzle backends are \emph{implementable}; the
 question is engineering cost, which we measure directly in §5.6 (Table 9: 175
 LOC Android / 186 LOC iOS for Dazzle vs 200--290 LOC for the SQLite-based
 equivalents). A reviewer reading Table 1 as ``primitives that exist anywhere in
-this engine's ecosystem'' would arrive at a much smaller gap; that is a
-different (and weaker) question than the one Table 1 is structured to answer,
-and we make this axis-of-comparison choice explicit in §6.3 Limitations. The
-performance experiments that follow support the quantitative argument ---
-including the head-to-head vector benchmark against ObjectBox 4.x and SQLiteAI
-sqlite-vector 0.9.95 in §5.8.
+this engine's ecosystem'' arrives at a much smaller gap. That is a different
+(and weaker) question than the one Table 1 is structured to answer, and §6.3
+Limitations spells the choice out explicitly. The performance experiments that
+follow support the quantitative argument, including the head-to-head vector
+benchmark against ObjectBox 4.x and SQLiteAI sqlite-vector 0.9.95 in §5.8.
 
 \subsection{Why Embed Valkey, and Why as a
 Fork}\label{why-embed-valkey-and-why-as-a-fork}
 
-Valkey is designed for Linux servers: long-lived daemon, TCP loopback, GNU libc
+Valkey was designed for Linux servers: long-lived daemon, TCP loopback, GNU libc
 POSIX assumptions, shutdown via \texttt{exit()}. None of these survive a port to
-a mobile app process. Dazzle applies three changes as a fork overlay: (a)
-\textbf{portability} --- shims for Android Bionic libc and the Apple SDK; (b)
-\textbf{lifecycle} --- the server cannot kill its host process; (c)
-\textbf{in-process transport} --- TCP loopback is pure overhead when client and
+a mobile app process. Dazzle applies three changes as a fork overlay. The first
+is \textbf{portability}: shims for Android Bionic libc and the Apple SDK. The
+second is \textbf{lifecycle}: the server cannot kill its host process. The third
+is \textbf{in-process transport}: TCP loopback is pure overhead when client and
 server share the address space.
 
-Upstream Valkey is not vendored; it is downloaded at a fixed tag and patched
-with three diffs (\textasciitilde180 lines total) before compilation. Publishing
-only the diffs preserves Valkey's BSD-3-Clause license; Dazzle's original code
-(in \texttt{core/} and \texttt{sdk/}) is Apache-2.0.
+Upstream Valkey is not vendored. We download it at a fixed tag and patch it with
+three diffs (\textasciitilde180 lines total) before compilation. Publishing only
+the diffs preserves Valkey's BSD-3-Clause licence; Dazzle's original code (in
+\texttt{core/} and \texttt{sdk/}) is Apache-2.0.
 
 \section{The Dazzle System}\label{the-dazzle-system}
 
@@ -267,35 +266,35 @@ communicates via:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{In-process pipe} --- the app thread \texttt{write()}s an 8-byte
-  pointer to a \texttt{DirectRequest}, well below \texttt{PIPE\_BUF} (≥ 512
-  bytes by POSIX, 4 096 on Linux), so the kernel guarantees atomic delivery
-  without a write-side lock. The event loop wakes up on \texttt{read()},
-  executes \texttt{call()} with a fake client, and signals the \texttt{condvar}
-  with the RESP reply.
+  \textbf{In-process pipe.} The app thread \texttt{write()}s an 8-byte pointer
+  to a \texttt{DirectRequest}, well below \texttt{PIPE\_BUF} (≥ 512 bytes by
+  POSIX, 4 096 on Linux), so the kernel guarantees atomic delivery without a
+  write-side lock. The event loop wakes on \texttt{read()}, executes
+  \texttt{call()} with a fake client, and signals the \texttt{condvar} with the
+  RESP reply.
 \item
-  \textbf{Write-through snapshot cache} --- every mutating command crossing the
+  \textbf{Write-through snapshot cache.} Every mutating command crossing the
   pipe updates an in-process cache under rwlock before the caller is released.
-  Subsequent reads acquire the rdlock and return values directly --- no
+  Subsequent reads acquire the rdlock and return values directly, with no
   event-loop wake-up. The pipe is synchronous, so by the time a read fires the
   cache reflects every prior write: \textbf{zero staleness by construction}.
 \item
-  \textbf{Worker pool (Android)} --- 2--4 additional threads absorb concurrent
-  reads under per-slot striped rwlocks, when the environment flag
+  \textbf{Worker pool (Android).} 2--4 additional threads absorb concurrent
+  reads under per-slot striped rwlocks when the environment flag
   \texttt{DAZZLE\_PARALLEL\_READS=1} is active.
 \end{itemize}
 
 \subsection{Post-EVAL Auto-Mirror}\label{post-eval-auto-mirror}
 
 Lua scripts (\texttt{EVALSHA}) execute their internal writes through Valkey's
-\texttt{call()}, which does not fire the snapshot-mirror hook. So that backends
-writing fields inside a Lua script and reading them later don't pay the
-pipe-HMGET cost on every read, Dazzle automatically hydrates the cache
-post-EVAL: after \texttt{call()}, it iterates the script's declared KEYS,
+\texttt{call()}, which does not fire the snapshot-mirror hook. Without further
+work, backends that write fields inside a Lua script and read them back later
+would pay the pipe-HMGET cost on every read. Dazzle hydrates the cache
+automatically after each \texttt{EVAL}: it iterates the script's declared KEYS,
 re-reads each hash through the kvstore API, and upserts its fields into the
 corresponding bucket. A backend that writes 8 fields inside a Lua EVALSHA sees
-them reflected in the snapshot at the next read with no manual gymnastics from
-the SDK.
+them reflected in the snapshot on the next read, without any extra work in the
+SDK.
 
 \section{Experiment Design}\label{experiment-design}
 
@@ -399,13 +398,13 @@ primitive surface, and ergonomics.
 \subsection{Latency Envelope
 Characterization}\label{latency-envelope-characterization}
 
-The purpose of this section is to establish the latency envelope in which an
-on-device agent backend has to operate, not to declare a winner on
-microbenchmark numbers. We measure each backend in two regimes: a storage-only
-sweep at N = 200 readings on both physical devices (Table 3), and a
-concurrent-load reference at N = 20 000 (1 writer + 1 reader, Moto G35 5G)
-carried over as a steady-state stress test. The two together cover the realistic
-operating envelope of a long-running on-device agent.
+This section establishes the latency envelope in which an on-device agent
+backend has to operate. It is not a microbenchmark winner- declaration. We
+measure each backend in two regimes: a storage-only sweep at N = 200 readings on
+both physical devices (Table 3), and a concurrent-load reference at N = 20 000
+(1 writer + 1 reader, Moto G35 5G) carried over as a steady-state stress test.
+The two together cover the realistic operating envelope of a long-running
+on-device agent.
 
 \textbf{Methodological note for Tables 3--6.} SQLite-family rows
 (\texttt{sqlite}, \texttt{sqlite-optimized}, \texttt{sqlite-precompute}) come
@@ -981,13 +980,13 @@ was verified as an independent contribution; the final stack has lived in
 \subsection{Vector Search Primitive: Envelope and Operating
 Points}\label{vector-search-primitive-envelope-and-operating-points}
 
-The headline result of this section is an envelope claim, not a speed
-competition claim: \textbf{Dazzle's HNSW vector search delivers sub-millisecond
-retrieval at recall \(\geq\) 0.95 across the standard mobile RAG operating range
-(dim \(\leq\) 384, N \(\leq\) 10 000)}. That places Dazzle in the same
-algorithmic class --- HNSW \citep{hnsw}, with expected \(O(\log N)\) search
-complexity --- as ObjectBox 4.x, a commercial mobile-first peer with native HNSW
-support.
+The result that matters in this section is an envelope claim, not a
+speed-competition claim: \textbf{Dazzle's HNSW vector search delivers
+sub-millisecond retrieval at recall \(\geq 0.95\) across the standard mobile RAG
+operating range (\(\dim \leq 384\), \(N \leq 10\,000\))}. That places Dazzle in
+the same algorithmic class as ObjectBox 4.x, the commercial mobile-first peer
+with native HNSW support --- both are HNSW \citep{hnsw} with expected
+\(O(\log N)\) search.
 
 SQLiteAI sqlite-vector v0.9.95, the production-shipping commercial SQLite
 extension as of Q1 2026, exposes a SIMD-accelerated quantized linear scan
@@ -1621,7 +1620,7 @@ Applications that prioritise factual grounding accept the extra prefill time;
 applications that prioritise short-turn interaction can step down to a smaller
 model and rely on retrieval to recover the factual grounding (e.g. 0.5B + RAG at
 17.6 s p50 still beats 1.5B no-RAG at 2.98 s p50 on every accuracy metric in
-Table 15). The key point is that the \textbf{RAG pattern is available on-device
+Table 15). What matters is that the \textbf{RAG pattern is available on-device
 with no cloud dependency}; the storage backend's contribution to that turn
 budget is the \textasciitilde22 ms + 0.6 ms embed-and-search cost --- under 0.05
 \% of the fastest RAG row's total turn.
@@ -1679,12 +1678,11 @@ because retrieval recall dominates this metric while retrieval latency (614--692
 \subsection{Materialized Aggregates as a Primitive, Not an
 Optimization}\label{materialized-aggregates-as-a-primitive-not-an-optimization}
 
-The key mechanism behind low-latency retrieval in this paper is the
-materialized-aggregates pattern, not a specific brand of database engine.
-Whether implemented as a Lua-maintained hash in Dazzle, a trigger-maintained
-table in SQLite, or an explicit update step in an in-memory structure, the
-pattern shifts aggregation work to write time and makes read-time retrieval
-bounded.
+Low-latency retrieval in this paper rides on the materialized- aggregates
+pattern, not on any specific brand of database engine. Whether implemented as a
+Lua-maintained hash in Dazzle, a trigger- maintained table in SQLite, or an
+explicit update step in an in-memory structure, the pattern shifts aggregation
+work to write time and makes read-time retrieval bounded.
 
 Dazzle's contribution is not inventing this pattern. The contribution is
 shipping it as a first-class primitive surface (\texttt{EVALSHA}-maintained hash
@@ -2136,28 +2134,29 @@ threshold for typical mobile RAG corpora.
 \section{Related Work}\label{related-work}
 
 \textbf{On-device inference.} LiteRT-LM, llama.cpp, MLC-LLM, and ExecuTorch
-\citep{litertlm, llamacpp, mlcllm, executorch} address model compression and
-runtime efficiency. None addresses the stateful execution layer --- they treat
-each inference call as an independent event.
+\citep{litertlm, llamacpp, mlcllm, executorch} target model compression and
+runtime efficiency. None of them addresses the stateful execution layer; each
+inference call is treated as an independent event.
 
 \textbf{Memory for agents.} MemGPT \citep{memgpt} proposes a two-level memory
 hierarchy (in-context + external) targeting server deployment. Generative Agents
 \citep{generativeagents} uses a retrieval-augmented memory stream for NPC
 simulation. A-MEM \citep{amem} introduces agent-managed memory with dynamic
-linking. All assume cloud or server environments with a separate database
-process, network, and substantial RAM. Dazzle moves the external memory layer
+linking. All three assume cloud or server environments with a separate database
+process, network, and substantial RAM. Dazzle moves that external memory layer
 \textbf{inside the mobile app process}.
 
-\textbf{Redis on constrained hardware.} Redis on Raspberry Pi achieves
-sub-millisecond latency, but runs as a separate daemon over TCP. Valkey on
-Android specifically has not been published to our knowledge.
+\textbf{Redis on constrained hardware.} Redis on Raspberry Pi reaches
+sub-millisecond latency but runs as a separate daemon over TCP. We are not aware
+of a published Valkey-on-Android port.
 
-\textbf{Embedded engines.} SQLite, LMDB, RocksDB are designed from the ground up
-as in-process libraries. Dazzle takes the opposite path: starting from a server
-engine designed around TCP loopback + single-threaded event loop and rewriting
-its I/O substrate --- not its data structures --- to make in-process execution
-the default. It sits between both camps: used as an embedded library, but
-preserving the data model of a full server-grade database.
+\textbf{Embedded engines.} SQLite, LMDB, and RocksDB are designed from the
+ground up as in-process libraries. Dazzle takes the opposite path: it starts
+from a server engine designed around TCP loopback and a single-threaded event
+loop, and rewrites its I/O substrate (not its data structures) to make
+in-process execution the default. The result sits between both camps. The
+library is consumed exactly like an embedded engine, while the data model is the
+one a full server-grade database exposes.
 
 \textbf{Mobile vector databases --- three distinct products.} The mobile
 SQLite-vector ecosystem includes three commonly-confused products that we
@@ -2223,26 +2222,26 @@ already include.
 
 \section{Conclusion}\label{conclusion}
 
-Dazzle argues for a different backend-selection lens for on-device agents:
-primitive surface, developer ergonomics, and latency envelope matter more than
-isolated microsecond races. In the measured workload, all evaluated backends
-operate inside an acceptable retrieval envelope; the operational differentiators
-are which agent-state primitives are available natively and what engineering
-effort is required to use them.
+Dazzle proposes a different backend-selection lens for on-device agents.
+Primitive surface, developer ergonomics, and latency envelope matter more than
+isolated microsecond races. In the measured workload every evaluated backend
+operates inside an acceptable retrieval envelope; the operational
+differentiators are which agent-state primitives are available natively and how
+much engineering effort they cost to use.
 
-Three empirical results support that framing. First, retrieval latency in
-Dazzle's steady-state path is roughly 0.00176 \% of a single on-device LLM
-inference turn (50 µs / \textasciitilde2.84 s for Gemma 4 E2B on the Moto G35
-5G), placing backend retrieval cost within the noise floor of the end-to-end
-loop. Second, primitive surface and development effort differ materially: Dazzle
-exposes ten native primitives versus \(\leq\) 4 in the measured embedded
-alternatives, with representative agent-state implementations around 175 LOC
-(Android) / 186 LOC (iOS) in Dazzle versus roughly 200--290 LOC across the
-alternatives (Table 9, both platforms). Third, at the application level, a 2×2
-RAG ablation lifts \texttt{EM\_contains} 6.0× on Qwen 2.5 0.5B (0.105 → 0.630)
-and 6.7× on Qwen 2.5 1.5B (0.110 → 0.735); a 380\textasciitilde MB model with
-retrieval beats a 3× larger model without retrieval on every factual metric,
-end-to-end on a \$150-class Android device.
+Three empirical results back that framing. Retrieval latency in Dazzle's
+steady-state path is roughly 0.00176 \% of a single on-device LLM inference turn
+(50 µs against \$\sim\$2.84 s for Gemma 4 E2B on the Moto G35 5G), which places
+backend retrieval cost within the noise floor of the end-to-end loop. Primitive
+surface and development effort differ materially: Dazzle exposes ten native
+primitives against \(\leq 4\) in the measured embedded alternatives, with
+representative agent-state implementations landing around 175 LOC (Android) /
+186 LOC (iOS) in Dazzle against roughly 200--290 LOC across the alternatives
+(Table 9, both platforms). At the application level, a 2×2 RAG ablation lifts
+\texttt{EM\_contains} 6.0× on Qwen 2.5 0.5B (0.105 → 0.630) and 6.7× on Qwen 2.5
+1.5B (0.110 → 0.735); a 380 MB model with retrieval beats a 3× larger model
+without retrieval on every factual metric, end-to-end on a \$150-class Android
+device.
 
 The practical question for the next on-device deployment therefore shifts from
 ``which backend is fastest?'' to ``which primitive set and which model
@@ -2250,10 +2249,10 @@ composition best fit the application, given that retrieval cost is effectively
 invisible at turn level.''
 
 Dazzle is publicly distributed as \texttt{dazzle-sdk} 1.0.0-beta.4 across Maven
-Central, pub.dev, npm, and Swift Package Manager. Dazzle-origin code is
-Apache-2.0; derivative Valkey portions retain BSD-3-Clause. We invite the
-community to validate these results on additional mobile hardware and extend the
-benchmark matrix across broader workloads.
+Central, pub.dev, npm, and Swift Package Manager. Dazzle's original code is
+released under Apache-2.0; derivative Valkey portions retain BSD-3-Clause. We
+invite the community to validate these results on additional mobile hardware and
+to extend the benchmark matrix across broader workloads.
 
 \subsection{Artifact and Reproducibility}\label{artifact-and-reproducibility}
 
