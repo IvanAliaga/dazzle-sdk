@@ -8,59 +8,49 @@ fontsize: 11pt
 geometry: margin=0.75in
 linkcolor: blue
 abstract: |
-  LLM agents on mobile devices need a persistent state layer between
-  inference calls — sensor windows, materialized aggregates,
-  approximate counts, vector indices over recent context. Existing
-  embedded databases for the platform (SQLite, RocksDB, LMDB,
-  ObjectBox) expose flat key-value or relational primitives, forcing
-  developers to reimplement higher-order data structures on top, in
-  application code, per app.
+  Mobile applications that embed a language-model agent now need a
+  persistent state layer between inference calls — sensor windows,
+  materialised aggregates, approximate counts, vector indices over
+  recent context. The embedded databases available on the platform
+  (SQLite, RocksDB, LMDB, ObjectBox) ship two to four data-structure
+  primitives each, so every higher-order construct (bounded streams,
+  per-field TTL, HyperLogLog, HNSW vector search) is reimplemented in
+  application code, on top of those primitives, by every team that
+  needs them.
 
   We present **Dazzle**, a fork of Valkey (the Linux Foundation's
   Redis-compatible store) whose server runs *inside* the process of
   Android and iOS applications rather than as a daemon over TCP
-  loopback. Dazzle exposes ten native primitives — strings, hashes,
-  lists, sets, sorted sets, streams, HyperLogLog, bitmaps, per-field
-  expiration, and HNSW vector search — against $\leq$ 4 in any
-  embedded competitor on the same platforms.
+  loopback. The fork ships ten native data-structure primitives,
+  including HNSW vector search, against $\leq 4$ in any embedded
+  competitor we measure on the same platforms; it exposes them
+  through a typed mobile SDK on Maven Central, pub.dev, npm and
+  Swift Package Manager.
 
-  We characterize the latency envelope across twelve backends on two
-  physical devices (Moto G35 5G, iPhone 12 Pro). On the Write-Heavy /
-  Read-Light path retrieval lands at 50 µs steady-state on Moto G35 5G
-  and 7.24 µs on iPhone 12 Pro. The HNSW vector primitive stays in the
-  sub-millisecond search envelope at recall $\geq 0.95$ across the
-  9-configuration grid of §5.8 (per-cell numbers in Tables 11–14).
-  At a 50 µs retrieval against a $\sim 2.84$ s Gemma 4 E2B [@gemma4]
-  inference turn ($\sim$30 prompt + $\sim$60 decoded tokens,
-  q4\_k\_m, on-device on the same Moto G35 5G) the retrieval cost is
-  **0.00176 %** of the LLM cost: below the noise floor of the inference
-  loop. **For an on-device agent backend the deciding axis is therefore
-  primitive surface and developer ergonomics, not microbenchmark
-  deltas.** We still report the per-engine microsecond numbers because
-  the same engines also serve non-LLM workloads (analytics, sync,
-  indexing) where the microsecond column *is* the selection
-  criterion (§5.2).
+  We characterise the latency envelope across twelve backends on two
+  physical devices (Moto G35 5G, iPhone 12 Pro). Steady-state retrieval
+  on the materialised-aggregates path lands at 50 µs on Moto G35 5G
+  and 7.24 µs on iPhone 12 Pro; HNSW vector search stays
+  sub-millisecond at recall $\geq 0.95$ across the 9-configuration
+  grid we measure. At 50 µs against a $\sim 2.84$ s on-device LLM
+  inference turn the retrieval cost is **0.00176 %** of the
+  inference call — below the noise floor of the end-to-end loop. The
+  deciding axis for an on-device agent backend is therefore
+  **primitive surface and developer ergonomics**, not microbenchmark
+  deltas. We report the absolute per-engine microsecond numbers
+  anyway, because the same engines also serve non-LLM workloads
+  (analytics, sync, indexing) where microseconds matter.
 
-  A 2×2 ablation on 200 NQ queries (Moto G35 5G, §5.9) confirms
-  that the retrieval primitive is what drives factual accuracy at
-  this scale: Qwen 2.5 0.5B + Dazzle RAG reaches `EM_contains`
-  0.630 vs 0.105 without RAG (6.0×); Qwen 2.5 1.5B + Dazzle RAG
-  reaches 0.735 vs 0.110 without RAG (6.7×). A 380 MB model with
-  retrieval beats a 3× larger 940 MB model without retrieval on
-  every factual metric, and a 1.5B model with retrieval is the
-  global maximum on factual accuracy (at 49 s p50 per turn,
-  ~17× the non-RAG baseline; §5.9.3 characterises the
-  latency-vs-accuracy frontier). The result speaks to primitive
-  surface: whether the backend lets the agent loop reach a vector
-  index at all.
-
-  Dazzle ships as `dazzle-sdk` 1.0.0-beta.4 across four standard
-  registries (Maven Central, pub.dev, npm, Swift Package Manager);
-  five LLM adapters (`LlamaCppClient`, `LiteRtLmClient`,
-  `FoundationModelsClient`, `OpenAICompatibleClient`,
-  `AnthropicClient`) implement a common `LLMClient` interface
-  (Appendix A). Dazzle's original code is released under Apache-2.0;
-  derivative Valkey portions retain BSD-3-Clause.
+  An end-to-end 2×2 ablation on 200 Natural Questions queries on the
+  Moto G35 5G shows that the retrieval primitive is what drives
+  factual accuracy at this scale. Qwen 2.5 0.5B with Dazzle RAG
+  reaches 0.630 `EM_contains` against 0.105 without retrieval (6.0×);
+  Qwen 2.5 1.5B with RAG reaches 0.735 against 0.110 without (6.7×).
+  A 380 MB model with retrieval beats a 940 MB model (3× larger)
+  without retrieval on every factual metric, end-to-end on a
+  \$150-class Android phone. The bottleneck is not the model size,
+  the SoC, or the microsecond cost of retrieval; it is whether the
+  backend lets the agent loop reach a vector index at all.
 ---
 
 # 1. Introduction
