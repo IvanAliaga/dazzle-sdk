@@ -1884,7 +1884,8 @@ in §5.2. (2) Alex Garcia's open-source **sqlite-vec**
   adding brute-force vector search; this revision benchmarks it in
   the SQLite-family sweep (§5.8.4). (3) **SQLiteAI sqlite-vector** [@sqliteaivector]
 (`github.com/sqliteai/sqlite-vector`, Elastic License 2.0) is the
-commercial product from SQLiteAI Inc., which ships a
+commercial product from SQLite Cloud, Inc. (the corporate entity
+behind the SQLite AI ecosystem), which ships a
 SIMD-accelerated quantized linear-scan query path
 (`vector_quantize_scan`) and deliberately avoids HNSW. SQLiteAI
 sqlite-vector and the open-source sqlite-vec are both commercially
@@ -1911,7 +1912,7 @@ precedent against which any HNSW implementation (including
 Dazzle's, ObjectBox's, and `vector_quantize_scan`) is compared at
 the index-construction level. Dazzle's NEON kernels for fp32 dot
 product, fp32 L2-squared, fp16 dot product, and i8 cosine come
-from `simsimd` [@simsimd] (Vardanian, MIT licence) and use that
+from `simsimd` [@simsimd] (Vardanian, Apache 2.0 license) and use that
 library's runtime dispatcher (`simsimd_capabilities()` over
 `/proc/cpuinfo`) to select the best available variant on each
 chip, which is the mechanism §6.3 exercises. The contribution of this paper is not a new ANN algorithm;

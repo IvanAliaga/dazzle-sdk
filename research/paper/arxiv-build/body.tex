@@ -2168,15 +2168,16 @@ open-source \textbf{sqlite-vec} (\texttt{github.com/asg017/sqlite-vec}, Apache
 benchmarks it in the SQLite-family sweep (§5.8.4). (3) \textbf{SQLiteAI
 sqlite-vector} \citep{sqliteaivector}
 (\texttt{github.com/sqliteai/sqlite-vector}, Elastic License 2.0) is the
-commercial product from SQLiteAI Inc., which ships a SIMD-accelerated quantized
-linear-scan query path (\texttt{vector\_quantize\_scan}) and deliberately avoids
-HNSW. SQLiteAI sqlite-vector and the open-source sqlite-vec are both
-commercially or publicly available as of 2026, and we benchmark SQLiteAI
-directly in §5.8 because its production positioning makes it the most relevant
-SQLite-ecosystem reference for an embedded-LLM-agent comparison; we make no
-claim about it being the ``standard'' of the SQLite vector ecosystem.
-\textbf{ObjectBox 4.x} \citep{objectbox4} is the other commercial peer in our
-benchmark and ships native HNSW backed by float32 vectors.
+commercial product from SQLite Cloud, Inc.~(the corporate entity behind the
+SQLite AI ecosystem), which ships a SIMD-accelerated quantized linear-scan query
+path (\texttt{vector\_quantize\_scan}) and deliberately avoids HNSW. SQLiteAI
+sqlite-vector and the open-source sqlite-vec are both commercially or publicly
+available as of 2026, and we benchmark SQLiteAI directly in §5.8 because its
+production positioning makes it the most relevant SQLite-ecosystem reference for
+an embedded-LLM-agent comparison; we make no claim about it being the
+``standard'' of the SQLite vector ecosystem. \textbf{ObjectBox 4.x}
+\citep{objectbox4} is the other commercial peer in our benchmark and ships
+native HNSW backed by float32 vectors.
 
 \textbf{Server-grade vector ANN libraries.} \textbf{FAISS} \citep{faiss}
 (Facebook AI), \textbf{DiskANN} \citep{diskann} (Microsoft Research), and
@@ -2191,8 +2192,8 @@ separate orchestrator --- but all three are the algorithmic precedent against
 which any HNSW implementation (including Dazzle's, ObjectBox's, and
 \texttt{vector\_quantize\_scan}) is compared at the index-construction level.
 Dazzle's NEON kernels for fp32 dot product, fp32 L2-squared, fp16 dot product,
-and i8 cosine come from \texttt{simsimd} \citep{simsimd} (Vardanian, MIT
-licence) and use that library's runtime dispatcher
+and i8 cosine come from \texttt{simsimd} \citep{simsimd} (Vardanian, Apache 2.0
+license) and use that library's runtime dispatcher
 (\texttt{simsimd\_capabilities()} over \texttt{/proc/cpuinfo}) to select the
 best available variant on each chip, which is the mechanism §6.3 exercises. The
 contribution of this paper is not a new ANN algorithm; it is putting an HNSW
