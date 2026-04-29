@@ -1,0 +1,41 @@
+#!/bin/sh
+# Layer 2: pre-push hook — rejects pushes with LLM attribution patterns
+
+REGEX='\b(co-authored-by|claude|anthropic|generated with)\b|noreply@anthropic\.com'
+
+while IFS=' ' read -r LOCAL_REF LOCAL_SHA REMOTE_REF REMOTE_SHA; do
+    # Skip deletions (LOCAL_SHA is zero-SHA)
+    if [ "$LOCAL_SHA" = "0000000000000000000000000000000000000000" ]; then
+        continue
+    fi
+
+    # Determine commit range
+    if [ "$REMOTE_SHA" = "0000000000000000000000000000000000000000" ]; then
+        # New branch: check if origin/main exists
+        if git rev-parse origin/main >/dev/null 2>&1; then
+            RANGE="origin/main..$LOCAL_SHA"
+        else
+            # Fallback: last 50 commits
+            RANGE="$LOCAL_SHA~50..$LOCAL_SHA"
+        fi
+    else
+        # Existing branch: compare to remote
+        RANGE="$REMOTE_SHA..$LOCAL_SHA"
+    fi
+
+    # Scan commits in range
+    OUTPUT=$(git log --format="%H %an <%ae>%n  %s%n  %b%n  committer: %cn <%ce>" "$RANGE" 2>/dev/null | grep -iE "$REGEX")
+
+    if [ -n "$OUTPUT" ]; then
+        echo "❌ PUSH RECHAZADO"
+        echo ""
+        echo "Los commits contienen patrones prohibidos (co-authored-by, claude, anthropic, generated with, noreply@anthropic.com):"
+        echo ""
+        echo "$OUTPUT" | sed 's/^/  > /'
+        echo ""
+        echo "Ver docs/COMMIT_POLICY.md para más detalles."
+        exit 1
+    fi
+done
+
+exit 0

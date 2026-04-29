@@ -1,55 +1,52 @@
-name: Check commit messages
+name: Validate — commit messages
 
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
-  check-commits:
-    name: No prohibited words in commits
+  check-commit-messages:
+    name: Check for LLM attribution patterns
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Scan commit messages
+      - name: Determine commit range
+        id: range
         run: |
-          set -u
-          ZERO="0000000000000000000000000000000000000000"
-
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
           else
             BEFORE="${{ github.event.before }}"
             AFTER="${{ github.event.after }}"
-            if [ -z "$BEFORE" ] || [ "$BEFORE" = "$ZERO" ]; then
-              # New-branch push or deleted branch: before is zero-SHA, so
-              # before..after is invalid. Fall back to the commits unique
-              # to this branch relative to main.
-              if git rev-parse --verify origin/main >/dev/null 2>&1; then
-                RANGE="origin/main..$AFTER"
-              else
-                # No main reference (first push ever) — bound the scan to
-                # the last 50 commits so we do not scan arbitrary history.
-                RANGE="$AFTER~50..$AFTER"
-              fi
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              RANGE="origin/main..$AFTER"
             else
               RANGE="$BEFORE..$AFTER"
             fi
           fi
+          echo "range=$RANGE" >> $GITHUB_OUTPUT
 
-          echo "Scanning range: $RANGE"
+      - name: Scan commits for LLM attribution
+        run: |
+          REGEX='\b(co-authored-by|claude|anthropic|generated with)\b|noreply@anthropic\.com'
+          RANGE="${{ steps.range.outputs.range }}"
 
-          # \b word boundaries avoid substring false positives like
-          # "claudette" or "unclaude" matching "claude".
-          OFFENDING=$(git log --format="%H %s%n%b" "$RANGE" 2>/dev/null \
-            | grep -iE '\b(co-authored-by|claude)\b' || true)
+          # Extended format: subject, body, trailers, author, committer
+          OUTPUT=$(git log --format="%H%n  Subject: %s%n  Body: %b%n  Trailers: %(trailers:only)%n  Author: %an <%ae>%n  Committer: %cn <%ce>" "$RANGE" 2>/dev/null | grep -iE "$REGEX" || true)
 
-          if [ -n "$OFFENDING" ]; then
-            echo "Commits con palabras prohibidas (co-authored-by / claude):"
-            echo "$OFFENDING"
+          if [ -n "$OUTPUT" ]; then
+            echo "::error::Commits contain LLM attribution patterns (co-authored-by, claude, anthropic, generated with, noreply@anthropic.com)"
+            echo ""
+            echo "Offending lines:"
+            echo "$OUTPUT" | sed 's/^/  /'
+            echo ""
+            echo "See: docs/COMMIT_POLICY.md"
             exit 1
           fi
 
-          echo "Todos los commits estan limpios."
+          echo "✅ All commits passed validation"

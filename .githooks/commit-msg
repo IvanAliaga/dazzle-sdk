@@ -1,0 +1,31 @@
+#!/bin/sh
+# Layer 1: commit-msg hook — rejects commits with LLM attribution patterns
+
+COMMIT_MSG_FILE="$1"
+REGEX='\b(co-authored-by|claude|anthropic|generated with)\b|noreply@anthropic\.com'
+
+# Check commit message body
+if grep -iE "$REGEX" "$COMMIT_MSG_FILE" > /dev/null; then
+    echo "❌ COMMIT RECHAZADO"
+    echo ""
+    echo "El mensaje contiene patrones prohibidos (co-authored-by, claude, anthropic, generated with, noreply@anthropic.com):"
+    echo ""
+    grep -iE "$REGEX" "$COMMIT_MSG_FILE" | sed 's/^/  > /'
+    echo ""
+    echo "Ver docs/COMMIT_POLICY.md para más detalles."
+    exit 1
+fi
+
+# Check author identity
+AUTHOR_IDENT=$(git var GIT_AUTHOR_IDENT 2>/dev/null || echo "")
+if [ -n "$AUTHOR_IDENT" ] && echo "$AUTHOR_IDENT" | grep -iE "$REGEX" > /dev/null; then
+    echo "❌ COMMIT RECHAZADO"
+    echo ""
+    echo "La identidad del autor contiene patrones prohibidos:"
+    echo "  > $AUTHOR_IDENT"
+    echo ""
+    echo "Ver docs/COMMIT_POLICY.md para más detalles."
+    exit 1
+fi
+
+exit 0
