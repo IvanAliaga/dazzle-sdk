@@ -209,7 +209,7 @@ debe:
   desalojo automático).
 - Trackear running aggregates (min/max/avg sin re-scan O(N)).
 - Contar aproximadamente eventos distintos (HyperLogLog en 12 KB
-  con $\sim$0.8 % error relativo [@hyperloglog] vs O(N) exacto).
+  con $\sim 0.8$ % error relativo [@hyperloglog] vs O(N) exacto).
 - Aplicar TTL por campo a observaciones obsoletas (expiración
   automática sin un cron en la app).
 - Señalizar entre componentes (Pub/Sub sin polling).
