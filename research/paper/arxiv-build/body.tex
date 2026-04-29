@@ -2334,13 +2334,14 @@ commits to the following versioning policy on arXiv:
   changelog of the most recent material change} so a citation to a specific
   revision points to a specific set of numbers.
 \item
-  \textbf{All raw JSON measurements} for every cell in every revision live in
-  \href{https://github.com/IvanAliaga/dazzle/tree/main/research/benchmarks/results}{\texttt{research/benchmarks/results/}}
-  under timestamped paths, never overwritten across revisions. Bootstrap-CI
-  re-derivations (\texttt{research/scripts/\ bootstrap\_*\_lats.py}) are
-  deterministic (\texttt{B\ =\ 10\ 000}, \texttt{seed\ =\ 42}); a reader at any
-  point in time can re-derive every CI in the table from the timestamped JSONs
-  alone.
+  \textbf{All raw JSON measurements} for every cell in every revision live under
+  \texttt{research/benchmarks/results/} at timestamped paths, never overwritten
+  across revisions --- public URL of the canonical tree:
+  \url{https://github.com/IvanAliaga/dazzle-sdk/tree/release/1.0.0-beta.5-paper-arxiv-v1/research/benchmarks/results}.
+  Bootstrap-CI re-derivations (\texttt{research/scripts/bootstrap\_*\_lats.py})
+  are deterministic (\texttt{B\ =\ 10\ 000}, \texttt{seed\ =\ 42}); a reader at
+  any point in time can re-derive every CI in the table from the timestamped
+  JSONs alone.
 \item
   \textbf{The repository main branch is the source of truth.} When a discrepancy
   arises between an arXiv revision and \texttt{main}, \texttt{main} wins; the

@@ -2045,14 +2045,16 @@ versioning policy on arXiv:
    one-line changelog of the most recent material change** so a
    citation to a specific revision points to a specific set of
    numbers.
-5. **All raw JSON measurements** for every cell in every revision
-   live in
-   [`research/benchmarks/results/`](https://github.com/IvanAliaga/dazzle/tree/main/research/benchmarks/results)
-   under timestamped paths, never overwritten across revisions.
-   Bootstrap-CI re-derivations (`research/scripts/
-   bootstrap_*_lats.py`) are deterministic (`B = 10 000`,
-   `seed = 42`); a reader at any point in time can re-derive
-   every CI in the table from the timestamped JSONs alone.
+5. **All raw JSON measurements** for every cell in every
+   revision live under `research/benchmarks/results/` at
+   timestamped paths, never overwritten across revisions —
+   public URL of the canonical tree:
+   <https://github.com/IvanAliaga/dazzle-sdk/tree/release/1.0.0-beta.5-paper-arxiv-v1/research/benchmarks/results>.
+   Bootstrap-CI re-derivations
+   (`research/scripts/bootstrap_*_lats.py`) are deterministic
+   (`B = 10 000`, `seed = 42`); a reader at any point in time
+   can re-derive every CI in the table from the timestamped
+   JSONs alone.
 6. **The repository main branch is the source of truth.** When a
    discrepancy arises between an arXiv revision and `main`, `main`
    wins; the discrepancy triggers a revision per (1) above. The

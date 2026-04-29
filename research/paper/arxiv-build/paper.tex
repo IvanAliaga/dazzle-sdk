@@ -25,6 +25,22 @@
 \usepackage{microtype}
 \usepackage{caption}
 
+% --- url-aware line breaking ---
+\usepackage{url}
+\PassOptionsToPackage{hyphens}{url}
+\Urlmuskip=0mu plus 1mu      % allow stretch around URL break-points
+\sloppy                       % prefer loose lines over overflow
+\setlength{\emergencystretch}{3em}
+
+% --- inline-code (pandoc \passthrough) breakability ---
+% Long file paths and identifiers that pandoc renders as
+% \texttt{...} are otherwise unbreakable, which produced 200+pt
+% overfull \hbox warnings. \seqsplit inserts a discretionary
+% break opportunity between every character; LaTeX only breaks
+% there when no better option exists, so short inline-code spans
+% stay intact in the normal flow.
+\usepackage{seqsplit}
+
 % --- code listings ---
 \usepackage{listings}
 \lstset{
@@ -43,7 +59,28 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \providecommand{\pandocbounded}[1]{#1}
 \providecommand{\real}[1]{#1}
-\providecommand{\passthrough}[1]{\texttt{#1}}
+% pandoc emits \texttt{...} (and sometimes \passthrough{...}) around
+% inline-code spans. Override BOTH so long file paths and identifiers
+% break across lines instead of producing 200+pt overfull \hbox
+% warnings. \seqsplit only inserts break opportunities; LaTeX only
+% breaks there when no better option exists, so short inline-code
+% spans stay intact in the normal flow.
+\newcommand{\passthrough}[1]{\texttt{\seqsplit{#1}}}
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\seqsplit{#1}}}
+
+% Long tables (Tables 11/12 with 7-column engine grids carry rows
+% like "707 302 µs" + "not reported by runner" + "39.06 MB †" that
+% otherwise overflow column widths). Render every longtable in
+% \footnotesize so the wide rows fit; the surrounding prose stays
+% in 11pt body size.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{%
+  \scriptsize%                   % was \footnotesize — clears the
+                                  % last 1pt overflow in Table 12
+  \setlength{\tabcolsep}{3pt}% tighter cell padding (default 6pt)
+  \renewcommand{\arraystretch}{0.95}% tighter row spacing
+}
 % pandoc emits \def\LTcaptype{none} around longtables to suppress
 % caption numbering; longtable then tries \addtocounter{\LTcaptype}.
 % Define the dummy counter so tectonic does not bail.
