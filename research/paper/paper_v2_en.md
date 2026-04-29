@@ -212,20 +212,20 @@ explicitly in §6.3.
 | Per-field TTL                   |   N    |   A    |    A    |     A     |  A   |
 | HyperLogLog                     |   N    |   A    |    A    |     A     |  A   |
 | Geo indexing                    |   N    |   E³   |    A    |     A     |  A   |
-| Pub/Sub                         |   N    |   A    |    A    |     N⁴    |  A   |
+| Pub/Sub                         |   N    |   A    |    A    |     N$^{4}$    |  A   |
 | Server-side scripting (Lua)     |   N    |   A    |    A    |     A     |  A   |
-| Vector search (HNSW)            |   N    |   T⁵   |    A    |     N     |  A   |
+| Vector search (HNSW)            |   N    |   T$^{5}$   |    A    |     N     |  A   |
 | Cursor-based iteration          |   N    |   N    |    N    |     N     |  N   |
 | **Total Native (N)**            | **10** | **1**  | **1**   |  **4**    | **1**|
 
 ¹ Implementable via `ORDER BY … WHERE … BETWEEN` in app SQL.
 ² Implementable via `UPDATE … SET v = v + ?` inside a transaction.
 ³ R*Tree is an official SQLite extension shipped inside the
-amalgamation since 2008. ⁴ ObjectBox `DataSubscription` is a typed
+amalgamation since 2008. $^{4}$ ObjectBox `DataSubscription` is a typed
 1-call API for change-notification consumers; we count it as a
 native pub/sub equivalent for the agent-loop use case (single
 consumer subscribed to a typed stream of changes), even though it
-is observer-pattern rather than topic-routed. ⁵ SQLite has no
+is observer-pattern rather than topic-routed. $^{5}$ SQLite has no
 native or official vector primitive; vector search is provided only
 by third-party extensions (commercial `sqliteai/sqlite-vector`,
 open-source `asg017/sqlite-vec`), which we benchmark separately in
@@ -1610,7 +1610,7 @@ model's context window simply because more data has accumulated.
 Tables 11 and 12 are reported on a single physical device (Moto
 G35 5G, Unisoc T760, ARMv8.2-A). To rule out
 single-device artefacts, we re-ran the same harness (same query
-set, same N ∈ {200, 1k, 5k, 20k}, same `k = 10`, dim = 384) on
+set, same N $\in$ {200, 1k, 5k, 20k}, same `k = 10`, dim = 384) on
 three additional Android SoC families and re-bootstrapped the
 headline N = 20 000 cell with paired-query resampling
 (`B = 10 000`, seed = 42). The full per-engine tables are in
@@ -1619,10 +1619,10 @@ ratios are reproduced here:
 
 | Device                                  | SoC (ISA)                            | Dazzle SQ8 p50 µs    | vs ObjectBox p50            | vs SQLiteAI precompute p50  |
 |-----------------------------------------|--------------------------------------|----------------------|-----------------------------|-----------------------------|
-| Moto G35 5G *(reference, Table 11)*     | Unisoc T760 (ARMv8.2-A + fp16/dot)   | 306 [296, 314]       | 0.34× [0.32×, 0.36×] ★      | 0.10× [0.10×, 0.10×] ★      |
-| Moto G30                                | Snapdragon 662 (ARMv8.0-A)           | 568 [530, 608]       | 0.33× [0.31×, 0.35×] ★      | 0.11× [0.10×, 0.11×] ★      |
-| Huawei Y9a (FRL-L23)                    | MediaTek Helio G80 (ARMv8.2-A)       | 744 [718, 778]       | 0.22× [0.21×, 0.23×] ★      | 0.15× [0.15×, 0.16×] ★      |
-| Huawei P20 Lite (ANE-LX3)               | Kirin 659 (ARMv8.0-A, Linux 4.9)     | 974 [949, 991]       | 0.30× [0.28×, 0.30×] ★      | 0.13× [0.13×, 0.14×] ★      |
+| Moto G35 5G *(reference, Table 11)*     | Unisoc T760 (ARMv8.2-A + fp16/dot)   | 306 [296, 314]       | 0.34× [0.32×, 0.36×] $\bigstar$      | 0.10× [0.10×, 0.10×] $\bigstar$      |
+| Moto G30                                | Snapdragon 662 (ARMv8.0-A)           | 568 [530, 608]       | 0.33× [0.31×, 0.35×] $\bigstar$      | 0.11× [0.10×, 0.11×] $\bigstar$      |
+| Huawei Y9a (FRL-L23)                    | MediaTek Helio G80 (ARMv8.2-A)       | 744 [718, 778]       | 0.22× [0.21×, 0.23×] $\bigstar$      | 0.15× [0.15×, 0.16×] $\bigstar$      |
+| Huawei P20 Lite (ANE-LX3)               | Kirin 659 (ARMv8.0-A, Linux 4.9)     | 974 [949, 991]       | 0.30× [0.28×, 0.30×] $\bigstar$      | 0.13× [0.13×, 0.14×] $\bigstar$      |
 
 All four ratios are statistically significant (95 % CI excludes
 1.0); a Dazzle SQ8 search is 3.0×–4.5× faster than ObjectBox 4.x
@@ -1788,8 +1788,8 @@ every chip we ran. Two findings to flag:
    to write the JSON. The cell is otherwise produced by the
    same harness as the reference run.
 
-The qualitative ordering (Dazzle SQ8 < ObjectBox 4.x ≪ SQLiteAI
-precompute ≪ `sqlite-vec` ≪ raw SQLite) holds across all four
+The qualitative ordering (Dazzle SQ8 < ObjectBox 4.x $\ll$ SQLiteAI
+precompute $\ll$ `sqlite-vec` $\ll$ raw SQLite) holds across all four
 chips and across both ISA generations. The 95 % CIs in the table
 above and in `research/paper/vecbench_cross_platform_ci.md`
 exclude 1.0 in every chip × engine cell that the paper relies on.
