@@ -385,17 +385,17 @@ verifiable global statistics).
 | Stateless                    | -- (confabulates ~50)  | -- (confabulates 2–3)| -- (confabulates ~21 °C)| **0/3** |
 | Augmented (any backend)      | Y (200)               | Y (11)              | Y (22.4 °C)            | **3/3** |
 
-This is the central empirical finding of the paper. Without external
-memory the model has no access to data outside its current context
-window (the last 20 readings); the "global statistics" it produces
-are confabulations. With a materialized context block, it reads the
-exact values and reproduces them. The specific backend is
-irrelevant for this finding — what matters is that the memory
-exists and that the context is precise.
+This is the central empirical finding of the paper. Without
+external memory the model has no access to data outside its
+current context window (the last 20 readings), so the "global
+statistics" it produces are confabulations. With a materialized
+context block, the model reads the exact values and reproduces
+them. The specific backend is irrelevant for this finding. What
+matters is that the memory exists and that the context is precise.
 
 The implication for agent design is direct: **the external memory
-layer is mandatory infrastructure for any task that reasons about
-accumulated state**, not an optional optimization. Backend choice
+layer is mandatory infrastructure for any task that reasons over
+accumulated state**, not an optional optimisation. Backend choice
 then comes down to performance, primitive surface, and ergonomics.
 
 ## 5.2 Latency Envelope Characterization
@@ -493,36 +493,38 @@ read from this single JSON, so the cell-by-cell numbers and the
 recall narrative come from one device run, not from a mix of
 pre-fix and post-fix snapshots.
 
-Observation 1: Dazzle-Precompute sets the floor reachable when
-materialized aggregates are exposed as a native primitive. Retrieval
+**Observation 1.** Dazzle-Precompute sets the floor reachable when
+materialised aggregates are exposed as a native primitive. Retrieval
 averages 34.7 µs at N = 200 on Moto G35 5G and 47 µs at N = 20 000
-under concurrent load — flat in N because the materialized context
-block is rebuilt on the write path and read with a constant-time field
-copy. On iPhone 12 Pro retrieval lands at 129 µs. These numbers
-represent the lower bound a backend can reach when the agent's read
-pattern is compiled into the schema, not what any backend "could"
-achieve in principle.
+under concurrent load. The retrieval cost is flat in N because the
+materialised context block is rebuilt on the write path and read
+with a constant-time field copy. On iPhone 12 Pro retrieval lands
+at 129 µs. These numbers are the lower bound a backend can reach
+when the agent's read pattern is compiled into the schema, not what
+any backend "could" achieve in principle.
 
-Observation 2: honest concession, now reflected in the main table with
-all nine SQLite-family variants (default/optimized/precompute across
-storage SQLite, sqlite-vec, and SQLiteAI). For the storage path,
-Android retrieval moves from 1 061.3 us (`sqlite` default) to 899.4 us
-(`sqlite-optimized`) and to 75.0 us (`sqlite-precompute`). This closes
-most of the storage-latency gap and reinforces the paper's framing: the
-key differentiator is not an intrinsic SQLite algorithm limit, but how
-much materialization ceremony and maintenance code the application must
-own.
+**Observation 2.** An honest concession the table now makes
+explicit, across the nine SQLite-family variants
+(default/optimised/precompute across storage SQLite, sqlite-vec,
+and SQLiteAI): Android retrieval moves from 1 061.3 µs
+(`sqlite` default) to 899.4 µs (`sqlite-optimized`) and to 75.0 µs
+(`sqlite-precompute`). That closes most of the storage-latency
+gap and reinforces the framing of the paper. The differentiator
+is not an intrinsic SQLite algorithm limit, but how much
+materialisation ceremony and maintenance code the application
+must own.
 
-Observation 3: the observation that actually matters. Even the highest
-retrieval latency in the envelope (SQLite at 3 374 µs under concurrent
-load on Moto G35 5G) is roughly 0.0001 % of a single Gemma 4 E2B
-[@gemma4] inference turn (1-3 seconds). The user-perceived difference
-between 50 µs and 3 374 µs at the agent layer is zero: both are dwarfed
-by the inference call that sits immediately after the retrieval.
-Microsecond comparisons are therefore not the right axis on which to
-choose a backend. The dominant criteria are the primitive surface
-(Table 1, §2.2) and the development complexity required to deliver a
-working state layer (§5.6).
+**Observation 3 is the one that actually matters.** Even the
+highest retrieval latency in the envelope (SQLite at 3 374 µs
+under concurrent load on Moto G35 5G) is roughly 0.0001 % of a
+single Gemma 4 E2B [@gemma4] inference turn (1–3 seconds). The
+user-perceived difference between 50 µs and 3 374 µs at the
+agent layer is zero; both are dwarfed by the inference call that
+sits immediately after the retrieval. Microsecond comparisons
+are not the axis on which to choose a backend. The dominant
+criteria are the primitive surface (Table 1, §2.2) and the
+development complexity required to deliver a working state
+layer (§5.6).
 
 ### Why we still report exact microsecond numbers
 
@@ -761,10 +763,10 @@ Three quantified observations:
    becomes visible only when the keyspace grows to dozens of keys
    or when field names share long prefixes.
 
-The clean narrative: **the snapshot cache is the only layer that
-moves throughput on this workload; the parallel worker pool and
-the hash-index dispatch are no-ops here and only earn their cost
-on workloads with a larger or more contended keyspace**.
+In one line: **the snapshot cache is the only layer that moves
+throughput on this workload. The parallel worker pool and the
+hash-index dispatch are no-ops here and only earn their cost on
+workloads with a larger or more contended keyspace.**
 
 ## 5.5 Cross-Platform Validation: iPhone 12 Pro
 
@@ -808,14 +810,14 @@ Three observations on cross-platform behavior:
    the per-reading `XADD` + `HINCRBYFLOAT` + `HSET` sequence faster
    than the Unisoc T760 budget tier.
 
-The bottom line: the **architectural contribution generalizes**
-across hardware and OS (cost shifts from read to write; snapshot
-cache absorbs N; footprint stays at single-engine scale), while
-**absolute numbers vary by SoC and runtime stack**. Even on the
-slower iPhone retrieval path, P95 stays under 200 µs — three to
-four orders of magnitude under the on-device LLM forward pass
-($>10^{6}$ µs on either device), which remains the only term that
-matters at the agent loop level.
+The summary: the **architectural contribution generalises**
+across hardware and OS (cost shifts from read to write, the
+snapshot cache absorbs N, footprint stays at single-engine
+scale), while **absolute numbers vary by SoC and runtime stack**.
+Even on the slower iPhone retrieval path, P95 stays under 200 µs.
+That is three to four orders of magnitude under the on-device
+LLM forward pass ($>10^{6}$ µs on either device), which remains
+the only term that matters at the agent-loop level.
 
 ## 5.6 Development Complexity
 
@@ -849,8 +851,8 @@ without schema translation or cursor parsing.
 
 ## 5.7 Performance Evolution (summary)
 
-The current stack is the cumulative result of five in-process
-transport redesigns. The single largest contribution is the
+The current stack is the result of five in-process transport
+redesigns. The largest single contribution is the
 **post-EVAL auto-mirror (+189 % on incremental retrieval
 throughput** at K = 8, Moto G35 5G, 80/20 read-write mix), which
 hydrates the snapshot cache from Lua-internal writes without
@@ -882,19 +884,20 @@ ecosystem encounter today, but this comparison spans two algorithm
 classes (O(log N) vs O(N)); the resulting gap reflects that asymmetry,
 not engineering quality of either implementation.
 
-The harness contract for every recall floor / operating-point cell in
-this section is described, audited, and post-mortemed in Appendix B
-(`research/paper/appendix_b_harness_postmortem.md`). All cells in
-Tables 4, 11 and 12 below come from the post-fix run archived at
+Appendix B (`research/paper/appendix_b_harness_postmortem.md`)
+documents the harness contract for every recall floor and every
+operating-point cell in this section, including the post-mortem
+of the bug that affected v1. Every cell in Tables 4, 11 and 12
+below comes from the post-fix run archived at
 `research/benchmarks/results/Moto_G35_5G/vector/vecbench_moto_g35_5G_1777369156656.json`
 (commit `1e3d5f5`, SHA-256 cited in §5.2).
 
 ### 5.8.1 Setup — two harness presets
 
-The vector evaluation actually runs the same harness
+The vector evaluation runs the same harness
 (`VectorBenchmark.kt` on Android, `VectorBenchmark.swift` on iOS)
-against two different config grids, and the rest of §5.8 cites
-both depending on the question being answered:
+against two different config grids. The rest of §5.8 cites whichever
+grid answers the question at hand:
 
 | Preset                       | Configs | Used in            | What it answers |
 |------------------------------|--------:|--------------------|-----------------|
@@ -1015,22 +1018,23 @@ bounds in the sense that they do not include the per-node level
 list overhead (which is small: ~$N \cdot \log_2 M$ bytes ≈ tens
 of KB at this scale).
 
-The scientifically primary comparison is Dazzle vs ObjectBox because
-both are HNSW implementations.
+The fair head-to-head is Dazzle vs ObjectBox: both engines run HNSW.
 
-At recall floor $\geq$ 0.95 (the common mobile RAG operating point),
-Dazzle SQ8 reaches 208 µs p50 search at N = 20 000 vs ObjectBox 4.x
-at 853 µs (4.1× faster), with both engines on HNSW. At strict
-recall $\geq$ 0.99, ObjectBox keeps a higher recall (0.994 vs 0.959
-for Dazzle SQ8 at ef = 10) and Dazzle SQ8 sits at a lower-recall
-operating point in this configuration. This is an expected trade-off
-between the int8 quantisation Dazzle SQ8 uses and the float32
-precision ObjectBox keeps, not a contradiction.
+At recall floor $\geq 0.95$ (the common mobile RAG operating point),
+Dazzle SQ8 reaches 208 µs p50 search at N = 20 000 against
+ObjectBox 4.x at 853 µs — 4.1× faster, both on HNSW. At strict
+recall $\geq 0.99$ the picture flips on the recall axis: ObjectBox
+keeps a higher recall (0.994 vs 0.959 for Dazzle SQ8 at $ef = 10$)
+and Dazzle SQ8 sits at a lower-recall operating point in this
+configuration. That is an expected trade-off between the int8
+quantisation Dazzle SQ8 uses and the float32 precision ObjectBox
+keeps, not a contradiction.
 
-SQLiteAI remains a useful secondary reference because it represents the
+SQLiteAI remains a useful secondary reference because it is the
 current SQLite production path in many mobile stacks. The observed
-ratio against SQLiteAI at N = 20 000 is consistent with O(log N) vs O(N)
-behavior and should be read with that algorithmic note attached.
+ratio against SQLiteAI at N = 20 000 is consistent with
+$O(\log N)$ vs $O(N)$ behaviour and should be read with that
+algorithmic note attached.
 
 ### 5.8.3 Envelope Interpretation
 
@@ -1076,8 +1080,8 @@ so the cross-engine comparison is in one place; the per-N detail
 **§2 of the companion engineering report**
 (`research/paper/companion_engineering_report.md`, Tables 2 / 3 / 4).
 
-The headline reading is **about envelope membership, not winner
-declaration**. At N = 20 000, dim = 384, k = 10, recall ≥ 0.95:
+The reading is **about envelope membership, not a winner
+declaration**. At N = 20 000, dim = 384, k = 10, recall $\geq 0.95$:
 
 * **Dazzle SQ8** lands at 208 µs (Table 11) — clearly inside the
   sub-millisecond search envelope.
@@ -1468,13 +1472,13 @@ make it correct and maintainable in production."
 
 ## 6.2 The Bounded Context Block
 
-The ~58–62 token property independent of N is a consequence of an
-architectural choice, not a coincidence. The context block encodes
-six aggregated scalars (min/max/avg/count/…) plus the probabilistic
-summary — not a list of N raw readings. This decouples prompt size
-from dataset size. An agent running for weeks on a device should
-not progressively consume more of the model's context window simply
-because more data has accumulated.
+The ~58–62 token property independent of N comes from an
+architectural choice, not from coincidence. The context block
+encodes six aggregated scalars (min/max/avg/count/…) plus the
+probabilistic summary, not a list of N raw readings. Prompt size
+therefore decouples from dataset size: an agent running for
+weeks on a device should not progressively consume more of the
+model's context window simply because more data has accumulated.
 
 ## 6.3 Limitations
 
@@ -1877,25 +1881,25 @@ a full server-grade database exposes.
 
 **Mobile vector databases — three distinct products.** The mobile
 SQLite-vector ecosystem includes three commonly-confused products
-that we distinguish carefully here. (1) Plain **SQLite** has no
-native vector support and is benchmarked only on its storage layer
-in §5.2. (2) Alex Garcia's open-source **sqlite-vec**
+worth distinguishing here. (1) Plain **SQLite** has no native vector
+support and is benchmarked only on its storage layer in §5.2.
+(2) Alex Garcia's open-source **sqlite-vec**
 (`github.com/asg017/sqlite-vec`, Apache 2.0) is a SQLite extension
-  adding brute-force vector search; this revision benchmarks it in
-  the SQLite-family sweep (§5.8.4). (3) **SQLiteAI sqlite-vector** [@sqliteaivector]
-(`github.com/sqliteai/sqlite-vector`, Elastic License 2.0) is the
-commercial product from SQLite Cloud, Inc. (the corporate entity
-behind the SQLite AI ecosystem), which ships a
-SIMD-accelerated quantized linear-scan query path
+adding brute-force vector search; this revision benchmarks it in
+the SQLite-family sweep (§5.8.4). (3) **SQLiteAI sqlite-vector**
+[@sqliteaivector] (`github.com/sqliteai/sqlite-vector`, Elastic
+Licence 2.0) is the commercial product from SQLite Cloud, Inc.
+(the corporate entity behind the SQLite AI ecosystem); it ships a
+SIMD-accelerated quantised linear-scan query path
 (`vector_quantize_scan`) and deliberately avoids HNSW. SQLiteAI
 sqlite-vector and the open-source sqlite-vec are both commercially
-or publicly available as of 2026, and we benchmark SQLiteAI directly
+or publicly available as of 2026. We benchmark SQLiteAI directly
 in §5.8 because its production positioning makes it the most
 relevant SQLite-ecosystem reference for an embedded-LLM-agent
 comparison; we make no claim about it being the "standard" of the
-SQLite vector ecosystem.
-**ObjectBox 4.x** [@objectbox4] is the other commercial peer in our
-benchmark and ships native HNSW backed by float32 vectors.
+SQLite vector ecosystem. **ObjectBox 4.x** [@objectbox4] is the
+other commercial peer in our benchmark and ships native HNSW
+backed by float32 vectors.
 
 **Server-grade vector ANN libraries.** **FAISS** [@faiss]
 (Facebook AI), **DiskANN** [@diskann] (Microsoft Research), and
@@ -1933,14 +1937,14 @@ stores with two to four primitive types — and would extend the
 
 **RAG evaluation.** **RAGTruth** [@ragtruth] is the canonical
 hallucination corpus for retrieval-augmented LLM evaluation as of
-2024. Section §5.9 deliberately uses NQ-open instead because the
-unit of measurement here is *recall of canonical short-answer
-strings* (whether the LLM emits the gold span when retrieval is
-present); RAGTruth measures hallucination *given* retrieved
-context, which is a strictly downstream signal that requires a
-hallucination judge. Layering RAGTruth-style evaluation on top of
-the §5.9 setup is future work and would belong on the same axis
-as the EM-vs-F1 reporting we already include.
+2024. Section §5.9 uses NQ-open instead because the unit of
+measurement here is *recall of canonical short-answer strings*
+(whether the LLM emits the gold span when retrieval is present).
+RAGTruth measures hallucination *given* retrieved context, which
+is a strictly downstream signal that requires a hallucination
+judge. Layering RAGTruth-style evaluation on top of the §5.9
+setup is future work; it would belong on the same axis as the
+EM-vs-F1 reporting we already include.
 
 # 8. Conclusion
 
@@ -1954,7 +1958,7 @@ they cost to use.
 
 Three empirical results back that framing. Retrieval latency in
 Dazzle's steady-state path is roughly 0.00176 % of a single
-on-device LLM inference turn (50 µs against $\sim$2.84 s for
+on-device LLM inference turn (50 µs against $\sim 2.84$ s for
 Gemma 4 E2B on the Moto G35 5G), which places backend retrieval
 cost within the noise floor of the end-to-end loop. Primitive
 surface and development effort differ materially: Dazzle exposes
