@@ -6,7 +6,7 @@ set -e
 cd "$(git rev-parse --show-toplevel)"
 
 # Make hooks executable
-chmod +x .githooks/commit-msg .githooks/pre-push
+chmod +x .githooks/commit-msg .githooks/pre-push .githooks/pre-commit
 
 # Install hooks (idempotent)
 if ! git config --local core.hooksPath | grep -q ".githooks"; then
@@ -36,6 +36,9 @@ echo "   Config: core.hooksPath = .githooks"
 echo ""
 echo "The following protections are now active:"
 echo "  • commit-msg: Rejects commits with LLM attribution on commit"
-echo "  • pre-push: Rejects pushes with LLM attribution in any commit"
+echo "  • pre-push:   Rejects pushes with LLM attribution in any commit"
+echo "  • pre-commit: Rejects commits that re-introduce operational"
+echo "                paper files (ARXIV_SUBMISSION.md, COMPETITORS.md,"
+echo "                sdk_addendum_es.md) into the public mirror"
 echo ""
 echo "For more info, see: docs/COMMIT_POLICY.md"
