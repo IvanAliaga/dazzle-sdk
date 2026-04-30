@@ -1,0 +1,169 @@
+\documentclass[11pt]{article}
+
+% --- arxiv-style template (kourgeorge/arxiv-style) ---
+\usepackage{arxiv}
+
+% --- engine: xelatex (Unicode-friendly) ---
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setmonofont{Menlo}[Scale=0.85]
+
+% --- core packages ---
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{caption}
+
+% --- url-aware line breaking ---
+\usepackage{url}
+\PassOptionsToPackage{hyphens}{url}
+\Urlmuskip=0mu plus 1mu      % allow stretch around URL break-points
+\sloppy                       % prefer loose lines over overflow
+\setlength{\emergencystretch}{3em}
+
+% --- inline-code (pandoc \passthrough) breakability ---
+% Long file paths and identifiers that pandoc renders as
+% \texttt{...} are otherwise unbreakable, which produced 200+pt
+% overfull \hbox warnings. \seqsplit inserts a discretionary
+% break opportunity between every character; LaTeX only breaks
+% there when no better option exists, so short inline-code spans
+% stay intact in the normal flow.
+\usepackage{seqsplit}
+
+% --- code listings ---
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+}
+
+% --- bibliography (bibtex, more portable than biber) ---
+\usepackage[numbers]{natbib}
+
+% --- pandoc compatibility helpers ---
+\usepackage{calc}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\real}[1]{#1}
+% pandoc emits \texttt{...} (and sometimes \passthrough{...}) around
+% inline-code spans. Override BOTH so long file paths and identifiers
+% break across lines instead of producing 200+pt overfull \hbox
+% warnings. \seqsplit only inserts break opportunities; LaTeX only
+% breaks there when no better option exists, so short inline-code
+% spans stay intact in the normal flow.
+\newcommand{\passthrough}[1]{\texttt{\seqsplit{#1}}}
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\seqsplit{#1}}}
+
+% Long tables (Tables 11/12 with 7-column engine grids carry rows
+% like "707 302 µs" + "not reported by runner" + "39.06 MB †" that
+% otherwise overflow column widths). Render every longtable in
+% \footnotesize so the wide rows fit; the surrounding prose stays
+% in 11pt body size.
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{%
+  \scriptsize%                   % was \footnotesize — clears the
+                                  % last 1pt overflow in Table 12
+  \setlength{\tabcolsep}{3pt}% tighter cell padding (default 6pt)
+  \renewcommand{\arraystretch}{0.95}% tighter row spacing
+}
+% pandoc emits \def\LTcaptype{none} around longtables to suppress
+% caption numbering; longtable then tries \addtocounter{\LTcaptype}.
+% Define the dummy counter so tectonic does not bail.
+\newcounter{none}
+
+% --- title block ---
+\title{Dazzle: An Embedded Database for On-Device LLM Agents}
+
+\author{
+    Ivan Aliaga \\
+    Universidad Ricardo Palma \\
+    Lima, Peru \\
+    \texttt{ivan.aliaga@urp.edu.pe}
+}
+
+\date{April 2026}
+
+% --- arxiv metadata ---
+\renewcommand{\headeright}{Preprint}
+\renewcommand{\undertitle}{Preprint}
+\renewcommand{\shorttitle}{Dazzle: An Embedded Database for On-Device LLM Agents}
+
+% --- begin document ---
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Mobile applications that embed a language-model agent now need a
+persistent state layer between inference calls --- sensor windows,
+materialised aggregates, approximate counts, vector indices over
+recent context. The embedded databases available on the platform
+(SQLite, RocksDB, LMDB, ObjectBox) ship two to four data-structure
+primitives each, so every higher-order construct (bounded streams,
+per-field TTL, HyperLogLog, HNSW vector search) is reimplemented
+in application code, on top of those primitives, by every team
+that needs them.
+
+We present \textbf{Dazzle}, a fork of Valkey (the Linux
+Foundation's Redis-compatible store) whose server runs
+\emph{inside} the process of Android and iOS applications rather
+than as a daemon over TCP loopback. The fork ships ten native
+data-structure primitives, including HNSW vector search, against
+$\leq 4$ in any embedded competitor we measure on the same
+platforms; it exposes them through a typed mobile SDK on Maven
+Central, pub.dev, npm and Swift Package Manager.
+
+We characterise the latency envelope across twelve backends on
+two physical devices (Moto G35 5G, iPhone 12 Pro). Steady-state
+retrieval on the materialised-aggregates path lands at 50~µs on
+Moto G35 5G and 7.24~µs on iPhone 12 Pro; HNSW vector search
+stays sub-millisecond at recall $\geq 0.95$ across the
+9-configuration grid we measure. At 50~µs against a
+$\sim 2.84$~s on-device LLM inference turn the retrieval cost is
+\textbf{0.00176\,\%} of the inference call --- below the noise
+floor of the end-to-end loop. The deciding axis for an on-device
+agent backend is therefore \textbf{primitive surface and
+developer ergonomics}, not microbenchmark deltas. We report the
+absolute per-engine microsecond numbers anyway, because the same
+engines also serve non-LLM workloads (analytics, sync, indexing)
+where microseconds matter.
+
+An end-to-end 2$\times$2 ablation on 200 Natural Questions queries
+on the Moto G35 5G shows that the retrieval primitive is what
+drives factual accuracy at this scale. Qwen 2.5 0.5B with Dazzle
+RAG reaches 0.630 \texttt{EM\_contains} against 0.105 without
+retrieval ($6.0\times$); Qwen 2.5 1.5B with RAG reaches 0.735
+against 0.110 without ($6.7\times$). A 380~MB model with
+retrieval beats a 940~MB model ($3\times$ larger) without
+retrieval on every factual metric, end-to-end on a
+\$150-class Android phone. The bottleneck is not the model size,
+the SoC, or the microsecond cost of retrieval; it is whether the
+backend lets the agent loop reach a vector index at all.
+\end{abstract}
+
+\keywords{embedded database \and on-device LLM \and mobile agents
+  \and Valkey \and HNSW vector search \and Apache 2.0}
+
+% --- body content (generated from paper_v2_en.md by pandoc) ---
+\input{body.tex}
+
+% --- bibliography ---
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

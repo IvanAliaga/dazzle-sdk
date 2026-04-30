@@ -1,0 +1,171 @@
+{
+  "backend" : "SQLite",
+  "backend_key" : "sqlite",
+  "dataset_name" : "dataset_iot_baseline",
+  "device" : {
+    "active_cpu_cores" : 6,
+    "cpu_cores" : 6,
+    "model" : "iPhone",
+    "name" : "iPhone",
+    "platform" : "iOS",
+    "ram_total_bytes" : 5994528768,
+    "systemName" : "iOS",
+    "systemVersion" : "26.3"
+  },
+  "scale_points" : [
+    {
+      "backend_size_after_bytes" : 2001872,
+      "backend_size_before_bytes" : 119032,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 1882840,
+      "backend_size_method" : "sqlite:db_file_size",
+      "concurrent_retrieval_avg_us" : 70.839599999999976,
+      "concurrent_retrieval_p95_us" : 72.167000000000002,
+      "context_chars" : 257,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 65.285083999999998,
+      "io_write_bytes_delta" : -1,
+      "n" : 200,
+      "per_ingest_us" : 326.42541999999997,
+      "ram_after_kb" : 5985,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 15728,
+      "ram_before_kb" : 5825,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 15456,
+      "ram_delta_kb" : 160,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 272,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 70.839599999999976,
+      "retrieval_p50_us" : 70.792000000000002,
+      "retrieval_p95_us" : 72.167000000000002,
+      "synth_chars" : 815,
+      "synth_tokens_est" : 203
+    },
+    {
+      "backend_size_after_bytes" : 1824712,
+      "backend_size_before_bytes" : 119032,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 1705680,
+      "backend_size_method" : "sqlite:db_file_size",
+      "concurrent_retrieval_avg_us" : 47.343800000000002,
+      "concurrent_retrieval_p95_us" : 51.167000000000002,
+      "context_chars" : 258,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 189.355042,
+      "io_write_bytes_delta" : -1,
+      "n" : 1000,
+      "per_ingest_us" : 189.355042,
+      "ram_after_kb" : 6641,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 16384,
+      "ram_before_kb" : 6065,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 15792,
+      "ram_delta_kb" : 576,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 592,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 47.343800000000002,
+      "retrieval_p50_us" : 47,
+      "retrieval_p95_us" : 51.167000000000002,
+      "synth_chars" : 3256,
+      "synth_tokens_est" : 814
+    },
+    {
+      "backend_size_after_bytes" : 1169608,
+      "backend_size_before_bytes" : 119032,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 1050576,
+      "backend_size_method" : "sqlite:db_file_size",
+      "concurrent_retrieval_avg_us" : 47.083399999999997,
+      "concurrent_retrieval_p95_us" : 49.207999999999998,
+      "context_chars" : 259,
+      "context_tokens_est" : 64,
+      "ingest_total_ms" : 758.08425,
+      "io_write_bytes_delta" : -1,
+      "n" : 5000,
+      "per_ingest_us" : 151.61685,
+      "ram_after_kb" : 9457,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 19216,
+      "ram_before_kb" : 6721,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 16448,
+      "ram_delta_kb" : 2736,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 2768,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 47.083399999999997,
+      "retrieval_p50_us" : 47,
+      "retrieval_p95_us" : 49.207999999999998,
+      "synth_chars" : 15828,
+      "synth_tokens_est" : 3957
+    },
+    {
+      "backend_size_after_bytes" : 2351712,
+      "backend_size_before_bytes" : 151896,
+      "backend_size_breakdown_after_bytes" : {
+
+      },
+      "backend_size_breakdown_before_bytes" : {
+
+      },
+      "backend_size_breakdown_delta_bytes" : {
+
+      },
+      "backend_size_delta_bytes" : 2199816,
+      "backend_size_method" : "sqlite:db_file_size",
+      "concurrent_retrieval_avg_us" : 46.881299999999996,
+      "concurrent_retrieval_p95_us" : 47.875,
+      "context_chars" : 261,
+      "context_tokens_est" : 65,
+      "ingest_total_ms" : 2750.3074999999999,
+      "io_write_bytes_delta" : -1,
+      "n" : 20000,
+      "per_ingest_us" : 137.51537500000001,
+      "ram_after_kb" : 20833,
+      "ram_after_pss_kb" : -1,
+      "ram_after_rss_kb" : 30656,
+      "ram_before_kb" : 9905,
+      "ram_before_pss_kb" : -1,
+      "ram_before_rss_kb" : 19648,
+      "ram_delta_kb" : 10928,
+      "ram_delta_pss_kb" : -1,
+      "ram_delta_rss_kb" : 11008,
+      "ram_metric" : "phys_footprint",
+      "retrieval_avg_us" : 46.881299999999996,
+      "retrieval_p50_us" : 46.790999999999997,
+      "retrieval_p95_us" : 47.875,
+      "synth_chars" : 63706,
+      "synth_tokens_est" : 15926
+    }
+  ],
+  "timestamp" : "2026-04-27T23:04:00Z",
+  "type" : "scale_benchmark"
+}

@@ -1,0 +1,158 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:9167064991161629440",
+      "lastPropertyId": "2:6107458320019732480",
+      "name": "AnomalyEntity",
+      "properties": [
+        {
+          "id": "1:5731869460967938304",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6107458320019732480",
+          "name": "minute",
+          "type": 6
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:4700891722054603264",
+      "lastPropertyId": "6:6871338352400544256",
+      "name": "CheckpointEntity",
+      "properties": [
+        {
+          "id": "1:3871284685631692288",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1427580949390599936",
+          "name": "cpIndex",
+          "type": 6
+        },
+        {
+          "id": "3:9164546104442581504",
+          "name": "minute",
+          "type": 6
+        },
+        {
+          "id": "4:7209664011810414080",
+          "name": "anomaly",
+          "type": 1
+        },
+        {
+          "id": "5:486461122285868800",
+          "name": "severity",
+          "type": 9
+        },
+        {
+          "id": "6:6871338352400544256",
+          "name": "trend",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:8816019786257580544",
+      "lastPropertyId": "3:4181757736301419776",
+      "name": "DecisionEntity",
+      "properties": [
+        {
+          "id": "1:5408439932521847296",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:90288257001896704",
+          "name": "cpIndex",
+          "type": 6
+        },
+        {
+          "id": "3:4181757736301419776",
+          "name": "decision",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:7394040494430619136",
+      "lastPropertyId": "5:7556897812920762368",
+      "name": "ReadingEntity",
+      "properties": [
+        {
+          "id": "1:7764953713073935872",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8032496270843291392",
+          "name": "minute",
+          "type": 6
+        },
+        {
+          "id": "3:8021719147883007232",
+          "name": "temp",
+          "type": 8
+        },
+        {
+          "id": "4:3454893104624945152",
+          "name": "humidity",
+          "type": 8
+        },
+        {
+          "id": "5:7556897812920762368",
+          "name": "anomalous",
+          "type": 1
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:8370887192439301120",
+      "lastPropertyId": "3:2378819212264094720",
+      "name": "StatsEntity",
+      "properties": [
+        {
+          "id": "1:1959981054635054848",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6077748803931151616",
+          "name": "key",
+          "type": 9
+        },
+        {
+          "id": "3:2378819212264094720",
+          "name": "value",
+          "type": 8
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "5:8370887192439301120",
+  "lastIndexId": "0:0",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 4,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}

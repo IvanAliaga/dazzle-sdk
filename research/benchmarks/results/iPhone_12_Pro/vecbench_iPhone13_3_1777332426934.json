@@ -1,0 +1,347 @@
+{
+  "configs" : [
+    {
+      "dazzle_f16" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.99399999999999999,
+            "search_lat_us" : {
+              "avg" : 18,
+              "max" : 25,
+              "min" : 14,
+              "n" : 100,
+              "p50" : 19,
+              "p95" : 21,
+              "p99" : 25
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 32,
+              "max" : 35,
+              "min" : 30,
+              "n" : 100,
+              "p50" : 33,
+              "p95" : 35,
+              "p99" : 35
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 42,
+              "max" : 46,
+              "min" : 40,
+              "n" : 100,
+              "p50" : 42,
+              "p95" : 44,
+              "p99" : 46
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 52,
+              "max" : 55,
+              "min" : 50,
+              "n" : 100,
+              "p50" : 52,
+              "p95" : 53,
+              "p99" : 55
+            }
+          }
+        ],
+        "ingest_avg_us" : 25.81625,
+        "ingest_total_ms" : 5
+      },
+      "dazzle_hnsw" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.98199999999999998,
+            "search_lat_us" : {
+              "avg" : 17,
+              "max" : 24,
+              "min" : 15,
+              "n" : 100,
+              "p50" : 18,
+              "p95" : 20,
+              "p99" : 24
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 32,
+              "max" : 40,
+              "min" : 29,
+              "n" : 100,
+              "p50" : 32,
+              "p95" : 34,
+              "p99" : 40
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 42,
+              "max" : 45,
+              "min" : 39,
+              "n" : 100,
+              "p50" : 42,
+              "p95" : 44,
+              "p99" : 45
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 51,
+              "max" : 57,
+              "min" : 49,
+              "n" : 100,
+              "p50" : 52,
+              "p95" : 53,
+              "p99" : 57
+            }
+          }
+        ],
+        "ingest_avg_us" : 28.192920000000001,
+        "ingest_total_ms" : 5
+      },
+      "dazzle_sq8" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.92800000000000005,
+            "search_lat_us" : {
+              "avg" : 7,
+              "max" : 18,
+              "min" : 6,
+              "n" : 100,
+              "p50" : 7,
+              "p95" : 8,
+              "p99" : 18
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 16,
+              "max" : 19,
+              "min" : 15,
+              "n" : 100,
+              "p50" : 17,
+              "p95" : 18,
+              "p99" : 19
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 24,
+              "max" : 29,
+              "min" : 23,
+              "n" : 100,
+              "p50" : 25,
+              "p95" : 26,
+              "p99" : 29
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 0.93200000000000005,
+            "search_lat_us" : {
+              "avg" : 33,
+              "max" : 38,
+              "min" : 32,
+              "n" : 100,
+              "p50" : 33,
+              "p95" : 34,
+              "p99" : 38
+            }
+          }
+        ],
+        "ingest_avg_us" : 16.572085000000001,
+        "ingest_total_ms" : 3
+      },
+      "dazzle_sq8_rerank" : {
+        "by_ef" : [
+          {
+            "ef_runtime" : 10,
+            "recall_at_k" : 0.998,
+            "search_lat_us" : {
+              "avg" : 13,
+              "max" : 18,
+              "min" : 11,
+              "n" : 100,
+              "p50" : 13,
+              "p95" : 16,
+              "p99" : 18
+            }
+          },
+          {
+            "ef_runtime" : 50,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 19,
+              "max" : 22,
+              "min" : 17,
+              "n" : 100,
+              "p50" : 19,
+              "p95" : 21,
+              "p99" : 22
+            }
+          },
+          {
+            "ef_runtime" : 100,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 26,
+              "max" : 29,
+              "min" : 25,
+              "n" : 100,
+              "p50" : 27,
+              "p95" : 28,
+              "p99" : 29
+            }
+          },
+          {
+            "ef_runtime" : 200,
+            "recall_at_k" : 1,
+            "search_lat_us" : {
+              "avg" : 35,
+              "max" : 41,
+              "min" : 33,
+              "n" : 100,
+              "p50" : 35,
+              "p95" : 36,
+              "p99" : 41
+            }
+          }
+        ],
+        "ingest_avg_us" : 17.054790000000001,
+        "ingest_total_ms" : 3
+      },
+      "dim" : 384,
+      "k" : 10,
+      "n_docs" : 200,
+      "n_queries" : 100,
+      "sqlite_vec" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 16.996040000000001,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 549,
+          "max" : 3904,
+          "min" : 422,
+          "n" : 100,
+          "p50" : 449,
+          "p95" : 751,
+          "p99" : 3904
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_default" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 16.996040000000001,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : true,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 549,
+          "max" : 3904,
+          "min" : 422,
+          "n" : 100,
+          "p50" : 449,
+          "p95" : 751,
+          "p99" : 3904
+        },
+        "variant" : "default"
+      },
+      "sqlite_vec_optimized" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 15.66,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 425,
+          "max" : 442,
+          "min" : 417,
+          "n" : 100,
+          "p50" : 425,
+          "p95" : 434,
+          "p99" : 442
+        },
+        "variant" : "optimized"
+      },
+      "sqlite_vec_precompute" : {
+        "algorithm_class" : "linear_scan",
+        "db_file_bytes" : 4096,
+        "ingest_avg_us" : 15.428545,
+        "ingest_total_ms" : 3,
+        "normalize_on_access" : false,
+        "recall_at_k" : 1,
+        "search_lat_us" : {
+          "avg" : 427,
+          "max" : 453,
+          "min" : 419,
+          "n" : 100,
+          "p50" : 426,
+          "p95" : 439,
+          "p99" : 453
+        },
+        "variant" : "precompute"
+      },
+      "sqlite_vector_ai" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_default" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "default"
+      },
+      "sqlite_vector_ai_optimized" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "optimized"
+      },
+      "sqlite_vector_ai_precompute" : {
+        "reason" : "create failed (vector extension not available on this iOS build)",
+        "skipped" : true,
+        "variant" : "precompute"
+      }
+    }
+  ],
+  "device" : {
+    "active_cpu_cores" : 6,
+    "cpu_cores" : 6,
+    "hw_model" : "iPhone13,3",
+    "model" : "iPhone",
+    "name" : "iPhone",
+    "platform" : "iOS",
+    "ram_total_bytes" : 5994528768,
+    "systemName" : "iOS",
+    "systemVersion" : "26.3"
+  },
+  "timestamp" : "2026-04-27T23:27:06Z",
+  "type" : "vector_benchmark"
+}

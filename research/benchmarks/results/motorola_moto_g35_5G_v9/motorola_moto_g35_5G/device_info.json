@@ -1,0 +1,9 @@
+{
+  "serial": "ZE223FPXBS",
+  "model": "moto g35 5G",
+  "manufacturer": "motorola",
+  "board": "manila",
+  "sdk_int": 34,
+  "abi": "arm64-v8a",
+  "ram_total_kb": 3497628
+}

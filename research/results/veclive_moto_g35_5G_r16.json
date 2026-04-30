@@ -1,0 +1,53 @@
+{
+  "type": "vector_live_ingest_bench",
+  "timestamp": "2026-04-22T22:06:29.584706Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "config": {
+    "dim": 768,
+    "n_seed": 10000,
+    "n_append": 5000,
+    "reader_threads": 4,
+    "queries_per_phase": 2000,
+    "k": 10,
+    "ef_runtime": 10
+  },
+  "results": {
+    "quiet": {
+      "wall_ms": 630,
+      "qps": 3174.4078275919555,
+      "search_lat_us": {
+        "n": 2000,
+        "avg": 1250.5005,
+        "p50": 1221,
+        "p95": 1598,
+        "p99": 2016,
+        "min": 654,
+        "max": 4849
+      }
+    },
+    "live_append": {
+      "wall_ms": 771,
+      "qps": 2592.9104642087605,
+      "search_lat_us": {
+        "n": 2000,
+        "avg": 1529.478,
+        "p50": 1354,
+        "p95": 3374,
+        "p99": 4587,
+        "min": 243,
+        "max": 6874
+      },
+      "writer_appends": 28,
+      "writer_wall_ms": 776,
+      "writer_append_qps": 36.08060370787736
+    }
+  }
+}

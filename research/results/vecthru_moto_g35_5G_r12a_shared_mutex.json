@@ -1,0 +1,277 @@
+{
+  "type": "vector_throughput_benchmark",
+  "timestamp": "2026-04-22T20:11:26.343360Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "hardware": "ums9620_2h10",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "config": {
+    "dim": 384,
+    "n_docs": 10000,
+    "n_queries": 500,
+    "k": 10,
+    "ef_runtime": 10,
+    "thread_counts": [
+      1,
+      2,
+      4,
+      8
+    ]
+  },
+  "results": {
+    "dazzle_hnsw": {
+      "ingest_total_ms": 10301,
+      "ingest_avg_us": 1030.1762723,
+      "by_threads": [
+        {
+          "threads": 1,
+          "wall_ms": 150,
+          "qps": 3332.9530433910822,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 295.548,
+            "p50": 287,
+            "p95": 373,
+            "p99": 416,
+            "min": 193,
+            "max": 1062
+          }
+        },
+        {
+          "threads": 2,
+          "wall_ms": 96,
+          "qps": 5194.846699606358,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 379.826,
+            "p50": 359,
+            "p95": 542,
+            "p99": 752,
+            "min": 249,
+            "max": 1174
+          }
+        },
+        {
+          "threads": 4,
+          "wall_ms": 79,
+          "qps": 6327.832337754378,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 622.336,
+            "p50": 605,
+            "p95": 816,
+            "p99": 1025,
+            "min": 360,
+            "max": 1844
+          }
+        },
+        {
+          "threads": 8,
+          "wall_ms": 84,
+          "qps": 5948.5079072087965,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 1320.438,
+            "p50": 901,
+            "p95": 3126,
+            "p99": 4443,
+            "min": 517,
+            "max": 5497
+          }
+        }
+      ]
+    },
+    "dazzle_sq8": {
+      "ingest_total_ms": 3141,
+      "ingest_avg_us": 314.11234210000003,
+      "by_threads": [
+        {
+          "threads": 1,
+          "wall_ms": 98,
+          "qps": 5076.879542290472,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 192.412,
+            "p50": 186,
+            "p95": 241,
+            "p99": 290,
+            "min": 133,
+            "max": 1038
+          }
+        },
+        {
+          "threads": 2,
+          "wall_ms": 51,
+          "qps": 9635.318050190102,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 202.916,
+            "p50": 187,
+            "p95": 311,
+            "p99": 517,
+            "min": 123,
+            "max": 1059
+          }
+        },
+        {
+          "threads": 4,
+          "wall_ms": 33,
+          "qps": 15112.887526928898,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 259.088,
+            "p50": 241,
+            "p95": 426,
+            "p99": 524,
+            "min": 157,
+            "max": 583
+          }
+        },
+        {
+          "threads": 8,
+          "wall_ms": 32,
+          "qps": 15226.814981529264,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 502.354,
+            "p50": 324,
+            "p95": 1136,
+            "p99": 2857,
+            "min": 168,
+            "max": 7235
+          }
+        }
+      ]
+    },
+    "dazzle_f16": {
+      "ingest_total_ms": 5860,
+      "ingest_avg_us": 586.0572457999999,
+      "by_threads": [
+        {
+          "threads": 1,
+          "wall_ms": 136,
+          "qps": 3657.112496839797,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 270.642,
+            "p50": 262,
+            "p95": 337,
+            "p99": 418,
+            "min": 195,
+            "max": 1153
+          }
+        },
+        {
+          "threads": 2,
+          "wall_ms": 73,
+          "qps": 6771.397616468039,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 287.342,
+            "p50": 272,
+            "p95": 391,
+            "p99": 507,
+            "min": 196,
+            "max": 1064
+          }
+        },
+        {
+          "threads": 4,
+          "wall_ms": 68,
+          "qps": 7266.312624788019,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 541.426,
+            "p50": 423,
+            "p95": 1342,
+            "p99": 3005,
+            "min": 249,
+            "max": 4085
+          }
+        },
+        {
+          "threads": 8,
+          "wall_ms": 46,
+          "qps": 10853.430413361146,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 719.056,
+            "p50": 448,
+            "p95": 1453,
+            "p99": 6519,
+            "min": 279,
+            "max": 16547
+          }
+        }
+      ]
+    },
+    "dazzle_sq8_rerank": {
+      "ingest_total_ms": 3297,
+      "ingest_avg_us": 329.75259589999996,
+      "by_threads": [
+        {
+          "threads": 1,
+          "wall_ms": 149,
+          "qps": 3340.2665241415025,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 296.554,
+            "p50": 289,
+            "p95": 352,
+            "p99": 410,
+            "min": 235,
+            "max": 1093
+          }
+        },
+        {
+          "threads": 2,
+          "wall_ms": 78,
+          "qps": 6351.2350344896195,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 311.688,
+            "p50": 300,
+            "p95": 387,
+            "p99": 462,
+            "min": 244,
+            "max": 1071
+          }
+        },
+        {
+          "threads": 4,
+          "wall_ms": 52,
+          "qps": 9496.454128489417,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 414.812,
+            "p50": 406,
+            "p95": 500,
+            "p99": 598,
+            "min": 328,
+            "max": 1236
+          }
+        },
+        {
+          "threads": 8,
+          "wall_ms": 51,
+          "qps": 9795.610665225797,
+          "search_lat_us": {
+            "n": 500,
+            "avg": 797.956,
+            "p50": 463,
+            "p95": 1413,
+            "p99": 12839,
+            "min": 364,
+            "max": 16629
+          }
+        }
+      ]
+    }
+  }
+}

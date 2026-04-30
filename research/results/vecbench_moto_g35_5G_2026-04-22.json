@@ -1,0 +1,718 @@
+{
+  "type": "vector_benchmark",
+  "timestamp": "2026-04-22T14:33:02.040272Z",
+  "device": {
+    "model": "moto g35 5G",
+    "manufacturer": "motorola",
+    "board": "manila",
+    "hardware": "ums9620_2h10",
+    "abi": "arm64-v8a",
+    "android_version": "14",
+    "sdk_int": 34,
+    "cpu_cores": 8
+  },
+  "configs": [
+    {
+      "dim": 16,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 44,
+        "ingest_avg_us": 88.407692,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 138517.82,
+          "p50": 137096,
+          "p95": 155230,
+          "p99": 177010,
+          "min": 130978,
+          "max": 177010
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 443,
+        "ingest_avg_us": 887.7047680000001,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1799.66,
+              "p50": 1549,
+              "p95": 3962,
+              "p99": 5529,
+              "min": 874,
+              "max": 5529
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1099.74,
+              "p50": 1097,
+              "p95": 1461,
+              "p99": 1794,
+              "min": 569,
+              "max": 1794
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1170.86,
+              "p50": 1157,
+              "p95": 1441,
+              "p99": 1633,
+              "min": 723,
+              "max": 1633
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1492.47,
+              "p50": 1445,
+              "p95": 2042,
+              "p99": 2134,
+              "min": 1154,
+              "max": 2134
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 16,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 147,
+        "ingest_avg_us": 73.5857695,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 106327.76,
+          "p50": 105538,
+          "p95": 111818,
+          "p99": 113023,
+          "min": 101792,
+          "max": 113023
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 1168,
+        "ingest_avg_us": 584.140807,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1751.19,
+              "p50": 1451,
+              "p95": 2836,
+              "p99": 5388,
+              "min": 611,
+              "max": 5388
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1381.72,
+              "p50": 1337,
+              "p95": 1928,
+              "p99": 2031,
+              "min": 1022,
+              "max": 2031
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1729.07,
+              "p50": 1693,
+              "p95": 2327,
+              "p99": 2590,
+              "min": 1203,
+              "max": 2590
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2095.63,
+              "p50": 1962,
+              "p95": 3056,
+              "p99": 3195,
+              "min": 1587,
+              "max": 3195
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 16,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 532,
+        "ingest_avg_us": 53.28285770000001,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 25351.79,
+          "p50": 25173,
+          "p95": 26208,
+          "p99": 30932,
+          "min": 24884,
+          "max": 30932
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 11932,
+        "ingest_avg_us": 1193.2259607,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.995,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1405.83,
+              "p50": 1350,
+              "p95": 2052,
+              "p99": 2492,
+              "min": 714,
+              "max": 2492
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1804.34,
+              "p50": 1882,
+              "p95": 2119,
+              "p99": 2557,
+              "min": 1298,
+              "max": 2557
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2504.84,
+              "p50": 2529,
+              "p95": 2852,
+              "p99": 3726,
+              "min": 1635,
+              "max": 3726
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 3528.27,
+              "p50": 3513,
+              "p95": 3752,
+              "p99": 5292,
+              "min": 3087,
+              "max": 5292
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 49,
+        "ingest_avg_us": 99.59523,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 22752.35,
+          "p50": 22352,
+          "p95": 27075,
+          "p99": 30897,
+          "min": 21532,
+          "max": 30897
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 649,
+        "ingest_avg_us": 1299.396,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.998,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1593.96,
+              "p50": 1582,
+              "p95": 2002,
+              "p99": 2397,
+              "min": 1028,
+              "max": 2397
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2282.72,
+              "p50": 2294,
+              "p95": 2725,
+              "p99": 3110,
+              "min": 1505,
+              "max": 3110
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2779.43,
+              "p50": 2777,
+              "p95": 3034,
+              "p99": 3811,
+              "min": 2422,
+              "max": 3811
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2940.89,
+              "p50": 2950,
+              "p95": 3143,
+              "p99": 3206,
+              "min": 2334,
+              "max": 3206
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 108,
+        "ingest_avg_us": 54.274538500000006,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 31540.94,
+          "p50": 31252,
+          "p95": 35364,
+          "p99": 38550,
+          "min": 30397,
+          "max": 38550
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 3197,
+        "ingest_avg_us": 1598.9757105,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1237.34,
+              "p50": 1289,
+              "p95": 1812,
+              "p99": 2356,
+              "min": 582,
+              "max": 2356
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.999,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2952.88,
+              "p50": 2927,
+              "p95": 3631,
+              "p99": 4122,
+              "min": 1931,
+              "max": 4122
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 4853.25,
+              "p50": 4831,
+              "p95": 5108,
+              "p99": 5207,
+              "min": 4492,
+              "max": 5207
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5322.11,
+              "p50": 5287,
+              "p95": 5976,
+              "p99": 6402,
+              "min": 4676,
+              "max": 6402
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 128,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 522,
+        "ingest_avg_us": 52.2645269,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 90380.23,
+          "p50": 90245,
+          "p95": 93649,
+          "p99": 95257,
+          "min": 85443,
+          "max": 95257
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 20116,
+        "ingest_avg_us": 2011.6611755,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.956,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1662.37,
+              "p50": 1604,
+              "p95": 2273,
+              "p99": 4844,
+              "min": 986,
+              "max": 4844
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.968,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 3635.72,
+              "p50": 3709,
+              "p95": 4487,
+              "p99": 5173,
+              "min": 2101,
+              "max": 5173
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.975,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5207.19,
+              "p50": 5281,
+              "p95": 5811,
+              "p99": 6022,
+              "min": 4405,
+              "max": 6022
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.982,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 4870.07,
+              "p50": 4617,
+              "p95": 6494,
+              "p99": 8388,
+              "min": 3720,
+              "max": 8388
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 500,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 51,
+        "ingest_avg_us": 102.769,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 51844.98,
+          "p50": 51184,
+          "p95": 56757,
+          "p99": 57503,
+          "min": 49300,
+          "max": 57503
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 783,
+        "ingest_avg_us": 1567.030922,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 2062.05,
+              "p50": 2059,
+              "p95": 2624,
+              "p99": 2769,
+              "min": 1107,
+              "max": 2769
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 3652.98,
+              "p50": 3615,
+              "p95": 4357,
+              "p99": 4476,
+              "min": 2156,
+              "max": 4476
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 4514.37,
+              "p50": 4506,
+              "p95": 4804,
+              "p99": 4966,
+              "min": 4109,
+              "max": 4966
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 1.0,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 4740.69,
+              "p50": 4737,
+              "p95": 5057,
+              "p99": 5255,
+              "min": 4269,
+              "max": 5255
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 2000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 178,
+        "ingest_avg_us": 89.24176949999999,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 152679.0,
+          "p50": 151830,
+          "p95": 158946,
+          "p99": 162302,
+          "min": 149051,
+          "max": 162302
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 4294,
+        "ingest_avg_us": 2147.0205175,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.996,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1660.83,
+              "p50": 1561,
+              "p95": 2937,
+              "p99": 3687,
+              "min": 914,
+              "max": 3687
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5115.82,
+              "p50": 5299,
+              "p95": 6205,
+              "p99": 6960,
+              "min": 3011,
+              "max": 6960
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5497.32,
+              "p50": 5318,
+              "p95": 7330,
+              "p99": 7690,
+              "min": 4557,
+              "max": 7690
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.997,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 4470.12,
+              "p50": 4273,
+              "p95": 5736,
+              "p99": 6938,
+              "min": 3398,
+              "max": 6938
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dim": 384,
+      "n_docs": 10000,
+      "n_queries": 100,
+      "k": 10,
+      "sqlite": {
+        "ingest_total_ms": 902,
+        "ingest_avg_us": 90.2890576,
+        "search_lat_us": {
+          "n": 100,
+          "avg": 279997.12,
+          "p50": 279422,
+          "p95": 285674,
+          "p99": 290575,
+          "min": 273927,
+          "max": 290575
+        },
+        "db_file_bytes": -1
+      },
+      "dazzle_hnsw": {
+        "ingest_total_ms": 38953,
+        "ingest_avg_us": 3895.3508126,
+        "by_ef": [
+          {
+            "ef_runtime": 10,
+            "recall_at_k": 0.803,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 1846.48,
+              "p50": 1754,
+              "p95": 2562,
+              "p99": 3698,
+              "min": 1061,
+              "max": 3698
+            }
+          },
+          {
+            "ef_runtime": 50,
+            "recall_at_k": 0.868,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5543.48,
+              "p50": 5447,
+              "p95": 6938,
+              "p99": 7311,
+              "min": 4378,
+              "max": 7311
+            }
+          },
+          {
+            "ef_runtime": 100,
+            "recall_at_k": 0.887,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 5270.13,
+              "p50": 5147,
+              "p95": 7549,
+              "p99": 7759,
+              "min": 4522,
+              "max": 7759
+            }
+          },
+          {
+            "ef_runtime": 200,
+            "recall_at_k": 0.915,
+            "search_lat_us": {
+              "n": 100,
+              "avg": 6017.13,
+              "p50": 5915,
+              "p95": 6558,
+              "p99": 8013,
+              "min": 5526,
+              "max": 8013
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

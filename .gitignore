@@ -79,6 +79,28 @@ research/data/hnsw_parity/
 # sqlite-vector-ai xcframework (Elastic License 2.0, bench-only, NOT
 # redistributed — run sqlitevectorai/download_xcframework.sh to fetch).
 experiment/backends/ios/sqlitevectorai/vector.xcframework/
+
+# RocksDB iOS xcframework (built locally, not redistributed —
+# run experiment/backends/ios/rocksdb/build_rocksdb_ios.sh to fetch).
+experiment/backends/ios/rocksdb/RocksDB.xcframework/
+
+# ObjectBox iOS framework + Sourcery codegen tooling (vendored by
+# experiment/backends/ios/objectbox/download_objectbox.sh — those
+# binaries are large and licence-restricted, not redistributed).
+experiment/backends/ios/objectbox/CodeGen/
+experiment/backends/ios/objectbox/ObjectBox.xcframework/
+
+# Bench app build outputs (Android Studio + Xcode) — every CI
+# rebuild produces these from source; they should never be tracked.
+experiment/**/build/
+experiment/**/build_dev/
+experiment/**/build_sim/
+experiment/**/.gradle/
+experiment/**/.cxx/
+experiment/**/DerivedData/
+experiment/**/*.dSYM/
+experiment/**/*.dylib
+
 # Sample test intermediate dirs (results JSONs ARE tracked for reproducibility)
 samples/_scripts/_test_logs/
 

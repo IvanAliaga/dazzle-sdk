@@ -108,7 +108,7 @@ released alongside the paper.
 ```kotlin
 // 1. Add to app/build.gradle.kts
 dependencies {
-    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.5")
 }
 
 // 2. Boot + use
@@ -146,7 +146,7 @@ agent.send("Explain quantisation in one sentence.")
 
 ```swift
 // 1. Add to Package.swift
-.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.4")
+.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.5")
 
 // 2. Target dependency
 .product(name: "Dazzle", package: "dazzle-sdk"),
@@ -291,7 +291,7 @@ let agent = server.client().chatAgent(threadId: "user-42", llm: llm) {
   demonstrating the three retrieval patterns (`chat-memory`,
   `chat-iot`, `chat-kb`) with all four LLM adapters swappable via a
   single file.
-- [CHANGELOG](../../CHANGELOG.md) — latest tag is `1.0.0-beta.4`
+- [CHANGELOG](../../CHANGELOG.md) — latest tag is `1.0.0-beta.5`
   (5th LLM adapter — `AnthropicClient` — across all four stacks,
   three EventChannel bridge fixes applied preventively to every
   Flutter bridge, RN wrapper deduplication via shared

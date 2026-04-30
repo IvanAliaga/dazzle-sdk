@@ -1,0 +1,155 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: DazzleExperiment
+options:
+  bundleIdPrefix: io.dazzle
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+
+packages:
+  LiteRTLM-Swift:
+    url: https://github.com/mylovelycodes/LiteRTLM-Swift.git
+    branch: main
+
+targets:
+  DazzleExperiment:
+    type: application
+    platform: iOS
+    sources:
+      # Experiment app (Gemma + LLM pipeline). `group:` is dropped on any
+      # path that goes outside this directory — xcodegen 2.45.4 has an
+      # infinite-loop bug in makePathRelative when you combine a relative
+      # `../` source with a group name.
+      - path: App
+      - path: Inference
+      - path: ExperimentPipelineIoT.swift
+      - path: Resources
+      # Shared experiment infrastructure (StorageBackend protocol, dataset, exporter)
+      - path: ../../backends/ios/StorageBackend.swift
+      - path: ../../backends/ios/SensorDataset.swift
+      - path: ../../backends/ios/SystemSnapshot.swift
+      - path: ../../backends/ios/ResultsExporter.swift
+      # Sensor dataset (shared across all three experiment projects)
+      - path: ../../backends/ios/Resources/dataset_iot_baseline.json
+      - path: ../../backends/ios/Resources/dataset_iot_valkey8.json
+      # Storage-only test (same app, invoked via toggle)
+      - path: ../../storage/ios/StorageOnlyTest.swift
+      # Backends (DazzleIncrementalIoTManager excluded — uses mGetDirect API not in LLM target)
+      - path: ../../backends/ios/dazzle/DazzleContextManager.swift
+      - path: ../../backends/ios/dazzle/DazzleHFEContextManager.swift
+      - path: ../../backends/ios/dazzle/DazzleHLLContextManager.swift
+      - path: ../../backends/ios/dazzle/DazzleLuaContextManager.swift
+      - path: ../../backends/ios/dazzle/DazzlePipelineContextManager.swift
+      - path: ../../backends/ios/dazzle/DazzlePrecomputeIoTManager.swift
+      - path: ../../backends/ios/dazzle/DazzleVectorIoTValkey9Manager.swift
+      - path: ../../backends/ios/valkey
+      - path: ../../backends/ios/sqlite
+      - path: ../../backends/ios/inmemory
+      # ── Paper 2 (TFI) use-case variants ─────────────────────────────────
+      # Kept isolated from the SDK shim block below so main's churn and
+      # precursor's Valkey8 block (appended post-merge) do not collide with
+      # the paper2-specific additions here. Paper2Namespace.swift declares
+      # `enum Paper2 {}` so each variant source file wraps its top-level
+      # declarations in `extension Paper2` to avoid colliding with main and
+      # with the Valkey 8 variant.
+      - path: Paper2Namespace.swift
+      - path: ExperimentPipelineIoTPaper2.swift
+      - path: ../../backends/ios/dazzle/DazzleVectorIoTValkey9Paper2Manager.swift
+      - path: ../../storage/ios/StorageOnlyTestPaper2.swift
+      # Include Dazzle Swift + C shim directly (same pattern as demo project)
+      - path: ../../../sdk/ios/Sources/DazzleConfig.swift
+      - path: ../../../sdk/ios/Sources/DazzleServer.swift
+      - path: ../../../sdk/ios/Sources/DazzlePrimitives.swift
+      - path: ../../../sdk/ios/Sources/VectorIndex.swift
+      - path: ../../../core/platform/dazzle_ios.c
+      # ── Valkey 8 use-case variants (precursor branch) ───────────────────
+      # Separated block so main's rename churn in the section above does
+      # not collide with the precursor-specific additions below.
+      # Valkey8Namespace.swift declares `enum Valkey8 {}` so each variant
+      # source file wraps its top-level declarations in `extension Valkey8`
+      # to avoid colliding with main and with the Paper 2 variant.
+      - path: Valkey8Namespace.swift
+      - path: ExperimentPipelineIoTValkey8.swift
+      - path: ../../backends/ios/dazzle/DazzleVectorIoTValkey8Manager.swift
+      - path: ../../storage/ios/StorageOnlyTestValkey8.swift
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment
+        INFOPLIST_FILE: Resources/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lz -lc++ -lsqlite3"
+        # Needed to link Valkey static lib on iOS
+        LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
+        CODE_SIGN_ENTITLEMENTS: Resources/DazzleExperiment.entitlements
+    dependencies:
+      # Dazzle provides Valkey server + direct in-process commands
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+      # LiteRT-LM runtime (community Swift wrapper over the official C API).
+      # Same runtime as the Android experiment (LiteRT-LM v0.10.2).
+      - package: LiteRTLM-Swift
+        product: LiteRTLMSwift
+    postBuildScripts:
+      # CLiteRTLM.framework embeds a nested dylib (libGemmaModelConstraintProvider.dylib)
+      # whose original signature does NOT chain to our dev provisioning profile.
+      # Xcode re-signs the framework but not the nested dylib, so dyld rejects it on
+      # device with "code signature invalid (errno=1)". Re-sign the dylib first, then
+      # re-seal the framework so its Sealed Resources hash is recomputed.
+      - name: "Re-sign nested CLiteRTLM dylibs"
+        runOnlyWhenInstalling: false
+        shell: /bin/bash
+        script: |
+          set -e
+          FW="${CODESIGNING_FOLDER_PATH}/Frameworks/CLiteRTLM.framework"
+          if [ ! -d "$FW" ]; then
+            echo "CLiteRTLM.framework not found at $FW — skipping"
+            exit 0
+          fi
+          if [ -z "${EXPANDED_CODE_SIGN_IDENTITY}" ]; then
+            echo "No code sign identity — skipping (likely a simulator/unsigned build)"
+            exit 0
+          fi
+          IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY}"
+          echo "Re-signing nested dylibs in CLiteRTLM.framework with $IDENTITY"
+          for DYLIB in "$FW"/*.dylib; do
+            [ -f "$DYLIB" ] || continue
+            echo "  codesign $(basename "$DYLIB")"
+            /usr/bin/codesign --force --sign "$IDENTITY" \
+              --preserve-metadata=identifier,entitlements,flags \
+              --timestamp=none "$DYLIB"
+          done
+          echo "Re-sealing CLiteRTLM.framework"
+          /usr/bin/codesign --force --sign "$IDENTITY" \
+            --preserve-metadata=identifier,entitlements,flags \
+            --timestamp=none "$FW"
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: "Dazzle Experiment"
+        CFBundleDisplayName: "Dazzle Experiment"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        NSDocumentsBrowserUsageDescription: "Used to export experiment results"
+        # Expose the app's Documents/ folder in the iOS Files app so the user
+        # can drop the 2.41 GB Gemma model into it without going through the
+        # Xcode Devices UI (which is unreliable for large files).
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true

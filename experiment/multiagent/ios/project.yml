@@ -1,0 +1,68 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+name: DazzleMultiAgent
+options:
+  bundleIdPrefix: io.dazzle
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.3"
+
+targets:
+  DazzleMultiAgent:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Resources
+      - path: MultiAgentTest.swift
+      # Shared infrastructure from backends module
+      - path: ../../backends/ios/StorageBackend.swift
+      - path: ../../backends/ios/SensorDataset.swift
+      - path: ../../backends/ios/SystemSnapshot.swift
+      - path: ../../backends/ios/Resources/dataset_iot_baseline.json
+      - path: ../../backends/ios/dazzle
+      # dazzle-incremental is inside the dazzle folder above (auto-included)
+      # Dazzle SDK (server + Swift primitives + C shim)
+      - path: ../../../sdk/ios/Sources/DazzleConfig.swift
+      - path: ../../../sdk/ios/Sources/DazzleServer.swift
+      - path: ../../../sdk/ios/Sources/DazzlePrimitives.swift
+      # Needed by the vector-search backend managers that live under
+      # backends/ios/dazzle/ (auto-included via the directory path above).
+      - path: ../../../sdk/ios/Sources/VectorIndex.swift
+      - path: ../../../core/platform/dazzle_ios.c
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: H886H7AS9G
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_BUNDLE_IDENTIFIER: io.dazzle.experiment.multiagent
+        INFOPLIST_FILE: Resources/Info.plist
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        OTHER_LDFLAGS: "$(inherited) -lz -lc++"
+        LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
+        CODE_SIGN_ENTITLEMENTS: Resources/DazzleMultiAgent.entitlements
+    dependencies:
+      - framework: ../../../sdk/ios/Dazzle.xcframework
+        embed: false
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: "Dazzle MultiAgent"
+        CFBundleDisplayName: "Dazzle MultiAgent"
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIApplicationSupportsIndirectInputEvents: true
+        NSDocumentsBrowserUsageDescription: "Used to export benchmark results"
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true

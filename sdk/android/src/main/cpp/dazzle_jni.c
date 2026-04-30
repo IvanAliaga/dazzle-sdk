@@ -69,10 +69,135 @@ static jclass g_stringArrCls  = NULL;
 
 jclass dazzle_jni_string_cls(void) { return g_stringCls; }
 
+/* SIGILL diagnostic handler — installed at JNI_OnLoad so any illegal-
+ * instruction trap during the bench surfaces with PC + faulting opcode
+ * + nearby instructions in logcat under tag "DazzleSIGILL". This is a
+ * pure debugging aid for the Cortex-A73-class chip-compatibility work
+ * in §6.3 of the paper; on chips that never fault it is a no-op.
+ *
+ * After the handler logs the diagnostic, we call dl_iterate_phdr to
+ * resolve the library + offset for the faulting PC, then restore the
+ * default action so the kernel proceeds with the standard SIGILL
+ * delivery (process death + tombstone). The next bench launch can read
+ * the logcat trace to identify the exact illegal instruction. */
+#include <ucontext.h>
+#include <dlfcn.h>
+
+/* MRS-emulation SIGILL handler — userspace shim for CPU feature
+ * detection on chips whose kernel does not emulate MRS on the
+ * ID_AA64* feature registers. Required for Cortex-A73-class chips
+ * running Linux <4.11 (specifically the HiSilicon Kirin 659 +
+ * Linux 4.9.148 combination on Huawei P20 Lite EMUI 9 / Android 9).
+ *
+ * Background. ARMv8-A defines a set of read-only EL1 system
+ * registers that report CPU feature bits (ID_AA64ISAR0_EL1,
+ * ID_AA64PFR0_EL1, ID_AA64MMFR0_EL1, …). compiler-rt-builtins (NDK
+ * 27 prebuilt) and various FetchContent dependencies emit `MRS Xt,
+ * ID_AA64*_EL1` instructions in their CPU feature initialisers.
+ * Linux 4.11+ traps those MRSes from EL0 and emulates them, so the
+ * userspace caller sees a sanitised value. Linux 4.9 does NOT
+ * emulate them: the EL1-only MRS faults with SIGILL.
+ *
+ * Workaround in this handler: detect the MRS pattern, write 0 into
+ * the destination register (every feature reported as "absent" — a
+ * safe baseline answer), advance PC past the MRS, and resume. The
+ * compiler-rt code paths that read these registers fall back to
+ * the safe / serial path when feature bits are 0, which is exactly
+ * what we want on a chip without those features. */
+static void dazzle_sigill_handler(int signo, siginfo_t *info, void *uctx) {
+    (void)signo;
+    ucontext_t *uc = (ucontext_t *)uctx;
+    uintptr_t pc = (uintptr_t)uc->uc_mcontext.pc;
+    uint32_t opcode = 0;
+    memcpy(&opcode, (const void *)pc, sizeof(opcode));
+
+    /* MRS encoding: 1101_0101_0011_1_o0_op1_CRn_CRm_op2_Rt
+     *   bits 31:20 == 0xD53_8 → MRS reading (L=1, the constant 1
+     *   bit at [20] for "register transfer" being the MRS direction).
+     *   bits 31:21 == 11010101001  (constant)
+     *   bit 20      == 1            (MRS direction)
+     *   bit 19      == 1            (system register, not implementation
+     *                                defined op)
+     */
+    const uint32_t MRS_MASK   = 0xFFF80000u;
+    const uint32_t MRS_PATTERN = 0xD5380000u;  /* MRS Xt, S3_*_*_*_* */
+    if ((opcode & MRS_MASK) == MRS_PATTERN) {
+        /* Decode + extract Rt and the system register tuple for the log */
+        uint32_t op1 = (opcode >> 16) & 7;
+        uint32_t CRn = (opcode >> 12) & 0xF;
+        uint32_t CRm = (opcode >>  8) & 0xF;
+        uint32_t op2 = (opcode >>  5) & 7;
+        uint32_t Rt  = opcode & 0x1F;
+        LOGI("=== SIGILL: emulating MRS S3_%u_C%u_C%u_%u → x%u (returning 0) ===",
+             op1, CRn, CRm, op2, Rt);
+        LOGI("  PC=0x%016lx opcode=0x%08x (kernel did not emulate ID_AA64* MRS)",
+             (unsigned long)pc, opcode);
+        if (Rt != 31) {
+            uc->uc_mcontext.regs[Rt] = 0;
+        }
+        uc->uc_mcontext.pc = pc + 4;  /* skip the faulting instruction */
+        return;                        /* resume execution */
+    }
+
+    /* Not an MRS we can emulate — fall through to diagnostic dump +
+     * default handler so the actual illegal opcode shows up in
+     * tombstone / logcat for further debugging. */
+    Dl_info dli;
+    const char *lib = "?", *sym = "?";
+    uintptr_t off = 0;
+    if (dladdr((const void *)pc, &dli)) {
+        if (dli.dli_fname) lib = dli.dli_fname;
+        if (dli.dli_sname) sym = dli.dli_sname;
+        off = pc - (uintptr_t)dli.dli_saddr;
+    }
+    LOGE("=== SIGILL non-MRS, cannot emulate ===");
+    LOGE("  signo=%d code=%d", info->si_signo, info->si_code);
+    LOGE("  PC=0x%016lx  opcode=0x%08x", (unsigned long)pc, opcode);
+    LOGE("  in %s  symbol=%s+0x%lx", lib, sym, (unsigned long)off);
+    for (int delta = -4; delta <= 4; ++delta) {
+        uint32_t op = 0;
+        memcpy(&op, (const void *)(pc + (delta * 4)), sizeof(op));
+        LOGE("    [PC%+d*4] = 0x%08x", delta, op);
+    }
+    LOGE("=== end SIGILL ===");
+    struct sigaction sa = { 0 };
+    sa.sa_handler = SIG_DFL;
+    sigaction(SIGILL, &sa, NULL);
+    raise(SIGILL);
+}
+
+static void install_sigill_handler(void) {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_sigaction = dazzle_sigill_handler;
+    /* SA_NODEFER keeps the handler installed across re-entry — there
+     * are multiple MRS reads in CPU feature detection, all of which
+     * must be emulated. SA_SIGINFO gives us the ucontext_t. We do NOT
+     * set SA_RESETHAND. */
+    sa.sa_flags     = SA_SIGINFO | SA_NODEFER;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGILL, &sa, NULL);
+    LOGI("SIGILL handler installed (MRS-emulation + diagnostic)");
+}
+
+/** Java-callable hook to (re-)install the SIGILL handler. Valkey's
+ * setupSignalHandlers() overrides ours during server start, so for
+ * the Cortex-A73-class chip-compat debug we need to call this from
+ * the bench thread immediately before exercising the Dazzle path. */
+JNIEXPORT void JNICALL
+Java_dev_dazzle_experiment_VectorBenchmark_nInstallSigillHandler(
+    JNIEnv *env, jclass cls)
+{
+    (void)env; (void)cls;
+    install_sigill_handler();
+}
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     (void)reserved;
     JNIEnv *env = NULL;
     if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) != JNI_OK) return -1;
+
+    install_sigill_handler();
 
     jclass lStr    = (*env)->FindClass(env, "java/lang/String");
     jclass lStrArr = (*env)->FindClass(env, "[Ljava/lang/String;");

@@ -85,7 +85,7 @@ object DazzleServer {
     private var metrics: DazzleMetrics = DazzleMetrics.DEFAULT
 
     init {
-        System.loadLibrary("dazzle")
+        DazzleNativeLoader.ensureLoaded()
     }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────

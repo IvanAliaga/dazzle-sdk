@@ -85,11 +85,11 @@ class VectorIndex internal constructor(
 
     companion object {
         init {
-            // libdazzle.so is loaded by DazzleServer.init; the valkey-search
-            // module (and its JNI exports nAddDirect / nSearchDirect) ships
-            // inside it via the static-link path. Fall through silently when
-            // called from a build that still had a separate libvalkeysearch.so.
-            try { System.loadLibrary("dazzle") } catch (_: UnsatisfiedLinkError) {}
+            // libdazzle.so (or libdazzle_v82.so on chips that advertise
+            // asimdhp + asimddp) is normally loaded by DazzleServer.init;
+            // ensureLoaded() is idempotent so calling it here protects
+            // VectorIndex callers that bypass DazzleServer.
+            try { DazzleNativeLoader.ensureLoaded() } catch (_: UnsatisfiedLinkError) {}
         }
 
         @JvmStatic external fun nAddDirect(indexName: String, key: String, vec: java.nio.ByteBuffer)

@@ -1,0 +1,164 @@
+\documentclass[11pt]{article}
+
+% --- arxiv-style template (kourgeorge/arxiv-style) ---
+\usepackage{arxiv}
+
+% --- engine: xelatex (Unicode-friendly) ---
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setmonofont{Menlo}[Scale=0.85]
+
+% --- Spanish typography (xelatex-friendly) ---
+\usepackage{polyglossia}
+\setdefaultlanguage{spanish}
+\setotherlanguage{english}
+% Override arxiv.sty's hard-coded English headers.
+\renewcommand{\abstractname}{Resumen}
+\providecommand{\keywordsname}{Palabras clave}
+\providecommand{\refname}{Referencias}
+\providecommand{\contentsname}{Índice}
+
+% --- core packages ---
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{caption}
+
+% --- url-aware line breaking ---
+\usepackage{url}
+\PassOptionsToPackage{hyphens}{url}
+\Urlmuskip=0mu plus 1mu
+\sloppy
+\setlength{\emergencystretch}{3em}
+
+% --- inline-code (pandoc \passthrough) breakability ---
+\usepackage{seqsplit}
+
+% --- code listings ---
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+}
+
+% --- bibliography (bibtex, more portable than biber) ---
+\usepackage[numbers]{natbib}
+
+% --- pandoc compatibility helpers ---
+\usepackage{calc}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\real}[1]{#1}
+\newcommand{\passthrough}[1]{\texttt{\seqsplit{#1}}}
+\let\OldTexttt\texttt
+\renewcommand{\texttt}[1]{\OldTexttt{\seqsplit{#1}}}
+
+% --- longtable styling (mismas reglas que la versión inglesa) ---
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{%
+  \scriptsize%
+  \setlength{\tabcolsep}{3pt}%
+  \renewcommand{\arraystretch}{0.95}%
+}
+\newcounter{none}
+
+% --- title block ---
+\title{Dazzle: Una base de datos embebida para agentes LLM on-device}
+
+\author{
+    Ivan Aliaga \\
+    Universidad Ricardo Palma \\
+    Lima, Perú \\
+    \texttt{ivan.aliaga@urp.edu.pe}
+}
+
+\date{Abril 2026}
+
+% --- arxiv metadata ---
+\renewcommand{\headeright}{Preprint}
+\renewcommand{\undertitle}{Preprint}
+\renewcommand{\shorttitle}{Dazzle: Una base de datos embebida para agentes LLM on-device}
+
+% --- begin document ---
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Las aplicaciones móviles que embeben un agente con un modelo de
+lenguaje hoy necesitan una capa de estado persistente entre las
+llamadas de inferencia: ventanas de sensores, agregados
+materializados, conteos aproximados, índices vectoriales sobre
+contexto reciente. Las bases de datos embebidas disponibles en la
+plataforma (SQLite, RocksDB, LMDB, ObjectBox) ofrecen entre dos y
+cuatro primitivas de estructura de datos cada una, así que cada
+construcción de orden superior (bounded streams, TTL por campo,
+HyperLogLog, búsqueda vectorial HNSW) termina re-implementada en
+código de aplicación, sobre esas primitivas, por cada equipo que la
+necesita.
+
+Presentamos \textbf{Dazzle}, un fork de Valkey (la versión Linux
+Foundation de Redis) cuyo servidor corre \emph{dentro} del proceso
+de aplicaciones Android e iOS en lugar de como demonio sobre TCP
+loopback. El fork expone diez primitivas nativas de estructura de
+datos, incluyendo búsqueda vectorial HNSW, contra $\leq 4$ en
+cualquier competidor embebido que medimos en las mismas
+plataformas; las expone a través de un SDK móvil tipado en Maven
+Central, pub.dev, npm y Swift Package Manager.
+
+Caracterizamos el envelope de latencia para doce backends en dos
+dispositivos físicos (Moto G35 5G, iPhone 12 Pro). El retrieval en
+estado estable sobre el path de agregados materializados aterriza
+en 50~µs en el Moto G35 5G y 7.24~µs en el iPhone 12 Pro; la
+búsqueda vectorial HNSW se mantiene en sub-milisegundo a recall
+$\geq 0.95$ a lo largo de la grilla de 9 configuraciones que
+medimos. A 50~µs frente a un turno de inferencia LLM on-device de
+$\sim 2.84$~s, el costo de retrieval representa el
+\textbf{0.00176\,\%} de la llamada de inferencia: por debajo del
+piso de ruido del bucle end-to-end. El eje de decisión para un
+backend de agente on-device es por tanto la \textbf{superficie
+primitiva y la ergonomía del desarrollador}, no los deltas de
+microbenchmark. Reportamos los números absolutos por motor en
+microsegundos de todas formas, porque los mismos motores también
+sirven cargas no-LLM (analítica, sincronización, indexación) donde
+los microsegundos sí importan.
+
+Una ablación 2$\times$2 end-to-end sobre 200 queries de Natural
+Questions en el Moto G35 5G muestra que la primitiva de retrieval
+es lo que impulsa la accuracy factual a esta escala. Qwen 2.5 0.5B
+con Dazzle RAG alcanza 0.630 \texttt{EM\_contains} contra 0.105 sin
+retrieval ($6.0\times$); Qwen 2.5 1.5B con RAG alcanza 0.735 contra
+0.110 sin retrieval ($6.7\times$). Un modelo de 380~MB con
+retrieval supera a un modelo de 940~MB ($3\times$ más grande) sin
+retrieval en cada métrica factual, end-to-end en un teléfono
+Android de \$150. El cuello de botella no es el tamaño del modelo,
+ni el SoC, ni el costo en microsegundos del retrieval; es si el
+backend permite que el bucle del agente alcance un índice
+vectorial siquiera.
+\end{abstract}
+
+\keywords{base de datos embebida \and LLM on-device \and agentes
+  móviles \and Valkey \and HNSW vector search \and Apache 2.0}
+
+% --- body content (generado desde paper_v2_es.md por pandoc) ---
+\input{body_es.tex}
+
+% --- bibliography ---
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}

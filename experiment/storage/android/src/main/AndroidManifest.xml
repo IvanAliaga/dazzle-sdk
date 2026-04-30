@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Required by DazzleServer (loopback TCP socket) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Write results to shared storage -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+    <!-- Long-running benches: hold a partial wakelock so Huawei iAware
+         and stock Doze don't freeze the bench thread within seconds
+         of activity start. Combined with FLAG_KEEP_SCREEN_ON in the
+         StorageActivity, this is enough to keep the bench alive on
+         every Huawei + Moto device the paper covers. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Foreground service for the bench thread: required on EMUI and
+         on stock Android 14+ (and recommended on Android 12+) for the
+         OS to refrain from killing the app during a 10-30 minute bench
+         stretch where the bench thread is in native code with no Java
+         logging. See BenchForegroundService.kt for the rationale. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+    <application
+        android:allowBackup="false"
+        android:label="Dazzle Storage"
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
+
+        <activity
+            android:name=".StorageActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".BenchForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+    </application>
+
+</manifest>

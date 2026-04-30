@@ -207,32 +207,32 @@ static int b64_decode(const char* src, size_t src_len, uint8_t* out) {
 #if defined(DAZZLE_VECTOR_SIMSIMD)
 
 // simsimd returns the cosine/dot "similarity"; hnswlib expects distance.
-// Direct-NEON on aarch64 — same dispatch-shim bypass as SimsimdCosI8Distance.
+//
+// We call the **dispatched** simsimd entry points (`simsimd_dot_f32`,
+// `simsimd_l2sq_f32`, `simsimd_cos_i8`, `simsimd_dot_f16`) rather than
+// the suffix-tagged direct variants (`*_neon`, `*_neon_dotprod`,
+// `*_neon_f16`). The dispatcher resolves the best kernel **once** at
+// first call (via `simsimd_capabilities()` reading /proc/cpuinfo on
+// Linux) and caches the function pointer, so the per-call overhead is a
+// single indirect call. The previous "direct-NEON" pattern emitted
+// SDOT / fp16 instructions on every chip — which SIGILLs on Cortex-A73
+// chips that do not advertise asimddp / asimdhp (Kirin 659, Snapdragon
+// 662). Using the dispatched entry points keeps the fast path
+// available on chips that have the extension and falls back to a
+// portable kernel when they do not.
 static float SimsimdIPDistance(const void* a, const void* b, const void* qty) {
     simsimd_distance_t d;
-#if defined(__aarch64__)
-    simsimd_dot_f32_neon(static_cast<const simsimd_f32_t*>(a),
-                         static_cast<const simsimd_f32_t*>(b),
-                         *static_cast<const size_t*>(qty), &d);
-#else
     simsimd_dot_f32(static_cast<const simsimd_f32_t*>(a),
                     static_cast<const simsimd_f32_t*>(b),
                     *static_cast<const size_t*>(qty), &d);
-#endif
     return 1.0f - static_cast<float>(d);
 }
 
 static float SimsimdL2SqrDistance(const void* a, const void* b, const void* qty) {
     simsimd_distance_t d;
-#if defined(__aarch64__)
-    simsimd_l2sq_f32_neon(static_cast<const simsimd_f32_t*>(a),
-                          static_cast<const simsimd_f32_t*>(b),
-                          *static_cast<const size_t*>(qty), &d);
-#else
     simsimd_l2sq_f32(static_cast<const simsimd_f32_t*>(a),
                      static_cast<const simsimd_f32_t*>(b),
                      *static_cast<const size_t*>(qty), &d);
-#endif
     return static_cast<float>(d);
 }
 
@@ -270,20 +270,16 @@ class SimsimdL2Space : public hnswlib::SpaceInterface<float> {
 // recall intact; the 3-SDOT cost is worth it.
 static float SimsimdCosI8Distance(const void* a, const void* b, const void* qty) {
     simsimd_distance_t d;
-#if defined(__aarch64__)
-    // Bypass simsimd's capability-dispatch shim — the resolved NEON kernel is
-    // what we always want on our target ABI. Same trick as the fp32 rerank
-    // loop: avoids per-call fn-pointer re-resolution inside the graph-search
-    // hot path (hnswlib calls this once per candidate visited, tens-to-hundreds
-    // of times per query).
-    simsimd_cos_i8_neon(static_cast<const simsimd_i8_t*>(a),
-                        static_cast<const simsimd_i8_t*>(b),
-                        *static_cast<const size_t*>(qty), &d);
-#else
+    // Use simsimd's dispatched entry point (not `_neon` direct) so that on
+    // chips without the asimddp /proc/cpuinfo feature (Kirin 659,
+    // Snapdragon 662, etc.) the dispatcher falls back to a portable
+    // serial kernel instead of emitting SDOT and SIGILLing. On chips that
+    // do advertise asimddp the dispatcher selects `simsimd_cos_i8_neon`
+    // (the SDOT-based fast path), so we keep the perf on chips that
+    // support it.
     simsimd_cos_i8(static_cast<const simsimd_i8_t*>(a),
                    static_cast<const simsimd_i8_t*>(b),
                    *static_cast<const size_t*>(qty), &d);
-#endif
     return static_cast<float>(d);
 }
 
@@ -307,15 +303,13 @@ class SimsimdCosI8Space : public hnswlib::SpaceInterface<float> {
 // negligible recall loss for embeddings trained in fp32.
 static float SimsimdDotF16Distance(const void* a, const void* b, const void* qty) {
     simsimd_distance_t d;
-#if defined(__aarch64__)
-    simsimd_dot_f16_neon(static_cast<const simsimd_f16_t*>(a),
-                         static_cast<const simsimd_f16_t*>(b),
-                         *static_cast<const size_t*>(qty), &d);
-#else
+    // Use simsimd's dispatched entry point (not `_neon` direct) so that on
+    // chips without the asimdhp /proc/cpuinfo feature (Kirin 659,
+    // Snapdragon 662, etc.) the dispatcher falls back to a portable
+    // serial kernel instead of emitting fp16 NEON and SIGILLing.
     simsimd_dot_f16(static_cast<const simsimd_f16_t*>(a),
                     static_cast<const simsimd_f16_t*>(b),
                     *static_cast<const size_t*>(qty), &d);
-#endif
     return 1.0f - static_cast<float>(d);
 }
 
