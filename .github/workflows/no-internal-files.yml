@@ -1,0 +1,66 @@
+name: No internal paper files in public mirror
+
+# Server-side defence (third layer) against re-introducing
+# operational paper files that were purged from the public mirror
+# in commit 1798b1c (release/1.0.0-beta.5-paper-arxiv-v1) via
+# `git filter-repo`.
+#
+# The local layers are:
+#   - Layer 1: `.gitignore` blocks accidental `git add`
+#   - Layer 2: `.githooks/pre-commit` blocks `git commit` even
+#              under `git add -f`
+#   - Layer 3: this workflow — fires on every push and PR, fails
+#              the job if any of the forbidden paths reappears in
+#              the tree, regardless of how it got there
+#
+# Trigger: push and pull_request to any branch.
+# Failure mode: the workflow fails with an explicit annotation
+# pointing at the forbidden path.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    name: Detect operational paper files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for forbidden paths
+        run: |
+          set -u
+
+          # Keep this list in lock-step with .gitignore and
+          # .githooks/pre-commit FORBIDDEN_PATHS.
+          FORBIDDEN="
+          research/paper/ARXIV_SUBMISSION.md
+          research/paper/COMPETITORS.md
+          research/paper/sdk_addendum_es.md
+          "
+
+          FAIL=0
+          for path in $FORBIDDEN; do
+            [ -z "$path" ] && continue
+            if [ -e "$path" ]; then
+              echo "::error file=${path}::Forbidden operational file present in public mirror; remove it (kept in private repo only)."
+              FAIL=1
+            fi
+          done
+
+          if [ $FAIL -eq 1 ]; then
+            echo
+            echo "These files are author / workflow artefacts and must"
+            echo "not appear in the public mirror. They were purged from"
+            echo "the entire branch history in commit 1798b1c (release/"
+            echo "1.0.0-beta.5-paper-arxiv-v1) via git filter-repo."
+            echo
+            echo "If you reached this state by syncing from the private"
+            echo "repo without filtering, re-run your sync excluding"
+            echo "those three paths."
+            echo
+            exit 1
+          fi
+
+          echo "Public mirror is clean — no forbidden operational files."

@@ -1,0 +1,55 @@
+#!/bin/sh
+# Versioned pre-commit hook -- blocks any commit that adds or
+# modifies operational paper files that belong to the private
+# repo only (workflow / authoring artefacts, not paper content).
+#
+# Activated repo-wide via `git config core.hooksPath .githooks`
+# (see scripts/install-git-hooks.sh).
+#
+# These files were removed from the public mirror in commit
+# ef4dfab (release/1.0.0-beta.5-paper-arxiv-v1) and re-listed in
+# .gitignore. This hook is the third layer of defence: even
+# `git add -f` or a careless `cp` from the private repo cannot
+# slip them past `git commit`.
+#
+# To extend this list: edit FORBIDDEN_PATHS below and document
+# the reason in the commit message.
+
+set -u
+
+FORBIDDEN_PATHS='
+research/paper/ARXIV_SUBMISSION.md
+research/paper/COMPETITORS.md
+research/paper/sdk_addendum_es.md
+'
+
+# Files staged for this commit (added, modified, or renamed).
+STAGED=$(git diff --cached --name-only --diff-filter=AM)
+
+OFFENDING=""
+for path in $FORBIDDEN_PATHS; do
+  [ -z "$path" ] && continue
+  if printf '%s\n' "$STAGED" | grep -Fxq "$path"; then
+    OFFENDING="${OFFENDING}  ${path}\n"
+  fi
+done
+
+if [ -n "$OFFENDING" ]; then
+  printf '\n'
+  printf '\xE2\x9D\x8C COMMIT RECHAZADO\n'
+  printf 'Los siguientes archivos son operacionales (workflow / authoring)\n'
+  printf 'y NO deben publicarse en el repo p\xc3\xbablico:\n\n'
+  printf '%b' "$OFFENDING"
+  printf '\n'
+  printf 'Si el archivo termin\xc3\xb3 staged por accidente:\n'
+  printf '  git restore --staged <path>\n'
+  printf '  git checkout -- <path>     # opcional: descartar copia local\n'
+  printf '\n'
+  printf 'Si REALMENTE necesitas commitear el archivo (caso excepcional):\n'
+  printf '  edita .githooks/pre-commit y quita el path de FORBIDDEN_PATHS\n'
+  printf '  con justificaci\xc3\xb3n en el commit message.\n'
+  printf '\n'
+  exit 1
+fi
+
+exit 0

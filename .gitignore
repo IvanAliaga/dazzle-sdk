@@ -238,3 +238,10 @@ samples/chat-kb-rn/ios/assets/
 samples/chat-kb-rn/ios/*.xcworkspace/xcshareddata/
 samples/chat-kb-rn/ios/*.xcworkspace/xcuserdata/
 samples/chat-kb-rn/package-lock.json
+
+# Operational paper files: kept in the private repo only.
+# These are NOT referenced from paper_v2_{en,es}.md and exist for
+# author / reviewer workflow rather than for the published paper.
+research/paper/ARXIV_SUBMISSION.md
+research/paper/COMPETITORS.md
+research/paper/sdk_addendum_es.md
