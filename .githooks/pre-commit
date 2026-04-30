@@ -21,6 +21,15 @@ FORBIDDEN_PATHS='
 research/paper/ARXIV_SUBMISSION.md
 research/paper/COMPETITORS.md
 research/paper/sdk_addendum_es.md
+research/results/OPTIMIZATION_SUMMARY.md
+docs/plans/05-http-clients-to-jsi-cpp.md
+'
+
+# Path PREFIXES (any file under these directories is forbidden).
+# Different from FORBIDDEN_PATHS because we want to catch every
+# file under the directory, not just exact matches.
+FORBIDDEN_PREFIXES='
+sdk/android/.cxx/
 '
 
 # Files staged for this commit (added, modified, or renamed).
@@ -31,6 +40,19 @@ for path in $FORBIDDEN_PATHS; do
   [ -z "$path" ] && continue
   if printf '%s\n' "$STAGED" | grep -Fxq "$path"; then
     OFFENDING="${OFFENDING}  ${path}\n"
+  fi
+done
+# Prefix-based directory check: any staged file whose path starts
+# with one of FORBIDDEN_PREFIXES is rejected.
+for prefix in $FORBIDDEN_PREFIXES; do
+  [ -z "$prefix" ] && continue
+  matches=$(printf '%s\n' "$STAGED" | grep -F "$prefix" || true)
+  if [ -n "$matches" ]; then
+    while IFS= read -r m; do
+      [ -n "$m" ] && OFFENDING="${OFFENDING}  ${m}  (under forbidden prefix ${prefix})\n"
+    done <<EOFM
+$matches
+EOFM
   fi
 done
 
