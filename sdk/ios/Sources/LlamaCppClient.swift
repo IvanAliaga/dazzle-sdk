@@ -172,6 +172,11 @@ public final class LlamaCppClient: LLMClient, @unchecked Sendable {
     ) -> AsyncThrowingStream<Delta, Error> {
         let prompt = assemblePrompt(messages: messages, tools: tools)
         let parser = ToolCallParser(syntax: syntax)
+        // INSTRUMENTATION — append the assembled prompt + raw model output
+        // to a file in the app's Documents dir so we can pull it with
+        // `xcrun devicectl device file pull` and inspect what the model
+        // actually sees and emits.
+        DazzleDebugLog.writeBlock("=== PROMPT (\(prompt.count)c, syntax=\(syntax)) ===\n\(prompt)\n=== END PROMPT ===\n=== RAW OUTPUT ===\n")
 
         return AsyncThrowingStream { continuation in
             // Box the continuation + cancellation flag so the @convention(c)
@@ -186,6 +191,7 @@ public final class LlamaCppClient: LLMClient, @unchecked Sendable {
                     let b = Unmanaged<GenerationBox>.fromOpaque(userData).takeUnretainedValue()
                     if b.cancelled { return 1 }
                     let piece = String(cString: pieceCstr)
+                    DazzleDebugLog.writeRaw(piece)
                     for d in b.parser.process(piece) {
                         b.continuation.yield(d)
                     }
@@ -207,6 +213,7 @@ public final class LlamaCppClient: LLMClient, @unchecked Sendable {
 
                 // Flush any held-back text and terminate.
                 for d in box.parser.flush() { box.continuation.yield(d) }
+                DazzleDebugLog.writeBlock("\n=== END RAW OUTPUT (rc=\(rc)) ===\n\n")
                 if rc < 0 && rc != Int32(DAZZLE_LLAMA_E_CANCELLED) {
                     box.continuation.finish(throwing: LlamaCppClientError.generationFailed(code: Int(rc)))
                 } else {
@@ -241,19 +248,84 @@ public final class LlamaCppClient: LLMClient, @unchecked Sendable {
         let baseSystem = messages.last(where: { $0.role == .system })?.content ?? systemPrompt
         let sys = baseSystem + ToolCallPrompts.renderToolsSection(tools, syntax: syntax)
         let turns = messages.filter { $0.role != .system }
-        var sb = "<|system|>\n\(sys)\n"
-        for t in turns {
-            let label: String
-            switch t.role {
-            case .user:      label = "user"
-            case .assistant: label = "assistant"
-            case .tool:      label = "tool"
-            case .system:    continue
+
+        // Dialect-aware chat template. Qwen 2.5 / Qwen 3 were trained with
+        // ChatML markers (<|im_start|>role\n...<|im_end|>) — feeding them
+        // the generic <|system|>/<|user|>/<|assistant|> wrapper makes the
+        // model treat the markers as garbage text and fail on turn 2+.
+        // Llama 3.x uses its own header markers; Gemma matches the generic
+        // wrapper closely enough.
+        switch syntax {
+        case .qwen25:
+            // Match Qwen 2.5's chat_template.jinja exactly. Three quirks:
+            //   1. assistant tool_calls live INSIDE the <|im_start|>assistant
+            //      block, not as a separate message.
+            //   2. tool results are wrapped as a USER message containing
+            //      <tool_response>...</tool_response> — Qwen NEVER sees
+            //      role "tool" as a chat-template label.
+            //   3. consecutive tool results share a single user wrapper.
+            var sb = "<|im_start|>system\n\(sys)<|im_end|>\n"
+            var i = 0
+            while i < turns.count {
+                let t = turns[i]
+                switch t.role {
+                case .user:
+                    sb += "<|im_start|>user\n\(t.content)<|im_end|>\n"
+                case .assistant:
+                    sb += "<|im_start|>assistant"
+                    if !t.content.isEmpty { sb += "\n\(t.content)" }
+                    if !t.toolCalls.isEmpty {
+                        for call in t.toolCalls {
+                            sb += "\n<tool_call>\n{\"name\": \"\(call.name)\", \"arguments\": \(call.arguments)}\n</tool_call>"
+                        }
+                    }
+                    sb += "<|im_end|>\n"
+                case .tool:
+                    // Open a fresh <|im_start|>user wrapper if the previous
+                    // turn wasn't also a tool message.
+                    let prevWasTool = (i > 0) && (turns[i - 1].role == .tool)
+                    if !prevWasTool { sb += "<|im_start|>user" }
+                    sb += "\n<tool_response>\n\(t.content)\n</tool_response>"
+                    let nextIsTool = (i + 1 < turns.count) && (turns[i + 1].role == .tool)
+                    if !nextIsTool { sb += "<|im_end|>\n" }
+                case .system:
+                    break  // already handled in the leading sys block
+                }
+                i += 1
             }
-            sb += "<|\(label)|>\n\(t.content)\n"
+            sb += "<|im_start|>assistant\n"
+            return sb
+
+        case .llama32:
+            var sb = "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n\(sys)<|eot_id|>"
+            for t in turns {
+                let label: String
+                switch t.role {
+                case .user:      label = "user"
+                case .assistant: label = "assistant"
+                case .tool:      label = "ipython"
+                case .system:    continue
+                }
+                sb += "<|start_header_id|>\(label)<|end_header_id|>\n\n\(t.content)<|eot_id|>"
+            }
+            sb += "<|start_header_id|>assistant<|end_header_id|>\n\n"
+            return sb
+
+        case .gemma, .auto:
+            var sb = "<|system|>\n\(sys)\n"
+            for t in turns {
+                let label: String
+                switch t.role {
+                case .user:      label = "user"
+                case .assistant: label = "assistant"
+                case .tool:      label = "tool"
+                case .system:    continue
+                }
+                sb += "<|\(label)|>\n\(t.content)\n"
+            }
+            sb += "<|assistant|>\n"
+            return sb
         }
-        sb += "<|assistant|>\n"
-        return sb
     }
 }
 

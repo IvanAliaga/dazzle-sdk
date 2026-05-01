@@ -117,13 +117,22 @@ public final class ToolCallParser {
                     // same buffer
                 } else {
                     if !finalFlush { return }
-                    // Stream ended mid-call — surface whatever we got
-                    // as text so the caller at least sees the raw
-                    // bytes.
-                    if !buf.isEmpty {
+                    // Stream ended mid-call. Some fine-tuned models (e.g.
+                    // our Qwen 2.5 LoRA) emit <|im_end|> directly after
+                    // the balanced JSON without an explicit </tool_call>
+                    // close tag. Try to recover by treating the buffer
+                    // as the tool_call payload — if it parses cleanly we
+                    // emit a real tool_call delta; otherwise fall back
+                    // to surfacing the raw bytes as text.
+                    let payload = buf.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let name = Self.extractJsonString(payload, field: "name")
+                    let args = Self.extractJsonObject(payload, field: argsField)
+                    if name != nil && args != nil {
+                        emitCall(payload: payload, into: &out)
+                    } else if !buf.isEmpty {
                         out.append(.text(startDelim + buf))
-                        buf.removeAll(keepingCapacity: false)
                     }
+                    buf.removeAll(keepingCapacity: false)
                     insideCall = false
                     return
                 }
