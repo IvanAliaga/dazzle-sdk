@@ -1,0 +1,132 @@
+name: .NET SDK
+
+on:
+  push:
+    branches: [main, "release/**"]
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - "sdk/dotnet/**"
+      - "sdk/cpp/**"
+      - ".github/workflows/dotnet.yml"
+
+jobs:
+  # 1. Build the native libdazzle on each target platform
+  native:
+    name: Native (${{ matrix.rid }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  rid: linux-x64,   lib: libdazzle.so }
+          - { os: macos-latest,   rid: osx-arm64,   lib: libdazzle.dylib }
+          - { os: windows-latest, rid: win-x64,     lib: dazzle.dll }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -S sdk/cpp -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Locate artifact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p out
+          cp build/${{ matrix.lib }} out/
+
+      - name: Locate artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path out | Out-Null
+          Copy-Item build/Release/${{ matrix.lib }} out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.rid }}
+          path: out/${{ matrix.lib }}
+
+  # 2. Build managed code and run integration tests against a Valkey service
+  test:
+    name: Test (.NET 9)
+    runs-on: ubuntu-latest
+    needs: native
+    services:
+      valkey:
+        image: valkey/valkey:8
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Stage native lib for tests
+        uses: actions/download-artifact@v4
+        with:
+          name: native-linux-x64
+          path: sdk/cpp/build
+
+      - name: Restore
+        run: dotnet restore sdk/dotnet/Dazzle.NET.sln
+
+      - name: Build
+        run: dotnet build sdk/dotnet/Dazzle.NET.sln -c Release --no-restore
+
+      - name: Test
+        run: dotnet test sdk/dotnet/Dazzle.NET.sln -c Release --no-build --logger "console;verbosity=normal"
+
+  # 3. Pack and publish on tag push (v*)
+  publish:
+    name: Publish to NuGet.org
+    runs-on: ubuntu-latest
+    needs: [native, test]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Download all native libs
+        uses: actions/download-artifact@v4
+        with:
+          path: native-artifacts
+
+      - name: Stage natives into runtimes/
+        run: |
+          mkdir -p sdk/dotnet/runtimes/linux-x64/native
+          mkdir -p sdk/dotnet/runtimes/osx-arm64/native
+          mkdir -p sdk/dotnet/runtimes/win-x64/native
+          cp native-artifacts/native-linux-x64/libdazzle.so   sdk/dotnet/runtimes/linux-x64/native/
+          cp native-artifacts/native-osx-arm64/libdazzle.dylib sdk/dotnet/runtimes/osx-arm64/native/
+          cp native-artifacts/native-win-x64/dazzle.dll        sdk/dotnet/runtimes/win-x64/native/
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Pack
+        run: |
+          dotnet pack sdk/dotnet/Dazzle.NET.csproj \
+            -c Release \
+            -o nupkg \
+            -p:Version=${{ steps.ver.outputs.version }} \
+            -p:PackageVersion=${{ steps.ver.outputs.version }}
+
+      - name: Push to NuGet.org
+        run: |
+          dotnet nuget push nupkg/*.nupkg \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
