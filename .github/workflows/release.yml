@@ -40,7 +40,7 @@ jobs:
         run: echo "y" | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
       - name: Assemble release AAR
         working-directory: sdk/android
-        run: ./gradlew :dazzle:assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
