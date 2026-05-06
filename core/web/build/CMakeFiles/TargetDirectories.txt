@@ -1,3 +1,0 @@
-/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/CMakeFiles/dazzle.dir
-/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/CMakeFiles/edit_cache.dir
-/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/CMakeFiles/rebuild_cache.dir
