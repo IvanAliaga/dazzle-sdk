@@ -9,6 +9,31 @@ permissions:
   contents: write   # required by softprops/action-gh-release to create / update GitHub Releases
 
 jobs:
+  # Make sure the committed dazzle.wasm / dazzle.js artefacts in
+  # sdk/flutter/dazzle_flutter/web/native/ and the RN equivalent are still
+  # in sync with core/web/src/dazzle_wasm.cpp. Anyone editing the C++
+  # source has to regenerate the WASM locally (./core/web/build.sh) and
+  # commit the result; otherwise this job fails the release.
+  wasm-check:
+    name: Verify dazzle.wasm matches source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+      - name: Build WASM
+        run: bash core/web/build.sh
+      - name: Verify committed artefacts are up to date
+        run: |
+          if ! git diff --quiet -- sdk/flutter/dazzle_flutter/web/native sdk/react-native/dazzle-react-native/web/native; then
+            echo "::error::core/web/src/dazzle_wasm.cpp changed but the committed .wasm/.js were not regenerated."
+            echo "Run ./core/web/build.sh locally and commit sdk/{flutter,react-native}/.../web/native/."
+            git diff --stat -- sdk/flutter/dazzle_flutter/web/native sdk/react-native/dazzle-react-native/web/native
+            exit 1
+          fi
+          echo "✓ WASM artefacts in sync."
+
   release-ios:
     name: Build & publish iOS XCFramework
     runs-on: macos-latest

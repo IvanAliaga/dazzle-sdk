@@ -5,6 +5,18 @@
   "main": "src/index.ts",
   "source": "src/index.ts",
   "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./web": {
+      "types": "./src/web/index.ts",
+      "default": "./src/web/index.ts"
+    },
+    "./web/dazzle.wasm": "./web/native/dazzle.wasm",
+    "./web/dazzle.js":   "./web/native/dazzle.js"
+  },
   "files": [
     "src",
     "lib",
