@@ -55,3 +55,9 @@ export 'src/edge/foundation_models_client.dart';
 export 'src/ffi/command.dart'
     show dazzleCommand, RespValue, RespBulk, RespInt, RespArray,
          RespError, RespNull, DazzleTransportException;
+
+// Web target — Flutter Web embedded WASM runtime (Scope A: Hash + Vector
+// + OPFS persistence).  See the README "Flutter Web" section for the
+// index.html setup snippet that loads dazzle.wasm before Flutter boots.
+export 'src/web/dazzle_web.dart'
+    show DazzleWeb, DazzleWebHash, DazzleWebVectorIndex;

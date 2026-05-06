@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/_deps/hnswlib_src-subbuild/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

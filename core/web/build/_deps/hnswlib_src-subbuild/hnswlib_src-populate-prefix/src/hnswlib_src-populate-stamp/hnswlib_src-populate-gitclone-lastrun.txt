@@ -1,0 +1,15 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=git
+command=/opt/homebrew/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/_deps/hnswlib_src-subbuild/hnswlib_src-populate-prefix/tmp/hnswlib_src-populate-gitclone.cmake
+source_dir=/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/_deps/hnswlib_src-src
+work_dir=/Users/ivanaliaga/Proyectos/dazzle-sdk-clean/core/web/build/_deps
+repository=https://github.com/nmslib/hnswlib.git
+remote=origin
+init_submodules=TRUE
+recurse_submodules=--recursive
+submodules=
+CMP0097=NEW
+      

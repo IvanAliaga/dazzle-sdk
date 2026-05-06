@@ -28,7 +28,9 @@ topics:
 #   - https://github.com/sponsors/IvanAliaga
 
 environment:
-  sdk:     ">=3.3.0 <4.0.0"
+  # 3.6.0 is the minimum that supports JSArray.withLength used by the
+  # web-target js_interop bindings.
+  sdk:     ">=3.6.0 <4.0.0"
   flutter: ">=3.19.0"
 
 dependencies:
@@ -38,6 +40,12 @@ dependencies:
   ffi:                        ^2.1.0
   # OpenAICompatibleClient — pure Dart HTTP, no native deps.
   http:                       ^1.2.0
+  # web target — js_interop is in dart:* but `package:web` is the typed
+  # browser API surface (replaces the deprecated dart:html).
+  web:                        ^1.1.0
+  # flutter_web_plugins — required by the platforms.web plugin entry.
+  flutter_web_plugins:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -53,3 +61,13 @@ flutter:
         pluginClass: DazzleFlutterPlugin
       ios:
         pluginClass: DazzleFlutterPlugin
+      web:
+        pluginClass: DazzleWebPlugin
+        fileName:    src/web/plugin_web.dart
+
+  # Native WASM module + JS loader, served as static assets.  The Dart web
+  # bridge fetches `assets/packages/dazzle_flutter/web/native/dazzle.js`
+  # from a Flutter Web build.
+  assets:
+    - web/native/dazzle.js
+    - web/native/dazzle.wasm
