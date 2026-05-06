@@ -45,10 +45,15 @@ target_link_libraries(my_app PRIVATE dazzle_lite)
 ### Plain Make / GCC
 
 ```sh
-g++ -std=c++17 my_app.cpp \
+# On Linux, place the source file BEFORE -l flags — the default linker
+# behaviour (--as-needed) discards libraries it doesn't see referenced
+# from earlier objects.
+g++ -std=c++17 \
     -I /path/to/dazzle_lite/include \
+    my_app.cpp \
     -L /path/to/dazzle_lite/lib -ldazzle_lite \
-    -Wl,-rpath,/path/to/dazzle_lite/lib
+    -Wl,-rpath,/path/to/dazzle_lite/lib \
+    -o my_app
 ```
 
 ## Quickstart

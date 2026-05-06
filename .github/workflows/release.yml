@@ -90,11 +90,15 @@ jobs:
           path: core/native-lite/build
       - name: Build smoke test
         run: |
+          # Source file MUST come before -l flags on Linux because the
+          # default linker (--as-needed) discards libraries it doesn't
+          # see referenced from earlier objects.
           c++ -std=c++17 \
             -I core/native-lite/include \
+            sdk/cpp-server/test/smoke_test.cpp \
             -L core/native-lite/build -ldazzle_lite \
             -Wl,-rpath,$(pwd)/core/native-lite/build \
-            sdk/cpp-server/test/smoke_test.cpp -o /tmp/dazzle_smoke
+            -o /tmp/dazzle_smoke
       - name: Run smoke test
         run: /tmp/dazzle_smoke
 
