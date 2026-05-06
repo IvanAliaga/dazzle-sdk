@@ -76,7 +76,22 @@ void dazzle_llama_free_model(dazzle_llama_model *model);
 /* Create an inference context tied to `model`. `n_ctx` is the
  * maximum token window; 2048 is a reasonable default for 7B/13B
  * chat models, 4096+ for larger contexts. `n_threads` caps the
- * CPU worker count; pass -1 to let llama.cpp auto-size. */
+ * CPU worker count; pass -1 to let llama.cpp auto-size.
+ *
+ * Memory footprint: internally `n_batch` and `n_ubatch` are pinned
+ * to `n_ctx`, so the context will accept ANY prompt that fits in
+ * the window in a single decode call. The trade-off is that the
+ * batch buffers also scale with `n_ctx` rather than with a fixed
+ * 512-token batch. Pick `n_ctx` to match the longest prompt you
+ * realistically need: a needlessly large window costs RAM at
+ * context-creation time on memory-constrained mobile devices.
+ *
+ * Why this matters: llama.cpp aborts the process (SIGABRT inside
+ * `llama_decode`) if the prompt exceeds `n_batch` — so a fixed
+ * batch < `n_ctx` would crash the whole app the first time a user
+ * pastes a long message. Reproduced on iPhone 12 Pro / iOS 26.3
+ * with a 590-token prompt against the previous 512-token batch.
+ */
 dazzle_llama_ctx *dazzle_llama_new_context(dazzle_llama_model *model,
                                            int n_ctx,
                                            int n_threads);
