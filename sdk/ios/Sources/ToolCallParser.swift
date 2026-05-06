@@ -144,10 +144,24 @@ public final class ToolCallParser {
     /// `.toolCallArgs` pair. On malformed input, fall back to emitting
     /// the raw payload as a `.text` delta so the caller still sees the
     /// model's output instead of swallowing it.
+    ///
+    /// Accepts BOTH common shapes for the `arguments` field:
+    ///   1. As a JSON object (Qwen 1.5B fine-tuned, Gemma):
+    ///      `"arguments": {"query": "..."}`
+    ///   2. As a stringified JSON (Qwen 0.5B fine-tuned, OpenAI style):
+    ///      `"arguments": "{\"query\": \"...\"}"`
+    /// In case (2) we extract the inner JSON string and emit it
+    /// verbatim — the downstream tool's `argsFromJson` decodes the
+    /// arguments the same way regardless of the wrapper.
     private func emitCall(payload: String, into out: inout [Delta]) {
         let name = Self.extractJsonString(payload, field: "name")
-        let args = Self.extractJsonObject(payload, field: argsField)
-        guard let name, let args else {
+        guard let name else {
+            out.append(.text(startDelim + payload + endDelim))
+            return
+        }
+        let args: String? = Self.extractJsonObject(payload, field: argsField)
+            ?? Self.extractJsonString(payload, field: argsField)
+        guard let args else {
             out.append(.text(startDelim + payload + endDelim))
             return
         }
