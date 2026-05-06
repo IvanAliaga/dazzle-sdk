@@ -135,6 +135,50 @@ All notable changes to the Dazzle SDK. This project follows
   the source of truth, and the commit hash of head of main at
   each arXiv submission is recorded in the paper.
 
+### Added (Web — Flutter Web + RN Web with WebAssembly runtime)
+
+- **`dazzle.wasm` + `dazzle.js` Emscripten build** — HNSW vector search
+  + hash KV running 100% in-process inside the browser, persisted to
+  the Origin Private File System (OPFS).  Same on-device promise the
+  iOS / Android targets deliver, on the web.  Single 236 KB binary
+  built from `core/web/src/dazzle_wasm.cpp` (which is the same TU that
+  feeds the native `libdazzle_lite` build below — zero behavioural
+  drift between web and native targets).
+- **Flutter Web** — `DazzleWeb`, `DazzleWebHash`, `DazzleWebVectorIndex`
+  surfaced from `package:dazzle_flutter`.  Exported by the package's
+  main library; Flutter Web build pulls the WASM as a plugin asset.
+- **React Native Web** — same surface area exposed from
+  `dazzle-react-native/web` sub-path so RN apps targeting web (Expo
+  Web, react-native-web) get a parallel API to Dart's.
+- **`dazzle-react`** (new npm package) — first-class React (DOM)
+  bindings with idiomatic hooks (`useDazzleInit`, `useDazzleHash`,
+  `useVectorIndex`, `useVectorSearch`, `useAutoPersist`).  Re-uses the
+  same `dazzle.wasm` so React, Flutter Web and RN Web all behave
+  identically.
+- **OPFS persistence** — host-side snapshot via `navigator.storage
+  .getDirectory()`.  Multi-user isolation via `opfsFileName`.
+
+### Added (Desktop — Flutter Desktop + C++ servers via libdazzle_lite)
+
+- **`libdazzle_lite`** — native shared library (Linux `.so` / macOS
+  `.dylib` / Windows `.dll`) compiled from the same single
+  translation unit as `dazzle.wasm`.  One CMake target in
+  `core/native-lite/` produces all three host artefacts; the
+  binary snapshot format (`DZWS` magic + version 1) is identical
+  between web and desktop, so a snapshot saved by a Flutter Web app
+  can be loaded by a C++ server and vice-versa.
+- **Flutter Desktop** — `DazzleDesktop`, `DazzleDesktopHash`,
+  `DazzleDesktopVectorIndex` from `package:dazzle_flutter`.  Backed
+  by `dart:ffi` against `libdazzle_lite`; persistence to a file on
+  disk (default `<cwd>/.dazzle/snapshot.bin`, configurable via
+  `snapshotPath:`).  Plugin declares `ffiPlugin: true` for `linux`,
+  `macos`, `windows` so consumers don't need a host C++ toolchain.
+- **C++ Linux / macOS / Windows server SDK** — public C ABI header
+  at `core/native-lite/include/dazzle_lite.h`, shipped together with
+  `libdazzle_lite.{so,dylib,dll}`.  Use this for non-Flutter C++ apps
+  that need the same offline Hash + Vector primitives.  Quickstart
+  and CMake integration snippets live in `sdk/cpp-server/README.md`.
+
 ### Added (.NET — first-class ASP.NET Core 9 binding)
 
 - **`Dazzle.NET` NuGet package** — P/Invoke bindings to libdazzle for

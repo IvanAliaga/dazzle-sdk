@@ -189,12 +189,15 @@ PASS — see [`samples/PROVIDERS.md`](samples/PROVIDERS.md).
 
 ### Distribution / Distribución
 
-| Stack        | Registry                                                | Status                              |
-|--------------|---------------------------------------------------------|-------------------------------------|
-| iOS          | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
-| Flutter      | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.5` |
-| React Native | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.5` |
-| Android      | [Maven Central (`com.ivanaliaga:dazzle-sdk`)](https://central.sonatype.com/artifact/com.ivanaliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
+| Stack             | Registry                                                | Status                              |
+|-------------------|---------------------------------------------------------|-------------------------------------|
+| iOS               | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
+| Android           | [Maven Central (`com.ivanaliaga:dazzle-sdk`)](https://central.sonatype.com/artifact/com.ivanaliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
+| Flutter (mobile + web + desktop) | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.5` |
+| React Native (mobile + web)      | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.5` |
+| React (DOM)       | [npmjs.com/package/dazzle-react](https://www.npmjs.com/package/dazzle-react) | ✅ available — `1.0.0-beta.5` |
+| .NET (ASP.NET Core 9) | [nuget.org/packages/Dazzle.NET](https://www.nuget.org/packages/Dazzle.NET) | ✅ available — `1.0.0-beta.5` |
+| C++ server (Linux / macOS / Windows) | `libdazzle_lite` shared lib (this repo) | ✅ available — `1.0.0-beta.5` |
 
 ### Android — one-liner agent / Agente en una línea
 
