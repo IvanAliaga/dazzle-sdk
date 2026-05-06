@@ -64,6 +64,12 @@ flutter:
       web:
         pluginClass: DazzleWebPlugin
         fileName:    src/web/plugin_web.dart
+      linux:
+        ffiPlugin: true
+      macos:
+        ffiPlugin: true
+      windows:
+        ffiPlugin: true
 
   # Native WASM module + JS loader, served as static assets.  The Dart web
   # bridge fetches `assets/packages/dazzle_flutter/web/native/dazzle.js`

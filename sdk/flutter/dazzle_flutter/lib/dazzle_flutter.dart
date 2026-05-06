@@ -61,3 +61,9 @@ export 'src/ffi/command.dart'
 // index.html setup snippet that loads dazzle.wasm before Flutter boots.
 export 'src/web/dazzle_web.dart'
     show DazzleWeb, DazzleWebHash, DazzleWebVectorIndex;
+
+// Desktop targets — Linux / macOS / Windows native via dart:ffi.  Same
+// API surface as DazzleWeb (Hash + Vector + binary snapshot), backed by
+// libdazzle_lite compiled from the same C++ source as dazzle.wasm.
+export 'src/desktop/dazzle_desktop.dart'
+    show DazzleDesktop, DazzleDesktopHash, DazzleDesktopVectorIndex;
