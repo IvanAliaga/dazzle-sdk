@@ -135,6 +135,50 @@ All notable changes to the Dazzle SDK. This project follows
   the source of truth, and the commit hash of head of main at
   each arXiv submission is recorded in the paper.
 
+### Added (.NET — first-class ASP.NET Core 9 binding)
+
+- **`Dazzle.NET` NuGet package** — P/Invoke bindings to libdazzle for
+  ASP.NET Core 9 applications. Async wrapper interface
+  `IDazzleClient` covers the same hash + vector-index surface the
+  iOS / Android SDKs expose; `AddDazzle()` DI extension registers a
+  singleton client over the RESP-over-TCP transport.
+  - Cross-platform native: ships `libdazzle.so` / `.dylib` /
+    `dazzle.dll` under `runtimes/{rid}/native/` for `linux-x64`,
+    `linux-arm64`, `osx-arm64` and `win-x64`. The Windows build
+    ports the C transport to Winsock2 with lazy `WSAStartup`
+    initialisation under `InterlockedCompareExchange` so concurrent
+    request handlers sharing the singleton initialise exactly once.
+  - Symbol package (`.snupkg`) ships alongside for source-indexed
+    debug symbols.
+  - Sample at `samples/dotnet-vector-search` — minimal ASP.NET Core
+    app that seeds a small product catalog with mock embeddings and
+    exposes `POST /search`.
+
+### Fixed
+
+- **iOS — `ToolCallParser.swift` accepts stringified-JSON arguments.**
+  Some fine-tuned models (e.g. Qwen 0.5B fine-tuned in the OpenAI
+  tool-call style) emit `arguments` as a JSON-encoded string instead
+  of a JSON object. The previous parser only handled the object
+  shape, so stringified payloads fell through the
+  `extractJsonObject` guard and the whole call surfaced as a
+  `.text` delta — silently swallowing the tool call. `emitCall` now
+  tries `extractJsonObject` first, then falls back to
+  `extractJsonString`; downstream `argsFromJson` decodes both shapes
+  identically.
+
+- **iOS / Android — `dazzle_llama` no longer aborts on prompts
+  longer than `n_batch`.** llama.cpp aborts the entire process
+  (SIGABRT inside `llama_decode`) when a prompt exceeds `n_batch`,
+  and the previous hardcoded 512-token batch crashed the app the
+  first time a user pasted a long message on real devices —
+  reproduced on iPhone 12 Pro / iOS 26.3 with a 590-token prompt.
+  `dazzle_llama_new_context()` now pins `n_batch = n_ubatch = n_ctx`
+  so the context accepts any prompt that fits in the window in a
+  single decode call. The trade-off is documented on the public
+  `dazzle_llama.h` header so consumers across iOS / Android /
+  Flutter / RN see the same memory-footprint guidance.
+
 ### No SDK API changes
 
 - The public Kotlin / Swift API surface is unchanged from
