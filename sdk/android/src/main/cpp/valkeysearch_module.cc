@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifdef __ANDROID__
+#include <android/log.h>
+#define DZ_LOGI(fmt, ...) __android_log_print(ANDROID_LOG_INFO,  "DazzleVS", fmt, ##__VA_ARGS__)
+#else
+#include <cstdio>
+#define DZ_LOGI(fmt, ...) std::fprintf(stderr, "[DazzleVS] " fmt "\n", ##__VA_ARGS__)
+#endif
 
 /*
  * dazzle-search: minimal vector-search Valkey module for mobile.
@@ -1136,6 +1143,10 @@ static void add_batch_direct_impl(const char* name_c,
         int forced = std::atoi(env);
         if (forced >= 1) nThreads = forced;
     }
+    DZ_LOGI("addBatchDirect: nVecs=%d hw=%u nThreads=%d (env=%s)",
+            nVecs, hw, nThreads,
+            std::getenv("DAZZLE_HNSW_BATCH_THREADS") ?
+            std::getenv("DAZZLE_HNSW_BATCH_THREADS") : "<unset>");
 
     bool sq8 = schema->sq8;
     bool f16 = schema->f16;
@@ -1145,7 +1156,11 @@ static void add_batch_direct_impl(const char* name_c,
         std::vector<float>    scratch_f(dim);
         std::vector<int8_t>   scratch_i8((size_t)(sq8 ? dim : 0));
         std::vector<uint16_t> scratch_f16((size_t)(f16 ? dim : 0));
+        if (t == 0) DZ_LOGI("addBatchDirect: worker(0) entered, will iterate %d vecs", nVecs);
         for (int i = t; i < nVecs; i += nThreads) {
+            if (t == 0 && (i % 200 == 0)) {
+                DZ_LOGI("addBatchDirect: worker(0) at vec %d/%d", i, nVecs);
+            }
             const float* src = vecs_flat + (size_t)i * dim;
             const void* vec_to_add;
             bool have_norm = false;
@@ -1190,6 +1205,7 @@ static void add_batch_direct_impl(const char* name_c,
         for (int t = 0; t < nThreads; t++) pool.emplace_back(worker, t);
         for (auto& th : pool) th.join();
     }
+    DZ_LOGI("addBatchDirect: all workers joined, nVecs=%d done", nVecs);
 }
 
 // Search impl on a resolved schema pointer. Result fills out_ids[] with
