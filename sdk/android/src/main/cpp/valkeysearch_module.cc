@@ -1124,6 +1124,18 @@ static void add_batch_direct_impl(const char* name_c,
     unsigned hw = std::thread::hardware_concurrency();
     int nThreads = (int)std::min<unsigned>(hw == 0 ? 2u : hw, 8u);
     if (nVecs < nThreads * 32) nThreads = 1;
+    // Allow caller to override via env (set via the JNI helper
+    // `nSetAddBatchThreads`). This is the escape hatch for chips
+    // where 8-way parallel `hnsw->addPoint` deadlocks under EMUI
+    // iAware-style cgroup throttling (Kirin 659 / Cortex-A53). On
+    // those targets the test harness sets it to 1 before the
+    // first addBatchDirect call; on chips with adequate scheduler
+    // headroom (G80 / SD662 / T760 / iPhone) the env stays unset
+    // and the original 8-way pool runs as before.
+    if (const char* env = std::getenv("DAZZLE_HNSW_BATCH_THREADS")) {
+        int forced = std::atoi(env);
+        if (forced >= 1) nThreads = forced;
+    }
 
     bool sq8 = schema->sq8;
     bool f16 = schema->f16;
@@ -1536,6 +1548,32 @@ Java_dev_dazzle_sdk_VectorIndex_nAddBatchDirect(
         env->DeleteLocalRef(id_jstrings[(size_t)i]);
     }
     env->ReleaseStringUTFChars(jIndex, index_name);
+}
+
+// Force the parallelism level used by `add_batch_direct_impl` for the
+// `hnsw->addPoint` worker pool. `n` ≥ 1 pins to that exact thread count;
+// `n` ≤ 0 restores the auto-detected default
+// (min(hardware_concurrency, 8)). Mirrors the `DAZZLE_HNSW_BATCH_THREADS`
+// env-var path but doesn't require process-level env mutation, so a
+// single-process instrumentation test can switch policies on the fly.
+//
+// Concretely: tight 4 GB devices where EMUI iAware throttles cgroup CPU
+// shares (Kirin 659 / Cortex-A53) deadlock on the default 8-way
+// std::thread pool because the workers spin on hnswlib's per-element
+// mutex while the kernel only schedules a fraction of them. Calling
+// `nSetAddBatchThreads(1)` before the first `addBatchDirect` forces a
+// single-threaded build that finishes in linear time without
+// contention.
+extern "C" JNIEXPORT void JNICALL
+Java_dev_dazzle_sdk_VectorIndex_nSetAddBatchThreads(
+        JNIEnv* /*env*/, jclass, jint n) {
+    if (n >= 1) {
+        char buf[16];
+        std::snprintf(buf, sizeof(buf), "%d", (int)n);
+        ::setenv("DAZZLE_HNSW_BATCH_THREADS", buf, /*overwrite=*/1);
+    } else {
+        ::unsetenv("DAZZLE_HNSW_BATCH_THREADS");
+    }
 }
 
 // Returns String[] interleaved [id0, dist0, id1, dist1, …].
