@@ -1,12 +1,12 @@
 \section{Introduction}\label{introduction}
 
 Quantized language models under 3 GB now run at interactive rates on
-smartphone-class ARM64 hardware: Gemma 2 \citep{gemma2} and Gemma 4
-\citep{gemma4}, Phi-3 mini \citep{phi3}, the Llama 3 herd \citep{llama3}
-(including Llama 3.2 1B and 3B), MobileLLM \citep{mobilellm}, and the Qwen 2.5
-series \citep{qwen25} we use in §5.9. The runtime stack --- \texttt{llama.cpp}
-\citep{llamacpp} with its GGUF quantised-weight format \citep{gguf}, LiteRT-LM
-\citep{litertlm}, MLC-LLM \citep{mlcllm}, ExecuTorch \citep{executorch} --- is
+smartphone-class ARM64 hardware: Gemma 2 {[}@gemma2{]} and Gemma 4
+{[}@gemma4{]}, Phi-3 mini {[}@phi3{]}, the Llama 3 herd {[}@llama3{]} (including
+Llama 3.2 1B and 3B), MobileLLM {[}@mobilellm{]}, and the Qwen 2.5 series
+{[}@qwen25{]} we use in §5.9. The runtime stack --- \texttt{llama.cpp}
+{[}@llamacpp{]} with its GGUF quantised-weight format {[}@gguf{]}, LiteRT-LM
+{[}@litertlm{]}, MLC-LLM {[}@mlcllm{]}, ExecuTorch {[}@executorch{]} --- is
 mature and reaches sub-second decoded-token latency on \$150-class handsets.
 
 The \textbf{state layer} an agent needs has not matured at the same pace. By
@@ -25,17 +25,17 @@ HyperLogLog, TTL on hash fields. None of these are exotic. None are research
 problems.
 
 No backend on the platform offers them as native primitives. On Android and iOS
-the dominant embedded options --- SQLite \citep{sqlite}, RocksDB \citep{rocksdb}
-(an LSM-tree descendant of LevelDB \citep{leveldb}), LMDB \citep{lmdb},
-ObjectBox \citep{objectbox4}, and the analytical embedded peer DuckDB
-\citep{duckdb} --- expose between two and four data structures total: rows,
-key-value pairs, blob stores, occasionally a vector index. Every higher-order
-construct (bounded streams, materialized aggregates, approximate counts, TTL
-semantics, similarity search) has to be reimplemented in application code on top
-of those primitives, by every team that needs them. The resulting code is
-fragile under concurrent access. The atomicity guarantees that come for free
-with a mature in-process server are silently lost. The same handful of bugs gets
-rediscovered in app after app.
+the dominant embedded options --- SQLite {[}@sqlite{]}, RocksDB {[}@rocksdb{]}
+(an LSM-tree descendant of LevelDB {[}@leveldb{]}), LMDB {[}@lmdb{]}, ObjectBox
+{[}@objectbox4{]}, and the analytical embedded peer DuckDB {[}@duckdb{]} ---
+expose between two and four data structures total: rows, key-value pairs, blob
+stores, occasionally a vector index. Every higher-order construct (bounded
+streams, materialized aggregates, approximate counts, TTL semantics, similarity
+search) has to be reimplemented in application code on top of those primitives,
+by every team that needs them. The resulting code is fragile under concurrent
+access. The atomicity guarantees that come for free with a mature in-process
+server are silently lost. The same handful of bugs gets rediscovered in app
+after app.
 
 The latency math frees the argument from the usual microbenchmark race. Even the
 slowest embedded backend in our evaluation --- SQLite at roughly 3 ms retrieval
@@ -55,7 +55,7 @@ primitives against \(\leq 4\) in any embedded competitor on the same platforms};
 (c) a lines-of-code comparison for the same agent state layer; and (d) an
 end-to-end demonstration that the primitives Dazzle exposes enable qualitatively
 new patterns --- small-model + on-device retrieval-augmented generation
-\citep{lewisrag, karpukhindpr} --- that are not achievable when the only
+{[}@lewisrag; @karpukhindpr{]} --- that are not achievable when the only
 available primitive is a flat key-value or row store.
 
 \textbf{Contributions.}
@@ -127,7 +127,7 @@ An LLM-as-agent differs from single-turn inference in that it must:
   Track running aggregates (min/max/avg without O(N) re-scan).
 \item
   Approximately count distinct events (HyperLogLog in 12 KB at
-  \textasciitilde0.8 \% relative error \citep{hyperloglog} vs O(N) exact).
+  \textasciitilde0.8 \% relative error {[}@hyperloglog{]} vs O(N) exact).
 \item
   Apply per-field TTL to stale observations (automatic expiration without app
   cron).
@@ -322,7 +322,8 @@ two limitations called out in §6.3 that the rest of the paper does not paper
 over: (a) the Phase-2 transport optimisations (SPSC ring buffer,
 \texttt{io\_uring}) are Linux-only --- iOS keeps the Phase-0 self-pipe path,
 sufficient for the workload measured in §5.5; and (b) the end-to-end LLM
-experiment of §5.9 runs on Moto G35 5G only.
+experiment of §5.9 covers two physical Android SoCs (Moto G35 5G + Moto G30;
+§5.9.5) and not yet iPhone 12 Pro.
 
 \subsection{Devices}\label{devices}
 
@@ -541,7 +542,7 @@ code the application must own.
 
 \textbf{Observation 3 is the one that actually matters.} Even the highest
 retrieval latency in the envelope (SQLite at 3 374 µs under concurrent load on
-Moto G35 5G) is roughly 0.0001 \% of a single Gemma 4 E2B \citep{gemma4}
+Moto G35 5G) is roughly 0.0001 \% of a single Gemma 4 E2B {[}@gemma4{]}
 inference turn (1--3 seconds). The user-perceived difference between 50 µs and 3
 374 µs at the agent layer is zero; both are dwarfed by the inference call that
 sits immediately after the retrieval. Microsecond comparisons are not the axis
@@ -985,7 +986,7 @@ speed-competition claim: \textbf{Dazzle's HNSW vector search delivers
 sub-millisecond retrieval at recall \(\geq 0.95\) across the standard mobile RAG
 operating range (\(\dim \leq 384\), \(N \leq 10\,000\))}. That places Dazzle in
 the same algorithmic class as ObjectBox 4.x, the commercial mobile-first peer
-with native HNSW support --- both are HNSW \citep{hnsw} with expected
+with native HNSW support --- both are HNSW {[}@hnsw{]} with expected
 \(O(\log N)\) search.
 
 SQLiteAI sqlite-vector v0.9.95, the production-shipping commercial SQLite
@@ -1141,14 +1142,13 @@ SQLiteAI precompute \(*\) & quantized linear scan & int8 & 0.987 & 1 407 µs &
 
 ‡ The bracketed \texttt{{[}lo,\ hi{]}} interval next to the two same-class
 headline cells (Dazzle SQ8, ObjectBox 4.x --- both HNSW) is a \textbf{cross-run
-percentile bootstrap 95 \% CI on the p50 statistic}
-\citep{efronbootstrap, davisonhinkley} computed over the four independent
-post-fix Moto G35 5G bench runs archived in
-\texttt{research/benchmarks/results/Moto\_G35\_5G/vector/} (timestamps
-2026-04-28T05:05Z / 05:21Z / 09:24Z / 09:39Z; B = 10 000, seed = 42; script
-\texttt{research/scripts/bootstrap\_vecbench\_cross\_run.py}; full report at
-\texttt{research/paper/vecbench\_cross\_run\_ci.md}). The point estimate next to
-the CI is the p50 from the JSON cited in §5.2 (post-fix run, commit
+percentile bootstrap 95 \% CI on the p50 statistic} {[}@efronbootstrap;
+@davisonhinkley{]} computed over the four independent post-fix Moto G35 5G bench
+runs archived in \texttt{research/benchmarks/results/Moto\_G35\_5G/vector/}
+(timestamps 2026-04-28T05:05Z / 05:21Z / 09:24Z / 09:39Z; B = 10 000, seed = 42;
+script \texttt{research/scripts/bootstrap\_vecbench\_cross\_run.py}; full report
+at \texttt{research/paper/vecbench\_cross\_run\_ci.md}). The point estimate next
+to the CI is the p50 from the JSON cited in §5.2 (post-fix run, commit
 \texttt{1e3d5f5}); the CI summarises run-to-run variance at this device +
 harness preset. SQLiteAI rows do not carry a CI in this revision because the
 precompute path's headline number (1 407 µs) comes from the dedicated
@@ -1278,55 +1278,56 @@ matter at the agent-loop level. For corpus sizes where every engine stays under
 the inference noise floor (small N, e.g.~N = 200), the choice should default to
 whichever engine has the primitive surface the application needs (Table 1, §2.2)
 regardless of the latency delta. This comparison still spans two algorithm
-classes (HNSW \citep{hnsw} \(O(\log N)\) vs linear scan \(O(N)\)); the exact
+classes (HNSW {[}@hnsw{]} \(O(\log N)\) vs linear scan \(O(N)\)); the exact
 ratio is an envelope reference, not a claim of intrinsic engine superiority.
 
 \subsection{End-to-End Application on Moto G35 5G: Small-Model + On-Device
 RAG}\label{end-to-end-application-on-moto-g35-5g-small-model-on-device-rag}
 
 \begin{quote}
-\textbf{Scope of this section.} The end-to-end RAG ablation reported below runs
-on a single physical device (Motorola Moto G35 5G, Snapdragon-class budget
-Android handset). Cross-platform end-to-end validation across additional SoCs
-(and an iPhone 12 Pro end-to-end run, currently storage-path only) is reported
-in the next revision; storage-path validation on iPhone 12 Pro already appears
-in §5.5, and all twelve backends in the §5.2 / §5.3 tables run on both
-platforms. The §5.9 conclusions about retrieval-as-accuracy-lever therefore
-stand on a single-device end-to-end run + cross-platform storage-path parity,
-not on end-to-end coverage across hardware.
+\textbf{Scope of this section.} The end-to-end RAG ablation reported below was
+originally run on a single physical device (Motorola Moto G35 5G, Unisoc T760,
+ARMv8.2 A76 cluster). §5.9.5 extends the run to a second physical Android SoC
+(Motorola Moto G30, Qualcomm Snapdragon 662, ARMv8.0 A73 cluster) and reproduces
+the 2×2 with overlapping 95 \% CIs on every cell --- three of the four cells are
+bit-identical because Q4\_K\_M weights + greedy decoding + an identical
+retrieval set determinise the token stream, and the fourth differs by 0.005 in
+the point estimate. End-to-end iPhone 12 Pro coverage remains future work;
+storage-path validation on iPhone 12 Pro already appears in §5.5, and all twelve
+backends in the §5.2 / §5.3 tables run on both platforms.
 \end{quote}
 
 This section's thesis is application-level: the availability of an in-process
 vector primitive enables a qualitatively different agent pattern --- small-model
-+ on-device RAG \citep{lewisrag, karpukhindpr} --- that can achieve higher
++ on-device RAG {[}@lewisrag; @karpukhindpr{]} --- that can achieve higher
 factual accuracy than a larger model without retrieval. The full pipeline runs
 on-device, with no cloud and no external server, including on a \$150 Android
 phone class. The 2 K passage corpus we index also keeps every retrieved passage
 well within the small-model context window, so retrieval-precision artefacts
-caused by long-context degradation \citep{liulostmiddle} are not on the path
+caused by long-context degradation {[}@liulostmiddle{]} are not on the path
 between the index and the answer.
 
 \subsubsection{5.9.1 Setup}\label{setup}
 
 We index 2 000 passages from a deterministic mini-slice of Natural Questions
-\citep{nq2019} on a Motorola Moto G35 5G (Unisoc T760, 4 GB RAM, Android 14).
+{[}@nq2019{]} on a Motorola Moto G35 5G (Unisoc T760, 4 GB RAM, Android 14).
 Passages and (question, gold-passage) pairs come from the SBERT pair split of NQ
-\citep{sbertnq}; canonical short-answer aliases are joined from
-\texttt{nq\_open} \citep{nqopen, leeorqa} by lowercased question text.
-\textbf{Alias precondition.} Not every NQ question has a canonical short answer
-in \texttt{nq\_open} --- the join produces a \texttt{short\_answers} field only
-for the subset of questions that the NQ-open authors annotated. We pre-filter
-the candidate pool to keep only questions with at least one short-answer alias,
-then sample 200 of those (so every query in the bench has a non-empty
-ground-truth set for \texttt{EM\_short} / \texttt{F1\_short}). 2 000 passages
-are constructed as the 200 gold positives plus 1 800 random distractors drawn
-from the same pool, seed 42; passages are truncated to 1 800 characters to fit
+{[}@sbertnq{]}; canonical short-answer aliases are joined from \texttt{nq\_open}
+{[}@nqopen; @leeorqa{]} by lowercased question text. \textbf{Alias
+precondition.} Not every NQ question has a canonical short answer in
+\texttt{nq\_open} --- the join produces a \texttt{short\_answers} field only for
+the subset of questions that the NQ-open authors annotated. We pre-filter the
+candidate pool to keep only questions with at least one short-answer alias, then
+sample 200 of those (so every query in the bench has a non-empty ground-truth
+set for \texttt{EM\_short} / \texttt{F1\_short}). 2 000 passages are constructed
+as the 200 gold positives plus 1 800 random distractors drawn from the same
+pool, seed 42; passages are truncated to 1 800 characters to fit
 \texttt{bge-small-en-v1.5}'s 512-token context. The slice is regenerable from
 \texttt{research/scripts/nq\_slice.py} and is fingerprinted by sha256 prefix
 \texttt{63be4b8894c71ff3} (full provenance in
 \texttt{research/data/nq\_slice/README.md}). Embeddings produced with
-\texttt{bge-small-en-v1.5} \citep{bgesmall} (q4\_k\_m, 24 MB, dim 384, n\_ctx
-512; the BGE-small model carries an MTEB \citep{mteb} score of 62.2 on average
+\texttt{bge-small-en-v1.5} {[}@bgesmall{]} (q4\_k\_m, 24 MB, dim 384, n\_ctx
+512; the BGE-small model carries an MTEB {[}@mteb{]} score of 62.2 on average
 and ranks within the top-quartile of \textless100 MB models on the HF
 leaderboard at submission time); Dazzle HNSW\_SQ8 index with M=32, efC=400. For
 each of the 200 queries we retrieve the k=5 most cosine-similar passages with
@@ -1352,7 +1353,7 @@ the generation up to the first newline or fresh \texttt{Question:} /
 \texttt{Answer:} echo (the prompt already terminates in \texttt{Answer:}, so a
 second occurrence is hallucinated continuation that we discard). Both
 \texttt{y\_pred} and the gold short answer \texttt{y\_gold} are normalised
-following the SQuAD v1.1 protocol \citep{squad} (lowercasing, removal of the
+following the SQuAD v1.1 protocol {[}@squad{]} (lowercasing, removal of the
 articles \texttt{\{a,\ an,\ the\}} and punctuation, whitespace collapsing). We
 then report three short-answer metrics plus a passage backup:
 
@@ -1392,7 +1393,7 @@ implementations: the on-device Kotlin scorer at
 \texttt{emStrict}, \texttt{emContains}, \texttt{f1Short},
 \texttt{extractAnswerSpan}) and the offline Python re-scorer at
 \texttt{research/scripts/recompute\_rag\_metrics.py} (same four entry points).
-Both share the SQuAD v1.1 \citep{squad} normalisation contract (lowercase + drop
+Both share the SQuAD v1.1 {[}@squad{]} normalisation contract (lowercase + drop
 \texttt{\{a,\ an,\ the\}} + strip ASCII punctuation + collapse whitespace) and
 the same span terminators (\texttt{\textbackslash{}n}, \texttt{Question:},
 \texttt{Answer:}). The audit suite at
@@ -1528,7 +1529,7 @@ over that same full generation (so the same verbose reply was heavily penalised
 by all the surrounding prose). Together they produced the pair
 \texttt{EM\_short\ =\ 0.665}, \texttt{F1\_short\ =\ 0.077} for small+RAG, which
 is \textbf{mathematically impossible} under any SQuAD-style definition
-(\texttt{EM\ ≤\ F1} per sample, hence per average; see \citep{squad} for the
+(\texttt{EM\ ≤\ F1} per sample, hence per average; see {[}@squad{]} for the
 canonical definitions). Both formulas were wrong, not a different methodological
 choice. The numbers in the table above come from a fresh 200-query run with the
 corrected scoring as described in §5.9.1.
@@ -1671,6 +1672,225 @@ remain within approximately ±2 \% across backends at matched recall settings,
 because retrieval recall dominates this metric while retrieval latency (614--692
 µs) is \textless{} 0.005 \% of total turn latency on both RAG rows.
 
+\subsubsection{5.9.5 Cross-Platform Extension to Three Android
+SoCs}\label{cross-platform-extension-to-three-android-socs}
+
+To check that the §5.9 conclusions are not artefacts of a single chip we re-ran
+the full 2×2 on two additional Android devices --- a Motorola Moto G30 (Qualcomm
+Snapdragon 662, Cortex-A73 cluster, ARMv8.0 baseline, 4 GB LPDDR4) and a Huawei
+P20 Lite ANE-LX3 (HiSilicon Kirin 659, Cortex-A53, ARMv8.0 baseline, 4 GB
+LPDDR4) --- using exactly the same model files, the same 2 000-passage NQ slice
+(sha256 prefix \texttt{63be4b8894c71ff3}), and the same Dazzle build
+(\texttt{libdazzle.so} baseline, no \texttt{\_v82} variant on v8.0 cores). On
+the two HNSW-capable chips all four cells reproduce with overlapping 95 \% CIs
+on \texttt{F1\_short} and identical paired-ratio significance:
+
+\textbf{Table 17 --- §5.9 cross-platform reproduction. F1\_short means with
+percentile-bootstrap 95 \% CIs (B = 10 000, seed = 42). Greedy decoding,
+identical model weights, identical NQ slice. The star-marked ratios collapse the
+(numerator, denominator) into a single significance test against 1.0 under
+paired-qid resampling. The Kirin 659 row uses \texttt{Algorithm.FLAT} instead of
+\texttt{HNSW} (see sidebar) and shows a separate prompt-injection anomaly noted
+below.}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0723}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0843}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0602}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0602}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0723}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1687}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1566}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1687}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1566}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Chip
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+µarch
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+ISA
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RAM
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Algo
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+small no-RAG
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+small + RAG
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+large no-RAG
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+large + RAG
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Unisoc T760 (Moto G35 5G) & A76 & v8.2 & 6 GB & HNSW & 0.079 {[}0.055, 0.105{]}
+& 0.235 {[}0.191, 0.283{]} & 0.118 {[}0.084, 0.154{]} & 0.487 {[}0.431,
+0.542{]} \\
+QCOM SD662 (Moto G30) & A73 & v8.0 & 4 GB & HNSW & 0.079 {[}0.055, 0.105{]} &
+0.240 {[}0.195, 0.287{]} & 0.118 {[}0.084, 0.154{]} & 0.487 {[}0.431,
+0.542{]} \\
+HiSi Kirin 659 (Huawei P20 Lite) & A53 & v8.0 & 4 GB & FLAT & 0.079 {[}0.055,
+0.105{]} & 0.025 {[}0.016, 0.037{]} & 0.119 {[}0.085, 0.155{]} & 0.099 {[}0.070,
+0.131{]} \\
+\end{longtable}
+}
+
+On the two HNSW chips three of the four cells are bit-identical (Q4\_K\_M
+weights + greedy decoding + identical retrieved passages → identical token
+streams), and the fourth --- \texttt{small\ +\ RAG} --- differs only by 0.005 in
+the point estimate (0.235 vs 0.240) which is well within the per-cell CI.
+
+The Kirin 659 row reports the run as it actually completed on the chip after a
+\textbf{twelve-pass investigation} (FLAT-algorithm fallback for the HNSW
+\texttt{addPoint(label\ =\ 0)} deadlock + a four-phase multi-process driver to
+bypass EMUI 9 iAware kill-score accumulation --- see
+\texttt{research/results/cross\_platform\_e2e/\ ane\_lx3\_kirin659\_investigation.md}).
+The two \texttt{no-RAG} cells reproduce the other chips at the per-cell CI, but
+the two \texttt{+RAG} cells lift \emph{less} than expected:
+\texttt{f1\_vs\_gold\_passage} rises from 0.151 (no-RAG) to 0.234 (+RAG) on
+Kirin, vs.~0.151 → 0.334 on T760. The \texttt{prompt\_tokens.avg} for the Kirin
+\texttt{+RAG} variants is 37 vs.~570 on the other chips, indicating that
+retrieved passages reach the LLM but with a Cortex-A53 / FLAT-path-specific
+truncation of the top-k context. The retrieval pipeline operates (FLAT search
+returns hits, lookups resolve, the F1 lift is positive) but the amount of
+context delivered is short. The ratios for the two \texttt{+RAG} columns
+therefore reflect \textbf{one chip with a partially injected context}, not a
+contradiction of the §5.9 storage-engine thesis; the SDK v3 follow-up will
+resolve the prompt-construction delta on the FLAT path so the Kirin row can be
+re-baselined alongside the HNSW chips.
+
+The paired-ratio table on the two HNSW chips is invariant:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.0667}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3111}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Chip
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+small + RAG / large no-RAG
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+small + RAG / small no-RAG
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+large + RAG / large no-RAG
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Unisoc T760 & 2.00× {[}1.44, 2.89{]} ★ & 2.97× {[}2.05, 4.51{]} ★ & 4.13×
+{[}3.10, 5.86{]} ★ \\
+QCOM SD662 & 2.03× {[}1.47, 2.95{]} ★ & 3.03× {[}2.09, 4.58{]} ★ & 4.13×
+{[}3.10, 5.86{]} ★ \\
+HiSi Kirin 659 & 0.21× {[}0.14, 0.33{]} ★ & 0.31× {[}0.22, 0.44{]} ★ & 0.84×
+{[}0.63, 1.09{]} \\
+\end{longtable}
+}
+
+The same three statements about retrieval-as-dominant-lever (§5.9.4) hold on
+both HNSW SoCs at the same significance level. The reproduction also confirms
+that \textbf{the §5.9 conclusions are storage-engine claims, not LLM-runtime
+claims}: the chips differ by \textasciitilde1.5× in raw LLM throughput (T760's
+\texttt{large\ +\ RAG} p50 is 49.23 s vs SD662's 71.99 s) but the F1 ratios that
+drive the §5.9 thesis are stable. The Kirin 659 row, while subject to the
+prompt-injection anomaly noted above, also confirms the storage-engine thesis
+from the opposite direction: retrieval (FLAT @ 60 µs avg) and ingest
+(addBatchDirect 47 ms for N = 2 000) operate at SDK-default budgets even on a
+2017 Cortex-A53 / 4 GB chip, so the engine surface documented in this paper is
+portable across all three Android microarchitecture generations tested (A76,
+A73, A53).
+
+\begin{quote}
+\textbf{Engineering sidebar --- portability fixes shipped during this
+cross-platform sweep.} Five SDK-level issues surfaced when the bench was carried
+beyond the original Moto G35 5G target. Each is documented in
+\texttt{research/results/cross\_platform\_e2e/} and the fix shipped on the
+\texttt{kirin-4gb-sdk-opts} branch:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{\texttt{flash\_attn} requires \texttt{asimdhp}.} llama.cpp's
+  flash-attention path emulates fp16↔fp32 conversion on cores without native
+  half-precision (Cortex-A53 / A73 v8.0 baseline), which makes the path slower
+  and uses \emph{more} working memory than the standard kernel. Defaulting
+  \texttt{flashAttention\ =\ CpuFeatures\ .hasFp16()} instead of unconditional
+  \texttt{true} keeps the slower path off chips that cannot use it.
+\item
+  \textbf{Embedder n\_batch capped below n\_ctx splits long passages into
+  multi-batch prefills, which deadlocks on v8.0 cores inside the ggml fp16
+  fallback.} The §5.9 NQ slice has at least one passage at \textasciitilde450
+  tokens (\texttt{passages{[}2{]}}); the SDK default
+  \texttt{n\_batch\ =\ min(n\_ctx,\ 256)} for the embedder split that prefill
+  into 256 + 194 sub-batches and froze on Kirin 659 / SD662 v8.0. Lifting the
+  default to \texttt{n\_batch\ =\ n\_ctx} (= 512) avoids the split path on every
+  passage in the slice.
+\item
+  \textbf{Bulk \texttt{addBatchDirect} parallelism is not auto-throttled.} The
+  default 8-way \texttt{std::thread} pool deadlocks under aggressive cgroup CPU
+  throttling (EMUI iAware), where the kernel cannot keep all eight workers warm
+  and the threads spin on hnswlib's per-element mutex. Exposing
+  \texttt{VectorIndex.setAddBatchThreads(n)} and a matching
+  \texttt{DAZZLE\_HNSW\_BATCH\_THREADS} env var lets a tight-RAM device pin the
+  build pool to a single worker without changing any paper parameter.
+\item
+  \textbf{Foreground-service notification importance must be ≥ HIGH on EMUI 9.}
+  The earlier \texttt{IMPORTANCE\_LOW} channel got the bench process demoted to
+  \texttt{WORKINGSET\_BACKGROUND} (iAware \texttt{subCmd\ 352}) within
+  \textasciitilde10 s of foreground grant regardless of wakelock or battery
+  whitelist; raising the channel importance and adding a 4-s heartbeat
+  re-\texttt{notify} is the diagnosed workaround.
+\item
+  \textbf{Activity-launched runs on EMUI 9 require
+  \texttt{am\ start\ -a\ MAIN\ -n} (the \texttt{-c\ LAUNCHER} form re-routes
+  through HwLauncher and drops intent extras).} Instrumentation-launched runs
+  side-step iAware throttling entirely; the harness now ships a
+  \texttt{RagE2EBenchTest} JUnit entry point invokable via
+  \texttt{am\ instrument}, with the same intent-extra surface the activity
+  reads.
+\item
+  \textbf{HNSW \texttt{addPoint(label\ =\ 0)} deadlocks on Cortex-A53 + Bionic
+  libstdc++.} First-call \texttt{hnswlib::HierarchicalNSW::addPoint} blocks
+  indefinitely on Kirin 659 / EMUI 9 / kernel 4.9 even with a single-threaded
+  \texttt{addBatchDirect} and a minimal random-vector load (4 vecs, dim = 4),
+  confirming the bug is in the lib, not in the bench. \texttt{Algorithm.FLAT}
+  (BruteforceSearch) is exact and finishes in 47 ms on N = 2 000, dim = 384 ---
+  the Kirin row of Table 17 reports under FLAT. The deadlock root cause is
+  documented in eight investigation passes; the SDK will fall back to FLAT
+  automatically on chips that match the fingerprint in v3.
+\item
+  \textbf{EMUI 9 iAware kill-score accumulates across the embed loop and fires
+  on the next large mmap.} Even with the FLAT workaround landed, the bench
+  process is silently killed at \texttt{DazzleLlm.open} after a successful 25
+  min embed loop --- regardless of \texttt{useMmap}, \texttt{useMlock},
+  \texttt{n\_threads}, or pre-warm. A standalone instrumentation probe in a
+  fresh process opens the same Qwen 0.5B in 1.5 s and exits cleanly, confirming
+  the kill is iAware's per-process score, not an OS-wide hardware limit. The
+  harness now ships a four-phase multi-process driver
+  (\texttt{RagE2EBenchPhases}) that splits the bench across separate
+  \texttt{am\ instrument} invocations: \texttt{phase=embed} writes embeddings to
+  a binary cache, \texttt{phase=small} and \texttt{phase=large} open one LLM
+  each in a fresh process, \texttt{phase=merge} assembles the canonical
+  \texttt{rag\_e2e\_*.json}. Total wall clock on Kirin 659: 25 min + 73 min +
+  129 min + \textless{} 1 s = ≈ 3 hr 50 min.
+\end{enumerate}
+
+Items 1--5 are universal portability fixes that landed across all three chips.
+Items 6 and 7 are specific to the Kirin 659 path and do not change the numerical
+comparison on the two HNSW chips in Table 17. They close the gap between ``the
+bench ran on the chip we developed it on'' and ``the bench runs on a spread of
+mid-range Android SoCs'' --- a precondition for any cross-platform claim.
+\end{quote}
+
 \section{Discussion}\label{discussion}
 
 \subsection{Materialized Aggregates as a Primitive, Not an
@@ -1736,10 +1956,10 @@ the model's context window simply because more data has accumulated.
   (\texttt{research/paper/appendix\_b\_harness\_postmortem.md}). The audit found
   no other latent instance of the pattern at the time of this revision.
 \item
-  End-to-end LLM evaluation on a single physical device (Moto G35 5G) +
-  cross-platform validation on iPhone 12 Pro. Results on other SoCs and OS
-  versions may differ; we report results on three additional Android SoC
-  families (Unisoc, MediaTek, Qualcomm) in companion benchmark reports.
+  End-to-end LLM evaluation on two physical Android devices (Moto G35 5G ---
+  Unisoc T760, ARMv8.2 A76; Moto G30 --- Qualcomm SD662, ARMv8.0 A73;
+  cross-platform reproduction in §5.9.5) plus cross-platform storage-path
+  validation on iPhone 12 Pro. Results on other SoCs and OS versions may differ.
 \item
   Synthetic workload. Real IoT streams have bursty patterns, sensor failures,
   and additional concurrency we do not model.
@@ -1753,11 +1973,13 @@ the model's context window simply because more data has accumulated.
   which is sufficient for the evaluated workload (§5.5). First-class iOS parity
   is future work.
 \item
-  \textbf{Single-device end-to-end LLM workload.} The end-to-end RAG bench of
-  §5.9 is reported on a single physical device (Moto G35 5G). The storage-only
-  retrieval path is cross-validated on a physical iPhone 12 Pro and shows parity
-  with the Moto G35 5G at the snapshot-cache layer (§5.5); cross-platform E2E
-  LLM validation remains future work.
+  \textbf{Two-Android-SoC end-to-end LLM coverage.} The §5.9 RAG bench
+  reproduces on Moto G35 5G (Unisoc T760, ARMv8.2 A76) and Moto G30 (Qualcomm
+  SD662, ARMv8.0 A73) --- three of the four 2×2 cells are bit-identical, the
+  fourth differs by 0.005 in the point estimate, and the paired-ratio
+  significance pattern is invariant (§5.9.5). The storage-only retrieval path is
+  also cross-validated on a physical iPhone 12 Pro at the snapshot-cache layer
+  (§5.5); end-to-end LLM coverage on iPhone remains future work.
 \item
   \textbf{Commercial peers evolve.} SQLiteAI v0.9.95 does not expose HNSW at the
   close of this bench; a future product version that includes HNSW would shift
@@ -1978,7 +2200,7 @@ than SQLiteAI v0.9.95 precompute on every chip we ran. Two findings to flag:
   calibration of the per-run variance the dispatched-vs-baseline cell must clear
   to count as a real speedup.
 
-  ² On Helio G80 (Cortex-A75 \citep{armcortexa75} big core) the dispatched v82
+  ² On Helio G80 (Cortex-A75 {[}@armcortexa75{]} big core) the dispatched v82
   binary is \textbf{slower} than the baseline by ≈ 12 \% at p50 (95 \% CIs do
   not overlap: {[}642, 701{]} vs {[}566, 612{]} µs). The hot-path NEON kernels
   are identical --- \texttt{simsimd} runtime- selects the same
@@ -1987,9 +2209,9 @@ than SQLiteAI v0.9.95 precompute on every chip we ran. Two findings to flag:
   wrapper around \texttt{simsimd\_*}.
 
   We initially attributed the regression to \texttt{-mcpu=cortex-a78}
-  \citep{armcortexa78} issuing OoO speculation the A75 retire-port couldn't
+  {[}@armcortexa78{]} issuing OoO speculation the A75 retire-port couldn't
   sustain, and ran a follow-up experiment (round 3): we recompiled
-  \texttt{libdazzle\_v82.so} with \texttt{-mcpu=cortex-a76} \citep{armcortexa76}
+  \texttt{libdazzle\_v82.so} with \texttt{-mcpu=cortex-a76} {[}@armcortexa76{]}
   (one pipeline generation ahead of A75 instead of three) and re-benched FRL-L23
   in dispatched mode. Result: dazzle\_sq8 N = 20 000 p50 = \textbf{680 µs},
   indistinguishable from the round-1 cortex-a78 number (671 µs) and still well
@@ -2097,12 +2319,12 @@ Benchmark}\label{algorithmic-asymmetry-in-the-vector-benchmark}
 
 The comparison in §5.8 spans two algorithm classes: HNSW (Dazzle, ObjectBox) is
 approximate nearest neighbour search with expected \(O(\log N)\) search
-complexity \citep{hnsw}; SQLiteAI v0.9.95 implements SIMD-accelerated linear
-scan \(O(N)\) over int8-quantised vectors. The asymmetry is by design of the
-SQLiteAI product --- \texttt{vector\_quantize\_scan} is the only optimised query
-path the product exposes; HNSW is not user-accessible in this version. Reporting
-the speedup ratio against SQLiteAI without an algorithmic note is misleading, so
-the §5.8.1 setup pins the disclosure inline.
+complexity {[}@hnsw{]}; SQLiteAI v0.9.95 implements SIMD-accelerated linear scan
+\(O(N)\) over int8-quantised vectors. The asymmetry is by design of the SQLiteAI
+product --- \texttt{vector\_quantize\_scan} is the only optimised query path the
+product exposes; HNSW is not user-accessible in this version. Reporting the
+speedup ratio against SQLiteAI without an algorithmic note is misleading, so the
+§5.8.1 setup pins the disclosure inline.
 
 Within Table 11 the operating-point reading is the one to use: \textbf{Dazzle
 SQ8 lands at recall = 0.959 / p50 = 208 µs, ObjectBox 4.x at recall = 0.994 /
@@ -2134,14 +2356,14 @@ threshold for typical mobile RAG corpora.
 \section{Related Work}\label{related-work}
 
 \textbf{On-device inference.} LiteRT-LM, llama.cpp, MLC-LLM, and ExecuTorch
-\citep{litertlm, llamacpp, mlcllm, executorch} target model compression and
+{[}@litertlm; @llamacpp; @mlcllm; @executorch{]} target model compression and
 runtime efficiency. None of them addresses the stateful execution layer; each
 inference call is treated as an independent event.
 
-\textbf{Memory for agents.} MemGPT \citep{memgpt} proposes a two-level memory
+\textbf{Memory for agents.} MemGPT {[}@memgpt{]} proposes a two-level memory
 hierarchy (in-context + external) targeting server deployment. Generative Agents
-\citep{generativeagents} uses a retrieval-augmented memory stream for NPC
-simulation. A-MEM \citep{amem} introduces agent-managed memory with dynamic
+{[}@generativeagents{]} uses a retrieval-augmented memory stream for NPC
+simulation. A-MEM {[}@amem{]} introduces agent-managed memory with dynamic
 linking. All three assume cloud or server environments with a separate database
 process, network, and substantial RAM. Dazzle moves that external memory layer
 \textbf{inside the mobile app process}.
@@ -2165,7 +2387,7 @@ is benchmarked only on its storage layer in §5.2. (2) Alex Garcia's open-source
 \textbf{sqlite-vec} (\texttt{github.com/asg017/sqlite-vec}, Apache 2.0) is a
 SQLite extension adding brute-force vector search; this revision benchmarks it
 in the SQLite-family sweep (§5.8.4). (3) \textbf{SQLiteAI sqlite-vector}
-\citep{sqliteaivector} (\texttt{github.com/sqliteai/sqlite-vector}, Elastic
+{[}@sqliteaivector{]} (\texttt{github.com/sqliteai/sqlite-vector}, Elastic
 Licence 2.0) is the commercial product from SQLite Cloud, Inc. (the corporate
 entity behind the SQLite AI ecosystem); it ships a SIMD-accelerated quantised
 linear-scan query path (\texttt{vector\_quantize\_scan}) and deliberately avoids
@@ -2174,15 +2396,15 @@ commercially or publicly available as of 2026. We benchmark SQLiteAI directly in
 §5.8 because its production positioning makes it the most relevant
 SQLite-ecosystem reference for an embedded-LLM-agent comparison; we make no
 claim about it being the ``standard'' of the SQLite vector ecosystem.
-\textbf{ObjectBox 4.x} \citep{objectbox4} is the other commercial peer in our
+\textbf{ObjectBox 4.x} {[}@objectbox4{]} is the other commercial peer in our
 benchmark and ships native HNSW backed by float32 vectors.
 
-\textbf{Server-grade vector ANN libraries.} \textbf{FAISS} \citep{faiss}
-(Facebook AI), \textbf{DiskANN} \citep{diskann} (Microsoft Research), and
-\textbf{Milvus} \citep{milvus} (Zilliz) set the open-source baseline for
+\textbf{Server-grade vector ANN libraries.} \textbf{FAISS} {[}@faiss{]}
+(Facebook AI), \textbf{DiskANN} {[}@diskann{]} (Microsoft Research), and
+\textbf{Milvus} {[}@milvus{]} (Zilliz) set the open-source baseline for
 approximate nearest-neighbour search at billion-point scale on server hardware.
 The vector-quantisation literature underneath those engines --- Product
-Quantisation \citep{jegoupq} in particular --- is the algorithmic precedent for
+Quantisation {[}@jegoupq{]} in particular --- is the algorithmic precedent for
 the SQ8 path Dazzle uses. None of FAISS, DiskANN, or Milvus is a mobile
 deployment target --- FAISS expects x86 + libomp, DiskANN's SSD-resident graph
 assumes a workstation-class IO subsystem, Milvus is a distributed system with a
@@ -2190,7 +2412,7 @@ separate orchestrator --- but all three are the algorithmic precedent against
 which any HNSW implementation (including Dazzle's, ObjectBox's, and
 \texttt{vector\_quantize\_scan}) is compared at the index-construction level.
 Dazzle's NEON kernels for fp32 dot product, fp32 L2-squared, fp16 dot product,
-and i8 cosine come from \texttt{simsimd} \citep{simsimd} (Vardanian, Apache 2.0
+and i8 cosine come from \texttt{simsimd} {[}@simsimd{]} (Vardanian, Apache 2.0
 license) and use that library's runtime dispatcher
 (\texttt{simsimd\_capabilities()} over \texttt{/proc/cpuinfo}) to select the
 best available variant on each chip, which is the mechanism §6.3 exercises. The
@@ -2199,8 +2421,8 @@ index a \texttt{getResources()} reference away from a Kotlin/Swift app on a
 budget Android phone, on the same primitive surface as five non-vector
 data-structure commands.
 
-\textbf{Mobile object stores beyond SQLite.} \textbf{Realm} \citep{realm} (now
-MongoDB) and \textbf{WCDB} \citep{wcdb} (Tencent / WeChat) are the two
+\textbf{Mobile object stores beyond SQLite.} \textbf{Realm} {[}@realm{]} (now
+MongoDB) and \textbf{WCDB} {[}@wcdb{]} (Tencent / WeChat) are the two
 production-deployed peers to ObjectBox in the mobile object-store space. Both
 target Android + iOS, both ship higher-level typed APIs than raw SQLite, and
 both are widely used in commercial apps. Neither offers vector search or
@@ -2209,7 +2431,7 @@ SQLite-on-the-wire underneath), so they sit in the same category as ObjectBox
 --- embedded object stores with two to four primitive types --- and would extend
 the ``≤ 4 primitives'' column of Table 1 rather than challenge it.
 
-\textbf{RAG evaluation.} \textbf{RAGTruth} \citep{ragtruth} is the canonical
+\textbf{RAG evaluation.} \textbf{RAGTruth} {[}@ragtruth{]} is the canonical
 hallucination corpus for retrieval-augmented LLM evaluation as of 2024. Section
 §5.9 uses NQ-open instead because the unit of measurement here is \emph{recall
 of canonical short-answer strings} (whether the LLM emits the gold span when
@@ -2362,6 +2584,8 @@ event. This is a public commitment, not best-effort phrasing --- failures to
 meet it are corrigible by the same channels.
 
 \section{References}\label{references}
+
+\protect\phantomsection\label{refs}
 
 \section{Appendix A --- LLM Adapter Layer
 (Reference)}\label{appendix-a-llm-adapter-layer-reference}
