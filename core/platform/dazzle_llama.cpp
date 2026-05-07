@@ -44,6 +44,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -87,6 +88,19 @@ extern "C" dazzle_llama_model *dazzle_llama_load_model(const char *path,
 
     ::llama_model_params mp = ::llama_model_default_params();
     mp.n_gpu_layers = n_gpu_layers;
+
+    // Honour DAZZLE_LLAMA_USE_MMAP={0|false} as an opt-out from file-backed
+    // mmap of the .gguf weights. On EMUI 9 / Kirin 659 the iAware daemon
+    // demotes (and within seconds kills) any process that triggers a large
+    // mmap-fault burst — even an instrumentation-runner process — so the
+    // bench needs to fall back to a plain `read()` into anon RAM. Costs
+    // peak RSS but stays under iAware's "thrash" detector. See
+    // research/results/cross_platform_e2e/ane_lx3_kirin659_investigation.md
+    if (const char *e = std::getenv("DAZZLE_LLAMA_USE_MMAP")) {
+        if (e[0] == '0' || e[0] == 'f' || e[0] == 'F' || e[0] == 'n' || e[0] == 'N') {
+            mp.use_mmap = false;
+        }
+    }
 
     ::llama_model *m = ::llama_load_model_from_file(path, mp);
     if (!m) return nullptr;
