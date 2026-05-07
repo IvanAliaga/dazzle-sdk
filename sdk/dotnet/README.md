@@ -102,9 +102,15 @@ consuming project's runtime to its output directory automatically.
 ## Sample
 
 A minimal ASP.NET Core 9 sample lives at
-[`samples/dotnet-vector-search`](https://github.com/IvanAliaga/dazzle/tree/main/samples/dotnet-vector-search) —
+[`samples/dotnet-vector-search`](https://github.com/IvanAliaga/dazzle-sdk/tree/main/samples/dotnet-vector-search) —
 register Dazzle, seed a small catalog with mock embeddings, and expose
 `POST /search`.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for per-version notes, or the
+[repo CHANGELOG](https://github.com/IvanAliaga/dazzle-sdk/blob/main/CHANGELOG.md)
+for cross-stack release notes.
 
 ## License
 

@@ -122,6 +122,12 @@ If you're on React Native (with or without web target), use
 instead — it ships native bindings for iOS / Android plus the same
 WASM bridge for RN Web.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for per-version notes, or the
+[repo CHANGELOG](https://github.com/IvanAliaga/dazzle-sdk/blob/main/CHANGELOG.md)
+for cross-stack release notes.
+
 ## License
 
 Apache 2.0.

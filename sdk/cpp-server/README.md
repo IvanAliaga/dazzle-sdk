@@ -110,6 +110,12 @@ between web (WASM) and desktop (native) builds. A snapshot saved by
 a Flutter Web app can be loaded by a C++ server and vice versa,
 provided both link the same dazzle_lite version.
 
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for per-version notes, or the
+[repo CHANGELOG](https://github.com/IvanAliaga/dazzle-sdk/blob/main/CHANGELOG.md)
+for cross-stack release notes.
+
 ## License
 
 Apache 2.0.
