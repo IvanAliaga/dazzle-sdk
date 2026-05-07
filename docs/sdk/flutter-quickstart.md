@@ -172,6 +172,98 @@ four. Same `Stream<Delta>` / `Future<Completion>` surface as every
 other adapter; tool-calling auto-translates to `DeltaToolCallStart`
 / `DeltaToolCallArgs`.
 
+## Flutter Web
+
+Flutter Web apps get a WebAssembly runtime (`dazzle.wasm`, ~236 KB)
+that runs in-process inside the browser, persisted to the Origin
+Private File System (OPFS). Same on-device promise the iOS / Android
+targets deliver. The package's main library exports `DazzleWeb`,
+`DazzleWebHash` and `DazzleWebVectorIndex` for this target.
+
+**Setup** — add the loader script to your app's `web/index.html`,
+**before** `flutter_bootstrap.js`:
+
+```html
+<script type="module">
+  import dz from "assets/packages/dazzle_flutter/web/native/dazzle.js";
+  globalThis.dazzleModule = dz;
+</script>
+```
+
+Then in your Dart code:
+
+```dart
+import 'package:dazzle_flutter/dazzle_flutter.dart';
+
+await DazzleWeb.initialize();
+final hash = DazzleWeb.hash('chat:1');
+hash.set('role', 'user');
+
+final vec = DazzleWeb.vectorIndex('catalog');
+vec.create(dim: 1536);
+vec.add('product-1', embedding);                 // Float32List
+final hits = vec.search(query, topK: 5);
+
+await DazzleWeb.persist();                        // snapshot → OPFS
+```
+
+**Scope** (this beta): Hash KV + Vector index + OPFS snapshot.
+**Not on web yet**: List / Set / SortedSet / Stream standalone
+primitives, on-device LLM clients — those stay on iOS / Android /
+Desktop.
+
+## Flutter Desktop (Linux / macOS / Windows)
+
+Native desktop targets use **`libdazzle_lite`** — the same C++
+source as `dazzle.wasm`, compiled natively, exposed via `dart:ffi`.
+Persistence to a regular file on disk (default
+`<cwd>/.dazzle/snapshot.bin`, override with `snapshotPath:`). The
+plugin declares `ffiPlugin: true` for `linux` / `macos` / `windows`,
+so consuming apps get the right binary copied next to the runner
+without a host C++ toolchain.
+
+```dart
+import 'package:dazzle_flutter/dazzle_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+
+final dir = await getApplicationSupportDirectory();
+await DazzleDesktop.initialize(snapshotPath: '${dir.path}/dazzle.bin');
+
+final hash = DazzleDesktop.hash('chat:1');
+hash.set('role', 'user');
+
+final vec = DazzleDesktop.vectorIndex('catalog');
+vec.create(dim: 1536);
+vec.add('product-1', embedding);
+final hits = vec.search(query, topK: 5);
+
+await DazzleDesktop.persist();
+```
+
+The API surface mirrors `DazzleWeb` exactly — apps that target
+both Web and Desktop share the same data layer:
+
+```dart
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+if (kIsWeb) {
+  await DazzleWeb.initialize();
+} else {
+  await DazzleDesktop.initialize();
+}
+```
+
+**Snapshot binary format is identical** between Web (WASM) and
+Desktop (native) builds — a snapshot saved by a Flutter Web app
+loads byte-for-byte on Flutter Desktop and on a C++ server linking
+the same `libdazzle_lite`.
+
+**Scope** (this beta): same as Web — Hash + Vector + snapshot. The
+full Valkey embedded surface (Lists / Streams / SortedSets / Lua /
+pub-sub) is on the roadmap; for now apps that need those primitives
+on desktop should fall back to a sidecar via the
+[`Dazzle.NET`](./dotnet-quickstart.md) NuGet package.
+
 ## Reporting an issue
 
 GitHub: https://github.com/IvanAliaga/dazzle-sdk/issues — include the

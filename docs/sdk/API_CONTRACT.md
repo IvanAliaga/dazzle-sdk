@@ -1,16 +1,47 @@
 # Dazzle SDK — API contract (cross-platform source of truth)
 
 **Scope**: every primitive and Layer-2 API surface the SDK exposes to
-consumers. Both the Kotlin (Android) and Swift (iOS) bindings are
-projections of this document. New language bindings (Python, Node,
-Rust, Linux-C) must implement the same method set with the same names
-and semantics.
+consumers. The Kotlin (Android) and Swift (iOS) bindings — plus the
+Dart (Flutter) and TypeScript (React Native) bindings layered on top
+of them — are projections of this document. New language bindings
+(Python, Node-non-RN, Rust, Linux-C beyond the lite subset) must
+implement the same method set with the same names and semantics.
 
 **When this document and the code disagree, the code on the side the
 user is running is authoritative for that platform and one of the two
 has a bug.** The intent is: this document = spec, both platforms =
 implementations, zero divergence in commit history beyond what's
 listed under "Platform-specific exceptions" below.
+
+### Coverage by target
+
+The full surface (Layers 1 + 2) ships on **iOS**, **Android**,
+**Flutter (mobile)** and **React Native (mobile)**. Web and Desktop
+targets ship a **subset** named `DazzleWeb` / `DazzleDesktop` (or
+`dazzle_lite` for C++):
+
+| Target | API class | Hash | List | Set | SortedSet | Stream | String | Vector | Lua | ChatAgent | LLM clients |
+|---|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| iOS / Android / Flutter mobile / RN mobile | `DazzleServer` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | 5 adapters |
+| .NET (ASP.NET Core 9) | `IDazzleClient` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| Flutter Web / RN Web / React DOM | `DazzleWeb` | ✅ | — | — | — | — | — | ✅ | — | — | — |
+| Flutter Desktop | `DazzleDesktop` | ✅ | — | — | — | — | — | ✅ | — | — | — |
+| C++ server (libdazzle_lite) | `dazzle_*` C ABI | ✅ | — | — | — | — | — | ✅ | — | — | — |
+
+The subset on Web / Desktop / C++ is intentional: those three targets
+share a single 1-TU C++ build that omits the full Valkey embedding
+(networking, persistence subsystems, cluster, Lua) and trades them
+for a smaller binary (236 KB WASM, ~250 KB native) that boots
+instantly. The **binary snapshot format is identical** across all
+targets, so data round-trips without conversion.
+
+For per-stack quickstarts and setup snippets, see:
+
+- [`flutter-quickstart.md`](./flutter-quickstart.md) — mobile + Web + Desktop
+- [`react-native-quickstart.md`](./react-native-quickstart.md) — mobile + Web
+- [`react-quickstart.md`](./react-quickstart.md) — DOM
+- [`dotnet-quickstart.md`](./dotnet-quickstart.md) — ASP.NET Core 9
+- [`cpp-server-quickstart.md`](./cpp-server-quickstart.md) — Linux / macOS / Windows servers
 
 ---
 

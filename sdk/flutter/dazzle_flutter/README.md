@@ -34,7 +34,7 @@ every platform sees identical behaviour and the same benchmark profile.
 ```yaml
 # pubspec.yaml
 dependencies:
-  dazzle_flutter: ^1.0.0-beta.4
+  dazzle_flutter: ^1.0.0-beta.5
 ```
 
 ```dart

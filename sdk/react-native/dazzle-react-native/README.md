@@ -5,7 +5,7 @@ React Native package for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk)
 embedded Valkey + HNSW vector search + ChatAgent runtime the
 Android / iOS native + Flutter SDKs ship.
 
-Latest: **v1.0.0-beta.4** — see
+Latest: **v1.0.0-beta.5** — see
 [../../../CHANGELOG.md](../../../CHANGELOG.md).
 
 ## Install
