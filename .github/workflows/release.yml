@@ -88,6 +88,15 @@ jobs:
         with:
           name: native-lite-linux-x64
           path: core/native-lite/build
+      - name: Recreate SONAME symlink
+        # CMake builds libdazzle_lite.so.0.1.0 with SONAME libdazzle_lite.so.0
+        # and adds the unversioned symlink at build time, but
+        # actions/upload-artifact resolves symlinks to a single regular
+        # file and drops the rest.  Re-create the symlink so the runtime
+        # loader finds it under its SONAME.
+        run: |
+          cd core/native-lite/build
+          ln -sf libdazzle_lite.so libdazzle_lite.so.0
       - name: Build smoke test
         run: |
           # Source file MUST come before -l flags on Linux because the
