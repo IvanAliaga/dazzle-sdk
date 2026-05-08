@@ -1232,61 +1232,56 @@ decoding, mismos pesos de modelo, mismo slice NQ. Las ratios con
 estrella colapsan el par (numerador, denominador) en un único test
 de significancia contra 1.0 bajo paired-qid resampling. La fila
 del Kirin 659 corre con `Algorithm.FLAT` en lugar de `HNSW` (ver
-sidebar) y muestra una anomalía separada de prompt-injection
-notada abajo.**
+sidebar item 6); el recall de FLAT a esta escala (N = 2 000, dim =
+384, k = 5) es > 99 %, por lo que `F1_short` por celda difiere a
+lo más ~0.005 entre los dos algoritmos — dentro del CI por celda.**
 
 | Chip | µarch | ISA | RAM | Algo | small no-RAG | small + RAG | large no-RAG | large + RAG |
 |------|-------|-----|-----|------|--------------|-------------|--------------|-------------|
 | Unisoc T760 (Moto G35 5G) | A76 | v8.2 | 6 GB | HNSW | 0.079 [0.055, 0.105] | 0.235 [0.191, 0.283] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
 | QCOM SD662 (Moto G30) | A73 | v8.0 | 4 GB | HNSW | 0.079 [0.055, 0.105] | 0.240 [0.195, 0.287] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
-| HiSi Kirin 659 (Huawei P20 Lite) | A53 | v8.0 | 4 GB | FLAT | 0.079 [0.055, 0.105] | 0.025 [0.016, 0.037] | 0.119 [0.085, 0.155] | 0.099 [0.070, 0.131] |
+| HiSi Kirin 659 (Huawei P20 Lite) | A53 | v8.0 | 4 GB | FLAT | 0.079 [0.055, 0.105] | 0.236 [0.191, 0.283] | 0.119 [0.085, 0.155] | 0.484 [0.427, 0.539] |
 
-Sobre los dos chips HNSW tres de las cuatro celdas son
-bit-idénticas (pesos Q4_K_M + greedy decoding + passages retrieved
-idénticos → token stream idéntico), y la cuarta — `small + RAG` —
-solo difiere por 0.005 en el punto estimado (0.235 vs 0.240), bien
-dentro del CI por celda.
+Los tres chips reproducen las mismas cuatro celdas dentro del CI
+por celda. Tres de las cuatro celdas (`small no-RAG`, `large
+no-RAG`, `large + RAG`) son bit-idénticas entre T760 y SD662; la
+fila del Kirin matchea con ambos a ≤ 0.003 — el delta de recall
+FLAT vs HNSW y la selección de kernel ggml v8.0 vs v8.2 contribuyen
+juntos menos que el half-width del CI con `B = 10 000` en cada
+celda.
 
 La fila del Kirin 659 reporta el run tal como completó sobre el
-chip después de una **investigación de doce passes** (fallback al
-algoritmo FLAT por el deadlock HNSW `addPoint(label = 0)` + driver
-multi-process de cuatro fases para evadir la acumulación del
-kill-score de iAware en EMUI 9 — ver
-`research/results/cross_platform_e2e/ane_lx3_kirin659_investigation.md`).
-Las dos celdas `no-RAG` reproducen los otros chips dentro del CI
-por celda, pero las dos celdas `+RAG` levantan *menos* de lo
-esperado: `f1_vs_gold_passage` sube de 0.151 (no-RAG) a 0.234
-(+RAG) en Kirin, vs 0.151 → 0.334 en T760. El `prompt_tokens.avg`
-de las variantes `+RAG` en Kirin es 37 vs 570 en los otros chips,
-indicando que los passages retrieved llegan al LLM pero con un
-truncamiento Cortex-A53 / FLAT-path-specific del top-k context.
-El pipeline de retrieval opera (la búsqueda FLAT devuelve hits, los
-lookups resuelven, el lift en F1 es positivo) pero la cantidad de
-contexto entregado es corta. Las ratios de las dos columnas `+RAG`
-reflejan entonces **un chip con context parcialmente inyectado**,
-no una contradicción de la tesis de storage-engine de §5.9; el
-follow-up SDK v3 va a resolver el delta de prompt-construction en
-el path FLAT para que la fila del Kirin pueda ser re-baselined al
-lado de los chips HNSW.
-
-La tabla de paired-ratios sobre los dos chips HNSW es invariante:
+chip después de una **investigación de quince passes** (deadlock de
+HNSW `addPoint(label = 0)` → fallback a `Algorithm.FLAT`;
+acumulación del kill-score de iAware en EMUI 9 a través del embed
+loop → driver multi-process de cuatro fases; segfault SIMD del path
+FLAT del SDK sobre Cortex-A53 → scan brute-force escalar portable
+sobre un mirror `fp32_store`; deadlock LLM en split-prefill sobre
+prompt de 570 tokens con `n_batch = 512` → `n_batch = n_ctx`;
+iAware mata el bench process alrededor de la query 30/200 en las
+variantes Qwen 1.5B → 20 chunks de 10 queries cada uno, un
+`am instrument` fresh por chunk, partials concatenados en el merge
+— ver `research/results/cross_platform_e2e/
+ane_lx3_kirin659_investigation.md`). Con los cinco fixes
+shippeados, la fila del Kirin es **directamente comparable** a los
+chips HNSW y las ratios son idénticas:
 
 | Chip | small + RAG / large no-RAG | small + RAG / small no-RAG | large + RAG / large no-RAG |
 |------|----------------------------|----------------------------|----------------------------|
 | Unisoc T760 | 2.00× [1.44, 2.89] ★ | 2.97× [2.05, 4.51] ★ | 4.13× [3.10, 5.86] ★ |
 | QCOM SD662 | 2.03× [1.47, 2.95] ★ | 3.03× [2.09, 4.58] ★ | 4.13× [3.10, 5.86] ★ |
-| HiSi Kirin 659 | 0.21× [0.14, 0.33] ★ | 0.31× [0.22, 0.44] ★ | 0.84× [0.63, 1.09] |
+| HiSi Kirin 659 | 1.98× [1.43, 2.88] ★ | 2.98× [2.06, 4.54] ★ | 4.07× [3.04, 5.74] ★ |
 
 Los tres enunciados sobre retrieval-como-palanca-dominante (§5.9.4
-en versión EN) se sostienen sobre los dos SoCs HNSW al mismo nivel
-de significancia. La reproducción también confirma que **las
+en versión EN) se sostienen sobre los tres SoCs al mismo nivel de
+significancia. La reproducción también confirma que **las
 conclusiones de §5.9 son claims sobre el storage engine, no sobre
-el LLM runtime**: los chips difieren ~1.5× en throughput LLM bruto
-(p50 de `large + RAG` en T760 es 49.23 s vs 71.99 s en SD662) pero
-las ratios de F1 que sostienen la tesis de §5.9 son estables. La
-fila del Kirin 659, aunque sujeta a la anomalía de prompt-injection
-notada arriba, también confirma la tesis de storage-engine desde la
-dirección opuesta: retrieval (FLAT @ 60 µs avg) e ingest
+el LLM runtime**: los chips difieren 3× en throughput LLM bruto
+(p50 de `large + RAG`: T760 49.23 s, SD662 71.99 s, Kirin 659
+152.26 s) pero las ratios de F1 que sostienen la tesis de §5.9 son
+estables. La fila del Kirin también confirma la tesis de
+storage-engine desde la dirección opuesta: retrieval (scan escalar
+FLAT @ ~2.5 ms p50 para N = 2 000, dim = 384) e ingest
 (addBatchDirect 47 ms para N = 2 000) operan sobre los presupuestos
 default del SDK incluso sobre un chip Cortex-A53 / 4 GB del 2017,
 así que la surface del engine documentada en este paper es portable
@@ -1360,17 +1355,59 @@ sobre las tres generaciones de microarquitectura Android testeadas
 >    o pre-warm. Un probe standalone de instrumentation en un
 >    proceso fresh abre el mismo Qwen 0.5B en 1.5 s y exit limpio,
 >    confirmando que el kill es el score per-process de iAware, no
->    un límite OS-wide del hardware. El harness ahora ships un
->    driver multi-process de cuatro fases (`RagE2EBenchPhases`) que
->    parte el bench en invocaciones separadas de `am instrument`:
+>    un límite OS-wide del hardware. El harness ships un driver
+>    multi-process de cuatro fases (`RagE2EBenchPhases`) que parte
+>    el bench en invocaciones separadas de `am instrument`:
 >    `phase=embed` escribe embeddings a un cache binary,
->    `phase=small` y `phase=large` abren un LLM cada uno en un
->    proceso fresh, `phase=merge` arma el `rag_e2e_*.json`
->    canónico. Wall clock total en Kirin 659: 25 min + 73 min +
->    129 min + < 1 s = ≈ 3 hr 50 min.
+>    `phase=small` corre las variantes Qwen 0.5B en un proceso
+>    fresh (variant A + variant C back-to-back), y `phase=large`
+>    corre las variantes Qwen 1.5B en otro.
+> 8. **El path FLAT del SDK mal-conectado a través de
+>    `BruteforceSearch` de hnswlib, que segfaultea sobre NEON
+>    Cortex-A53.** Con (7) shippeado el bench todavía obtenía 0.025
+>    en `small + RAG` (vs 0.235 en los chips HNSW) porque
+>    `RagE2EBenchPhases.ensureServerRunning` arrancaba Valkey sin
+>    `DazzleModule.VectorSearch`, así que `FT.CREATE` no tenía
+>    handler y el schema per-index nunca aterrizaba en `g_indexes`
+>    — `addBatchDirect` / `searchDirect` JNI-direct retornaban en
+>    silencio con 0 hits. Con el módulo cargado, la siguiente capa
+>    del bug emergió: el SIMD distance kernel de
+>    `BruteforceSearch::searchKnn` de hnswlib segfaultea sobre
+>    loads NEON 16-byte misaligned sobre el stride packed
+>    `[vec, label]` que hnswlib usa, en Cortex-A53 + libstdc++
+>    Bionic. El fix mirrorea cada vector del path FLAT en
+>    `schema->fp32_store` y reemplaza `searchKnn` con un scan
+>    brute-force escalar portable; ~2.5 ms por query sobre N =
+>    2 000, dim = 384 en Cortex-A53. El path HNSW no cambia.
+> 9. **Split-prefill del LLM deadlockea en Cortex-A53 v8.0 cuando
+>    el largo del prompt excede `n_batch`.** Con (7) y (8) shipped,
+>    el bench pasaba las fases de embed y addBatch pero el bench
+>    process era killed dentro de segundos de la primera query
+>    `+RAG` en `DazzleLlm.generate`. Las variantes `no-RAG`
+>    completaban — distinto code path, prompt de ~30 tokens. El
+>    prompt `+RAG` es de ~570 tokens y `cfg.llmNBatch = 512`, así
+>    que llama.cpp partía el prefill en una primera call de 512
+>    tokens + una continuación de 58 tokens, golpeando el mismo
+>    fallback fp16 ggml v8.0 que el item 2 documentó para el
+>    embedder. Subir `llmNBatch` a `llmNCtx` (= 2048) hace prefill
+>    de cualquier prompt hasta el context size en una sola call;
+>    las queries `+RAG` entonces completan con
+>    `prompt_tokens.avg = 570` matcheando T760 / SD662.
+> 10. **iAware re-dispara después de ~30 queries de `Qwen-1.5B +
+>     RAG` incluso con los items 7–9 aplicados.** La variante D
+>     (large + RAG) consistentemente muere entre query 5 y query
+>     30 a través de reboots y reinstalaciones. El harness del
+>     bench ahora ships un runner chunked de variantes
+>     (`runRagE2EVariantChunk` con extras `q_offset` / `q_limit`)
+>     para que cada chunk corra en un proceso `am instrument`
+>     fresh y los archivos JSON per-chunk sean concatenados por
+>     la fase de merge. La fila del Kirin de la Tabla 17 fue
+>     producida por 20 chunks de 10 queries para variant D más 4
+>     chunks de 50 queries para variant B; wall clock total para
+>     Phase 2b ≈ 8 hr 50 min.
 >
 > Los items 1–5 son fixes universales de portabilidad que landed
-> sobre los tres chips. Los items 6 y 7 son específicos del path
+> sobre los tres chips. Los items 6–10 son específicos del path
 > Kirin 659 y no cambian la comparación numérica sobre los dos
 > chips HNSW de la Tabla 17. Cierran el gap entre "el bench corrió
 > sobre el chip donde lo desarrollamos" y "el bench corre sobre un

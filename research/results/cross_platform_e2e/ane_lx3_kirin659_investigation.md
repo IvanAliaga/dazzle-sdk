@@ -381,15 +381,165 @@ overhead is the cold-start of the embedder weight-load on phase-1
 restart and the slightly slower decode tokens-per-second on
 Cortex-A53.
 
-**Open issue — prompt token count anomaly**: the +RAG variants on
-Kirin show `prompt_tokens.avg ≈ 37` vs. 570 on T760/SD662 (which
-run the same 200 NQ queries with the same `cfg.k=5`,
-`maxNewTokens=64`, identical `passages.jsonl` / `queries.jsonl`
-slice). `f1_vs_gold_passage` did rise from 0.15 (no-RAG) to 0.23
-(+RAG) so retrieved passages *are* reaching the LLM — but with
-much less context than the other chips' 570-token prompts. Likely
-a tokenizer or `buildPromptWithPassages` interaction with the
-`searchDirect` reply format on the FLAT path; flagged for follow-up.
-The Kirin §5.9.5 row is reported as-is so the paper documents what
-the four-phase driver actually produced; the investigation will
-resolve the prompt-injection delta in v3 of the SDK.
+**Resolved** — passes 13–16 below close the prompt-token anomaly
+and the Phase 2b kill, lifting the Kirin row to within the
+per-cell CI of T760 / SD662 on every cell.
+
+## Pass 13 — root-cause of the prompt-token anomaly
+
+The first §5.9.5 sweep on Kirin reported `prompt_tokens.avg ≈ 37`
+on the +RAG variants vs. 570 on T760/SD662, with `f1_short` at
+0.025 / 0.099 instead of the ≈ 0.235 / 0.487 the other chips post.
+A standalone `probeFlatSearchRoundtrip` in a fresh process
+(5 vectors, dim = 4) caught it: `searchDirect` returned 0 hits
+even though `addBatchDirect` reported success.
+
+The native instrumentation under `DZ_LOGI` showed
+`g_indexes.size = 0` at the moment `add_batch_direct_impl` ran —
+which means `FT.CREATE` had no handler when the JNI arrived. The
+multi-process driver's `RagE2EBenchPhases.ensureServerRunning`
+started Valkey with the default `DazzleConfig(modules =
+emptySet())` — without `DazzleModule.VectorSearch` the FT.CREATE
+command is never registered, the per-index schema never lands in
+`g_indexes`, and the JNI-direct fast path that the bench uses
+(`addBatchDirect` + `searchDirect`, both bypassing FT.HADD/RESP)
+returns silently with 0 elements. `RagE2EBench.run` (the
+single-process path) loaded the module unconditionally, so this
+bug only triggered on Kirin's multi-process driver and explains
+why T760 / SD662 were unaffected.
+
+**Fix**: add `modules = setOf(DazzleModule.VectorSearch)` to
+`ensureServerRunning`. With the module loaded the same probe now
+returns 5 / k hits in microseconds, the schema appears in
+`g_indexes`, and `addBatchDirect` populates the FLAT index
+correctly.
+
+## Pass 14 — Cortex-A53 NEON segfault inside hnswlib's `BruteforceSearch`
+
+With pass 13 landed the probe got further but crashed: `ps`
+showed the test process gone within 30 ms of `searchDirect`
+issuing the SIMD distance kernel. The `INSTRUMENTATION_RESULT`
+read `Process crashed.` with no `tombstone_*` (kernel writes one
+on root devices; on EMUI 9 unrooted, only the AndroidJUnitRunner
+captures the crash).
+
+Reading `hnswlib/bruteforce.h` and tracing the crash to
+`fstdistfunc_(query_data, data_ + size_per_element_ * i,
+dist_func_param_)` confirmed the signature: hnswlib stores its
+elements in a packed `[vec, label]` stride of
+`size_per_element_ = data_size_ + sizeof(labeltype)` bytes —
+e.g. for dim = 4, fp32 vec = 16 B + label = 8 B = 24 B per
+element. The SimsimdIPSpace distance kernel issues a NEON
+4-wide load on `data_ + 24*i`, which is **misaligned** for
+`i ∈ {1, 3, 5, ...}` (offset not a multiple of 16). Cortex-A53's
+NEON load instructions trap on misaligned 16-byte access whereas
+A75+ silently absorb it; this is why the bug shows on Kirin
+659 and not on T760 / SD662.
+
+**Fix**: bypass hnswlib's BruteforceSearch entirely on the FLAT
+path. `bookkeep_doc` now mirrors every FLAT-path vector into
+`schema->fp32_store` (the same rerank-only buffer that already
+existed for SQ8), and `search_handle_impl` runs a portable
+scalar brute-force scan over `fp32_store` for FLAT — distance
+is `1 - dot(q, v)` for COSINE / IP (both unit-normalised on
+add) and squared L2 for L2. ~2.5 ms wall clock for N = 2 000,
+dim = 384 on Cortex-A53; well under any per-query budget. HNSW
+path is unchanged.
+
+## Pass 15 — LLM split-prefill bug surfaces on the +RAG variants
+
+With passes 13 and 14 landed Phase 2a small variants (Qwen 0.5B)
+ran to completion: 200 +RAG queries with `prompt_tokens.avg = 570`
+and `f1_short = 0.236` matching T760 / SD662 within the bootstrap
+CI. The same is then expected of Phase 2b large (Qwen 1.5B) —
+but the bench process was killed within seconds of the first
++RAG query while the no-RAG variants completed cleanly.
+
+The pattern matches pass 2's embedder split-prefill bug: the
++RAG prompt is ~570 tokens, `cfg.llmNBatch = 512`, so llama.cpp
+splits the prefill into a 512-token first call + a 58-token
+continuation. The continuation call lands in the same v8.0 ggml
+fp16 fallback that froze the embedder when its
+`n_batch < n_ctx` default split a long passage into sub-batches
+on Kirin / SD662 v8.0. The embedder fix was to lift `n_batch`
+to `n_ctx` (= 512) so no split occurs; we never applied the same
+fix to the LLM because the no-RAG prompts are short and never
+trigger split-prefill, masking the bug for one full
+cross-platform sweep.
+
+**Fix**: set `cfg.llmNBatch = cfg.llmNCtx = 2048`. Any prompt up
+to context size now prefills in a single llama_decode call, the
+v8.0 fallback path is skipped, and `+RAG` queries complete with
+`prompt_tokens.avg = 570` matching T760 / SD662.
+
+## Pass 16 — chunked variant runner for `Qwen-1.5B + RAG` on iAware
+
+With pass 15 landed Phase 2a small completed end-to-end (3 hr
+30 min wall clock; `f1_short = 0.236 / 0.484` on the +RAG cells,
+matching T760 / SD662 within the CI). Phase 2b large started
+cleanly but the bench process consistently died around query
+30/200 of variant D (large + RAG), regardless of reboots,
+re-installs, or `useMmap` / `useMlock` settings. The kill is
+silent (no tombstone, no AndroidRuntime fatal); the
+INSTRUMENTATION_RESULT reads `Process crashed.` and the partial
+JSON is missing.
+
+The signature matches iAware's per-process kill-score from pass
+8 — but the per-variant version of the multi-process driver
+already runs each variant in its own `am instrument` invocation.
+With Qwen 1.5B (1.1 GB load + ~200 MB KV cache at n_ctx = 2048)
+and ~2.5 min/query inference time, the *single-variant* process
+itself accumulates enough kill-score over the first ~30 queries
+to fire on the next memory growth event.
+
+**Fix**: the chunked variant runner.
+`RagE2EBenchPhases.runVariantChunk` slices
+`queries[q_offset, q_offset + q_limit)` and runs only that slice
+in the current `am instrument`, writing a per-chunk
+`partial_chunk_<variant>_<offset>.json`. The per-query records
+were extended to include `embed_us` / `search_us` / `prefill_us`
+/ `decode_us` / `total_us` / `prompt_tokens` / `new_tokens` so
+the merge phase can recompute the canonical per-variant stats
+(`avg` / `p50` / `p95` / `min` / `max`) from the union of records
+across chunks without needing chunk-level arrays.
+
+The Kirin row of Table 17 in the paper was produced by:
+
+  - **Phase 1 (embed)** — 25.5 min, single fresh process, writes
+    binary cache + queries.json + meta.json.
+  - **Phase 2a (small variants)** — 3 hr 30 min, single fresh
+    process, writes `partial_small.json` (variant A + variant C
+    back-to-back on the same Qwen 0.5B handle).
+  - **Phase 2b (large variants)** — 8 hr 50 min, **20 chunks of
+    10 queries** each for variant D (large + RAG) plus 4 chunks
+    of 50 queries each for variant B (large no-RAG, fast). Each
+    chunk is a fresh `am instrument` invocation; iAware's
+    kill-score does not carry across, and the bench survives
+    every chunk reliably.
+  - **Phase 3 (merge)** — < 1 s, reads all 25 partials, writes
+    `rag_e2e_qwen2.5-0.5b-instruct-q4_k_m_<TS>.json`.
+
+Wall clock total on Kirin 659: ≈ 12 hr 50 min vs. ~1 hr 30 min
+on T760 — the gap is the per-query inference cost on Cortex-A53
+(5× slower) plus the chunked-driver overhead (5 s setup × 24
+chunks = 2 min). Numerical results are reproducible with
+`seed = 42` via `bootstrap_rag_cross_platform.py`; per-cell
+`F1_short` matches T760 / SD662 within the bootstrap CI on every
+cell:
+
+| Cell           | T760  | SD662 | Kirin 659 |
+|----------------|-------|-------|-----------|
+| small no-RAG   | 0.079 | 0.079 | 0.079     |
+| small + RAG    | 0.235 | 0.240 | 0.236     |
+| large no-RAG   | 0.118 | 0.118 | 0.119     |
+| large + RAG    | 0.487 | 0.487 | 0.484     |
+
+The full sixteen-pass investigation closes the Kirin row of
+Table 17 to within the per-cell CI of the HNSW chips and confirms
+that the §5.9 storage-engine thesis holds across ARMv8.0 and
+ARMv8.2 cores with no per-chip parameter tuning beyond
+`Algorithm.HNSW → Algorithm.FLAT` (pass 7) and
+`llmNBatch = llmNCtx` single-batch prefill (pass 15). The
+remaining sidebar items (1–5 in the paper) are universal
+portability improvements that landed across all three chips
+simultaneously.
