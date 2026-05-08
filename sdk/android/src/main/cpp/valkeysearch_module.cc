@@ -466,16 +466,36 @@ static void bookkeep_doc(VectorSchema* schema,
         schema->key_to_label[key] = doc.label;
         schema->element_count.fetch_add(1, std::memory_order_release);
     }
+    // Mirror the unit-vector copy into fp32_store on three paths:
+    //   - rerank (SQ8) → already documented above
+    //   - FLAT  (algo::FLAT, no hnsw_ptr) → enables the scalar
+    //     brute-force scan that bypasses hnswlib's BruteforceSearch
+    //     SIMD distance function (which segfaults on Cortex-A53 +
+    //     ARMv8.0 due to misaligned 16-byte NEON loads on the
+    //     `data_ + size_per_element_ * i` stride hnswlib uses).
+    bool flat_no_quant = (schema->algo == Algo::FLAT) &&
+                         !schema->sq8 && !schema->f16 &&
+                         doc.buf.size() == (size_t)schema->dim * sizeof(float);
     if (schema->rerank && !doc.unit_buf.empty()) {
         size_t off = (size_t)doc.label * (size_t)schema->dim;
-        // Defensive resize: FLAT path or upsert of a label beyond current
-        // fp32_store size. For HNSW the grow_capacity_locked path has
-        // already pre-sized fp32_store, so this is a no-op.
         if (schema->fp32_store.size() < off + (size_t)schema->dim) {
             schema->fp32_store.resize(off + (size_t)schema->dim);
         }
         std::memcpy(schema->fp32_store.data() + off,
                     doc.unit_buf.data(), (size_t)schema->dim * sizeof(float));
+    } else if (flat_no_quant) {
+        // FLAT path — store the normalised fp32 vector directly so the
+        // brute-force scan in search_handle_impl can scan fp32_store
+        // with a portable scalar dot product (avoids hnswlib's
+        // BruteforceSearch SIMD path that segfaults on Cortex-A53 +
+        // ARMv8.0 due to misaligned 16-byte NEON loads on the
+        // `[vec, label]` packed stride hnswlib uses).
+        size_t off = (size_t)doc.label * (size_t)schema->dim;
+        if (schema->fp32_store.size() < off + (size_t)schema->dim) {
+            schema->fp32_store.resize(off + (size_t)schema->dim);
+        }
+        std::memcpy(schema->fp32_store.data() + off,
+                    doc.buf.data(), (size_t)schema->dim * sizeof(float));
     }
 }
 
@@ -1266,9 +1286,46 @@ static int search_handle_impl(VectorSchema* schema,
     }
 
     std::shared_lock<std::shared_mutex> idx_lock(schema->mtx);
-    auto results = (schema->hnsw_ptr && ef > 0)
-        ? schema->hnsw_ptr->searchKnnEf(q_ptr, (size_t)fetch_k, (size_t)ef)
-        : schema->index->searchKnn(q_ptr, fetch_k);
+    std::priority_queue<std::pair<float, hnswlib::labeltype>> results;
+    bool flat_scalar = (schema->algo == Algo::FLAT) &&
+                       !schema->sq8 && !schema->f16 &&
+                       !schema->fp32_store.empty();
+    if (flat_scalar) {
+        // Portable scalar brute-force scan over the stored fp32_store —
+        // bypasses hnswlib's BruteforceSearch SIMD distance kernel which
+        // segfaults on Cortex-A53 + ARMv8.0 (Kirin 659 / EMUI 9) due to
+        // misaligned 16-byte NEON loads on hnswlib's `[vec, label]`
+        // packed stride. This loop is unconditionally safe on every
+        // arm64 chip and ~1.5 ms for N=2000, dim=384 on Cortex-A53.
+        // Distance is `1 - dot(q, v)` for COSINE / IP (both already
+        // normalised on add) and the squared L2 distance for L2.
+        size_t dim_sz = (size_t)schema->dim;
+        size_t n      = n_elems;
+        const float* q_f = static_cast<const float*>(q_ptr);
+        const float* base = schema->fp32_store.data();
+        for (size_t i = 0; i < n; i++) {
+            const float* v = base + i * dim_sz;
+            float d = 0.0f;
+            if (schema->metric == Metric::L2) {
+                for (size_t j = 0; j < dim_sz; j++) {
+                    float diff = q_f[j] - v[j];
+                    d += diff * diff;
+                }
+            } else {
+                // COSINE / IP — both run on unit-normalised vectors so the
+                // similarity is the dot product; distance = 1 - sim.
+                float dot = 0.0f;
+                for (size_t j = 0; j < dim_sz; j++) dot += q_f[j] * v[j];
+                d = 1.0f - dot;
+            }
+            results.emplace(d, (hnswlib::labeltype)i);
+            if ((int)results.size() > fetch_k) results.pop();
+        }
+    } else {
+        results = (schema->hnsw_ptr && ef > 0)
+            ? schema->hnsw_ptr->searchKnnEf(q_ptr, (size_t)fetch_k, (size_t)ef)
+            : schema->index->searchKnn(q_ptr, fetch_k);
+    }
 
     thread_local std::vector<std::pair<float, hnswlib::labeltype>> sorted_tls;
     sorted_tls.clear();

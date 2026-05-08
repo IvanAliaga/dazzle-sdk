@@ -61,7 +61,11 @@ class DazzleLlm private constructor(
     companion object {
         init { System.loadLibrary("llamacpp-jni") }
 
-        @JvmStatic private external fun nInit(modelPath: String, nCtx: Int, nThreads: Int): Long
+        @JvmStatic private external fun nInit(
+            modelPath: String,
+            nCtx: Int, nBatch: Int, nThreads: Int,
+            kvCacheTypeOrdinal: Int, flashAttn: Boolean, useMlock: Boolean,
+        ): Long
         @JvmStatic private external fun nGenerate(handle: Long, prompt: String, maxNewTokens: Int): String?
         @JvmStatic private external fun nLastPrefillUs(handle: Long): Long
         @JvmStatic private external fun nLastDecodeUs (handle: Long): Long
@@ -73,15 +77,51 @@ class DazzleLlm private constructor(
          * Open a GGUF generator. [modelPath] may point at either
          *   <filesDir>/gen/<file>.gguf (already copied)
          *   or a /data/local/tmp/... / /sdcard/... path (copied on first use).
+         *
+         * Memory knobs (all default to the published-paper configuration):
+         * - [nCtx]           context window. 2048 fits a 5-passage RAG
+         *                    prompt + 64-token answer with margin.
+         * - [nBatch]         logical prefill batch. Defaults to 512.
+         *                    Lowering it shrinks the prefill compute
+         *                    scratch (50-80 MB on Qwen 1.5B) at a small
+         *                    prefill-time cost on prompts longer than the
+         *                    batch.
+         * - [kvCacheType]    [KvCacheType.F16] is the paper default. The
+         *                    KV cache for Qwen 1.5B at n_ctx=2048 is
+         *                    ~470 MB in F16; Q8_0 halves it; Q4_0 quarters
+         *                    it. The bench harness records the choice so
+         *                    any F1 delta is attributable.
+         * - [flashAttention] cuts attention scratch from O(n²) to O(n).
+         *                    Defaults to `CpuFeatures.hasFp16()`: ON for
+         *                    ARMv8.2 chips with native fp16 (A75/A76+),
+         *                    OFF for v8.0 cores (A53/A73) where the
+         *                    flash-attn fp16↔fp32 fallback is slower
+         *                    AND uses more working memory.
+         * - [useMlock]       pins the model weights into resident RAM via
+         *                    `mlock()`. Off by default. On 4 GB devices
+         *                    where EMUI iAware aggressively pages out the
+         *                    1 GB Qwen-1.5B mmap mid-decode, locking the
+         *                    weights is the difference between the bench
+         *                    finishing and freezing at a random query.
+         *                    Numerically a no-op — same weights via the
+         *                    same code path, they just stay resident.
          */
         fun open(
             context: Context,
             modelPath: String,
             nCtx: Int = 2048,
+            nBatch: Int = 512,
             nThreads: Int = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
+            kvCacheType: KvCacheType = KvCacheType.F16,
+            flashAttention: Boolean = CpuFeatures.hasFp16(),
+            useMlock: Boolean = false,
         ): DazzleLlm {
             val resolved = ensureInternalCopy(context, modelPath)
-            val handle   = nInit(resolved, nCtx, nThreads)
+            val handle   = nInit(
+                resolved,
+                nCtx, nBatch, nThreads,
+                kvCacheType.ordinal, flashAttention, useMlock,
+            )
             return DazzleLlm(handle, resolved)
         }
 

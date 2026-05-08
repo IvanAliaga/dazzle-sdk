@@ -125,14 +125,8 @@ extern "C" dazzle_llama_ctx *dazzle_llama_new_context(dazzle_llama_model *model,
 
     ::llama_context_params cp = ::llama_context_default_params();
     cp.n_ctx        = (n_ctx > 0) ? (uint32_t)n_ctx : 2048;
-    // n_batch / n_ubatch must be ≥ the prompt length we feed to
-    // llama_decode in one shot, otherwise ggml_abort kills the process
-    // (SIGABRT in llama_decode assertions). Scale with n_ctx so the
-    // wrapper accepts any prompt that fits in the context window.
-    // Confirmed via crash on iPhone 12 Pro / iOS 26.3 (May 2026): a
-    // 590-token prompt aborted with the previous hardcoded 512.
-    cp.n_batch      = cp.n_ctx;
-    cp.n_ubatch     = cp.n_ctx;
+    cp.n_batch      = 512;
+    cp.n_ubatch     = 512;
     cp.n_threads    = (n_threads > 0) ? n_threads : 4;
     cp.n_threads_batch = cp.n_threads;
     // Flash attention off — not universally supported on all backends
