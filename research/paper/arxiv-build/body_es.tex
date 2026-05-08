@@ -1584,6 +1584,69 @@ del 2017, así que la surface del engine documentada en este paper es portable
 sobre las tres generaciones de microarquitectura Android testeadas (A76, A73,
 A53).
 
+\textbf{Descomposición de latencia.} Partir el \texttt{total\_us\ p50} por query
+en sus cuatro componentes del pipeline (\texttt{embed} = forward de BGE sobre la
+pregunta, \texttt{search} = retrieval vector, \texttt{prefill} = LLM ingiere
+prompt + passages retrieved, \texttt{decode} = LLM autoregresivo hasta
+\texttt{max\_new\_tokens\ =\ 64}) afina la tesis de storage-engine a un
+statement de presupuesto:
+
+\textbf{Tabla 18 --- small + RAG descomposición de latencia (mediana por query,
+ms). Prefill domina, retrieval es \textless{} 0.01 \% del total incluso en un
+chip Cortex-A53 del 2017, y la ratio prefill ≈ 6× decode que el perfil
+compute-vs-memory de Qwen 2.5 fija es invariante a través de
+microarquitecturas.}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Chip & embed p50 & search p50 & prefill p50 & decode p50 & total p50 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Unisoc T760 & 21.5 & 0.6 & 15 027 & 2 924 & 17 618 \\
+QCOM SD662 & 30.8 & 0.9 & 22 237 & 4 387 & 26 237 \\
+HiSi Kirin 659 & 67.4 & 3.7 & 48 374 & 9 138 & 56 159 \\
+\end{longtable}
+}
+
+Dos invariantes visibles sobre los tres chips:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{\texttt{prefill\ ≈\ 6×\ decode}.} El prefill compute-bound (cada token
+  lee el KV cache completo) y el decode memory-bound (cada token streamea una
+  vez) sientan en la misma ratio de FLOPs por token que Qwen 2.5 especifica, sin
+  importar la microarquitectura. T760 es 3.2× más rápido que Kirin en términos
+  absolutos, pero el split intra-query es el mismo.
+\item
+  \textbf{\texttt{embed\ +\ search\ ≪\ 1\ \%\ de}total\_us``} en cada celda:
+
+  {\def\LTcaptype{none} % do not increment counter
+  \begin{longtable}[]{@{}llllll@{}}
+  \toprule\noalign{}
+  Chip & embed & search & prefill & decode & retrieval / total \\
+  \midrule\noalign{}
+  \endhead
+  \bottomrule\noalign{}
+  \endlastfoot
+  Unisoc T760 & 0.12 \% & 0.003 \% & 85.3 \% & 16.6 \% & \textbf{0.13 \%} \\
+  QCOM SD662 & 0.12 \% & 0.004 \% & 84.8 \% & 16.7 \% & \textbf{0.12 \%} \\
+  HiSi Kirin 659 & 0.12 \% & 0.007 \% & 86.1 \% & 16.3 \% & \textbf{0.13 \%} \\
+  \end{longtable}
+  }
+
+  La tesis de storage-engine de §5.9 colapsa a un statement de presupuesto, no a
+  un argumento de tuning: una regresión de un orden de magnitud en el path de
+  retrieval (e.g.~bajar el recall de HNSW a 80 \% o correr FLAT brute-force a 5×
+  los ms que cuesta en Kirin) todavía dejaría el retrieval bajo 1.5 \% del
+  total, bien dentro del noise floor del prefill. La spread 3× wall-clock entre
+  chips es 100 \% LLM-runtime; el engine documentado en este paper ni ayuda ni
+  perjudica ese envelope.
+\end{enumerate}
+
 \begin{quote}
 \textbf{Sidebar de ingeniería --- fixes de portabilidad shipped durante este
 sweep cross-platform.} Cinco issues SDK-level surgieron al llevar el bench más

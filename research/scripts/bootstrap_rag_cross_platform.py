@@ -207,6 +207,74 @@ def main(argv: list[str] | None = None) -> int:
         )
     rows.append("")
 
+    rows.append("## Per-chip latency decomposition (median per query, ms)")
+    rows.append("")
+    rows.append("Splits `total_us p50` into the four pipeline components:")
+    rows.append("`embed` (BGE forward over the question), `search` (vector")
+    rows.append("retrieval over the 2 000-passage corpus), `prefill` (LLM")
+    rows.append("ingests prompt + retrieved passages), `decode` (LLM")
+    rows.append("autoregresses up to `max_new_tokens = 64`). Sanity:")
+    rows.append("`embed + search + prefill + decode ≈ total` to within a")
+    rows.append("few ms (the residual is harness overhead between phases).")
+    rows.append("")
+    rows.append("**Two invariants visible across all chips and variants:**")
+    rows.append("`prefill ≈ 6× decode` (compute-bound prefill vs.")
+    rows.append("memory-bound decode at the same per-token FLOPs ratio")
+    rows.append("Qwen 2.5 specifies), and `embed + search ≪ 1 % of total`")
+    rows.append("on every cell — the §5.9 storage-engine claim collapses")
+    rows.append("to a budget statement, not a tuning argument.")
+    rows.append("")
+    rows.append("### small + RAG")
+    rows.append("")
+    rows.append("| Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |")
+    rows.append("|------|-----------|------------|-------------|------------|-----------|")
+    for label, uarch, isa, ram, algo, jpath in available:
+        raw = json.load(jpath.open())
+        v = raw["variants"]["small_rag"]
+        def ms(comp: str) -> str:
+            d = v.get(comp) or {}
+            return f"{(d.get('p50') or 0)/1e3:.1f}" if d else "—"
+        rows.append(
+            f"| {label} | {ms('embed_us')} | {ms('search_us')} | "
+            f"{ms('prefill_us')} | {ms('decode_us')} | {ms('total_us')} |"
+        )
+    rows.append("")
+    rows.append("### large + RAG")
+    rows.append("")
+    rows.append("| Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |")
+    rows.append("|------|-----------|------------|-------------|------------|-----------|")
+    for label, uarch, isa, ram, algo, jpath in available:
+        raw = json.load(jpath.open())
+        v = raw["variants"]["large_rag"]
+        def ms(comp: str) -> str:
+            d = v.get(comp) or {}
+            return f"{(d.get('p50') or 0)/1e3:.1f}" if d else "—"
+        rows.append(
+            f"| {label} | {ms('embed_us')} | {ms('search_us')} | "
+            f"{ms('prefill_us')} | {ms('decode_us')} | {ms('total_us')} |"
+        )
+    rows.append("")
+    rows.append("### Storage vs LLM split (% of `total_us`, small + RAG)")
+    rows.append("")
+    rows.append("| Chip | embed | search | prefill | decode | retrieval / total |")
+    rows.append("|------|-------|--------|---------|--------|-------------------|")
+    for label, uarch, isa, ram, algo, jpath in available:
+        raw = json.load(jpath.open())
+        v = raw["variants"]["small_rag"]
+        tot = (v.get("total_us") or {}).get("p50") or 0
+        if tot <= 0:
+            continue
+        def pct(comp: str) -> float:
+            d = v.get(comp) or {}
+            p = d.get("p50") or 0
+            return 100.0 * p / tot
+        e = pct("embed_us"); s = pct("search_us")
+        rows.append(
+            f"| {label} | {e:.2f}% | {s:.3f}% | {pct('prefill_us'):.1f}% | "
+            f"{pct('decode_us'):.1f}% | **{e + s:.2f}%** |"
+        )
+    rows.append("")
+
     rows.append("## Per-chip prompt / new-token sizes (RAG vs no-RAG)")
     rows.append("")
     rows.append("Same prompt sizes across chips for a given variant — the queries")

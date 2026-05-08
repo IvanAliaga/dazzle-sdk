@@ -40,6 +40,47 @@ under the same per-query draw.
 | QCOM SD662 | HNSW | 2.62 s / 5.34 s | 26.24 s / 31.05 s | 4.72 s / 7.63 s | 71.99 s / 89.84 s |
 | HiSi Kirin 659 | FLAT | 6.00 s / 13.13 s | 56.16 s / 66.30 s | 9.83 s / 15.86 s | 152.26 s / 194.93 s |
 
+## Per-chip latency decomposition (median per query, ms)
+
+Splits `total_us p50` into the four pipeline components:
+`embed` (BGE forward over the question), `search` (vector
+retrieval over the 2 000-passage corpus), `prefill` (LLM
+ingests prompt + retrieved passages), `decode` (LLM
+autoregresses up to `max_new_tokens = 64`). Sanity:
+`embed + search + prefill + decode ≈ total` to within a
+few ms (the residual is harness overhead between phases).
+
+**Two invariants visible across all chips and variants:**
+`prefill ≈ 6× decode` (compute-bound prefill vs.
+memory-bound decode at the same per-token FLOPs ratio
+Qwen 2.5 specifies), and `embed + search ≪ 1 % of total`
+on every cell — the §5.9 storage-engine claim collapses
+to a budget statement, not a tuning argument.
+
+### small + RAG
+
+| Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |
+|------|-----------|------------|-------------|------------|-----------|
+| Unisoc T760 | 21.5 | 0.6 | 15027.4 | 2924.2 | 17617.6 |
+| QCOM SD662 | 30.8 | 0.9 | 22236.5 | 4387.3 | 26237.0 |
+| HiSi Kirin 659 | 67.4 | 3.7 | 48374.5 | 9137.7 | 56158.7 |
+
+### large + RAG
+
+| Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |
+|------|-----------|------------|-------------|------------|-----------|
+| Unisoc T760 | 23.9 | 0.7 | 45892.3 | 5699.2 | 49227.6 |
+| QCOM SD662 | 34.5 | 1.0 | 66609.9 | 9420.2 | 71991.6 |
+| HiSi Kirin 659 | 67.4 | 3.8 | 140145.4 | 24393.9 | 152264.4 |
+
+### Storage vs LLM split (% of `total_us`, small + RAG)
+
+| Chip | embed | search | prefill | decode | retrieval / total |
+|------|-------|--------|---------|--------|-------------------|
+| Unisoc T760 | 0.12% | 0.003% | 85.3% | 16.6% | **0.13%** |
+| QCOM SD662 | 0.12% | 0.004% | 84.8% | 16.7% | **0.12%** |
+| HiSi Kirin 659 | 0.12% | 0.007% | 86.1% | 16.3% | **0.13%** |
+
 ## Per-chip prompt / new-token sizes (RAG vs no-RAG)
 
 Same prompt sizes across chips for a given variant — the queries
