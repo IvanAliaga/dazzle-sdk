@@ -1333,6 +1333,40 @@ Dos invariantes visibles sobre los tres chips:
    engine documentado en este paper ni ayuda ni perjudica ese
    envelope.
 
+**Techo de recall del retrieval.** Una pregunta natural a la
+descomposición de latencia es si el pipeline de retrieval es el
+bottleneck del F1 de §5.9. Computar `recall@k` de BGE-small sobre
+las mismas 200 queries NQ contra el mismo corpus de 2 000 passages
+— scoreando "el gold passage de short-answer está en el top-k"
+contra el campo `gold` de cada query — da el F1 upper bound que el
+storage engine *podría* entregar al LLM:
+
+**Tabla 19 — recall@k de retrieval de BGE-small sobre el slice de
+200 queries NQ. Cosine sobre embeddings unit-normalisados de
+`dim = 384`. Un solo número por row porque los embeddings son
+determinísticos y el chip elegido no cambia el recall — mismo
+modelo, mismo corpus, mismas queries.**
+
+| k    | recall@k |
+|------|----------|
+| 1    | 0.905    |
+| 3    | 0.970    |
+| 5    | 0.980    *(paper config)* |
+| 10   | 0.990    |
+
+El pipeline de retrieval entonces entrega el gold passage en el
+top-5 en 98 % de las queries — pero `F1_short` aterriza en 0.487
+para `large + RAG` sobre el chip más fuerte. El gap de 49 puntos
+entre "retrieval perfecto" y "el modelo escribe la respuesta
+correcta" es **la quality de extraction del LLM, no el recall del
+storage engine**. El small Qwen 2.5 0.5B compone esto — `small +
+RAG` aterriza en 0.236, la mitad del número del large-model,
+sobre el mismo contexto de 0.98 recall. Un modelo class-7B
+cerraría la mayor parte del gap remanente sin cambiar una línea
+del código del engine en este paper; la surface del storage
+engine satura su upper bound sobre este corpus y ships cero
+budget bloqueante sobre F1.
+
 > **Sidebar de ingeniería — fixes de portabilidad shipped durante
 > este sweep cross-platform.** Cinco issues SDK-level surgieron al
 > llevar el bench más allá del target original Moto G35 5G. Cada

@@ -1562,6 +1562,39 @@ Two invariants visible across all three chips:
    100 % LLM-runtime; the engine documented in this paper neither
    helps nor hurts that envelope.
 
+**Retrieval recall ceiling.** A natural follow-up question to
+the latency decomposition is whether the retrieval pipeline is
+the bottleneck of the §5.9 F1. Computing BGE-small's `recall@k`
+on the same 200 NQ queries against the same 2 000-passage corpus
+— scoring "the gold short-answer passage is in the top-k" against
+the `gold` field of each query — gives the upper bound F1 the
+storage engine *could* feed the LLM:
+
+**Table 19 — BGE-small retrieval recall@k on the 200-query NQ
+slice. Cosine over `dim = 384` unit-normalised embeddings. Single
+number per row because the embeddings are deterministic and chip
+choice does not change the recall — same model, same corpus, same
+queries.**
+
+| k    | recall@k |
+|------|----------|
+| 1    | 0.905    |
+| 3    | 0.970    |
+| 5    | 0.980    *(paper config)* |
+| 10   | 0.990    |
+
+The retrieval pipeline therefore delivers the gold passage in the
+top-5 on 98 % of queries — yet `F1_short` lands at 0.487 for
+`large + RAG` on the strongest chip. The 49-point gap between
+"perfect retrieval" and "model writes the right answer" is **the
+LLM's extraction quality, not the storage engine's recall**. The
+small Qwen 2.5 0.5B compounds this — `small + RAG` lands at
+0.236, half of the large-model number, on the same 0.98-recall
+context. A 7B-class model would close most of the remaining gap
+without changing a line of the engine code in this paper; the
+storage-engine surface saturates its upper bound on this corpus
+and ships zero blocking budget on F1.
+
 > **Engineering sidebar — portability fixes shipped during this
 > cross-platform sweep.** Five SDK-level issues surfaced when the
 > bench was carried beyond the original Moto G35 5G target. Each
