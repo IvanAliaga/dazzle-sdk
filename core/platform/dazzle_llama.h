@@ -76,22 +76,7 @@ void dazzle_llama_free_model(dazzle_llama_model *model);
 /* Create an inference context tied to `model`. `n_ctx` is the
  * maximum token window; 2048 is a reasonable default for 7B/13B
  * chat models, 4096+ for larger contexts. `n_threads` caps the
- * CPU worker count; pass -1 to let llama.cpp auto-size.
- *
- * Memory footprint: internally `n_batch` and `n_ubatch` are pinned
- * to `n_ctx`, so the context will accept ANY prompt that fits in
- * the window in a single decode call. The trade-off is that the
- * batch buffers also scale with `n_ctx` rather than with a fixed
- * 512-token batch. Pick `n_ctx` to match the longest prompt you
- * realistically need: a needlessly large window costs RAM at
- * context-creation time on memory-constrained mobile devices.
- *
- * Why this matters: llama.cpp aborts the process (SIGABRT inside
- * `llama_decode`) if the prompt exceeds `n_batch` — so a fixed
- * batch < `n_ctx` would crash the whole app the first time a user
- * pastes a long message. Reproduced on iPhone 12 Pro / iOS 26.3
- * with a 590-token prompt against the previous 512-token batch.
- */
+ * CPU worker count; pass -1 to let llama.cpp auto-size. */
 dazzle_llama_ctx *dazzle_llama_new_context(dazzle_llama_model *model,
                                            int n_ctx,
                                            int n_threads);
@@ -127,6 +112,37 @@ int dazzle_llama_generate(dazzle_llama_ctx *ctx,
 #define DAZZLE_LLAMA_E_DECODE         -3
 #define DAZZLE_LLAMA_E_CONTEXT_FULL   -4
 #define DAZZLE_LLAMA_E_CANCELLED      -5
+
+/* Per-call timing / token-count accessors. Each returns the value
+ * captured during the most-recent dazzle_llama_generate() call on
+ * `ctx`; calling them on a context that has never generated returns
+ * zero. The bench harness uses them to populate the same JSON shape
+ * the Android JNI produces (see paper §5.9.5 Tabla 18). */
+int64_t dazzle_llama_last_prefill_us(dazzle_llama_ctx *ctx);
+int64_t dazzle_llama_last_decode_us(dazzle_llama_ctx *ctx);
+int     dazzle_llama_last_prompt_tokens(dazzle_llama_ctx *ctx);
+int     dazzle_llama_last_new_tokens(dazzle_llama_ctx *ctx);
+
+/* Build an embedding-mode context — `embeddings = true`, mean
+ * pooling. Used by the §5.9 RAG bench to embed passages and
+ * queries. Same `dazzle_llama_free_context` releases either kind of
+ * context. */
+dazzle_llama_ctx *dazzle_llama_new_embed_context(dazzle_llama_model *model,
+                                                 int n_ctx,
+                                                 int n_threads);
+
+/* Embedding dimension of the loaded model — equivalent to the
+ * `n_embd` field of llama_model. Stable for the model lifetime. */
+int dazzle_llama_embed_dim(dazzle_llama_ctx *ctx);
+
+/* Compute the mean-pooled embedding of `prompt` and write `out_dim`
+ * fp32 floats into `out`. Returns the actual embedding dimension on
+ * success (always == `dazzle_llama_embed_dim(ctx)`), or a negative
+ * DAZZLE_LLAMA_E_* code on failure. `ctx` must have been built with
+ * `dazzle_llama_new_embed_context`. */
+int dazzle_llama_embed(dazzle_llama_ctx *ctx,
+                       const char *prompt,
+                       float *out, int out_dim);
 
 #ifdef __cplusplus
 } /* extern "C" */

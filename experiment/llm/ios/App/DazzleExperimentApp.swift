@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import SwiftUI
+import UIKit
 // DazzleServer is compiled directly into the target (see project.yml sources)
 
 @main
@@ -53,11 +54,45 @@ struct DazzleExperimentApp: App {
             print("[AutoRun] done — exiting")
             exit(0)
         }
+        // §5.9 RAG E2E auto-run on iOS — same JSON shape as the Android
+        // bench, mirrors `RagE2EBench.run` from `experiment/backends/
+        // android/core/RagE2EBench.kt`. Launch with:
+        //   xcrun devicectl device process launch \
+        //     --environment-variables RAG_E2E=true \
+        //     io.dazzle.experiment
+        // Optional `MAX_QUERIES=N` to bound the slice for smoke tests.
+        if env["RAG_E2E"] == "true" {
+            print("[AutoRun] RAG_E2E=true — launching iOS §5.9 bench on background queue")
+            // Detach so SwiftUI's main runloop returns within iOS's 20-s
+            // launch-watchdog (0x8BADF00D). The bench will run for
+            // 25-50 min on A14, write its JSON to Documents/, and
+            // `exit(0)` itself when done. The host app stays in
+            // foreground (idle UI) so jetsam doesn't kill it.
+            DispatchQueue.global(qos: .userInitiated).async {
+                RagE2EBench.run()
+                print("[AutoRun] RAG_E2E done — exiting")
+                exit(0)
+            }
+        }
     }
 
     var body: some Scene {
         WindowGroup {
-            ExperimentView()
+            // When RAG_E2E=true the bench runs on a detached queue from
+            // init(); rendering ExperimentView() would try to load the
+            // Gemma weights (which are not pushed to this device for the
+            // §5.9 RAG bench) and either fatal-error or block the main
+            // thread. A placeholder view keeps the app foregrounded so
+            // jetsam doesn't kill the long-running bench.
+            if ProcessInfo.processInfo.environment["RAG_E2E"] == "true" {
+                Text("RagE2EBench running — see console / Documents/")
+                    .padding()
+                    .onAppear {
+                        UIApplication.shared.isIdleTimerDisabled = true
+                    }
+            } else {
+                ExperimentView()
+            }
         }
     }
 }

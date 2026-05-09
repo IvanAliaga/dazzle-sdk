@@ -88,6 +88,15 @@ CHIPS = [
         REPO / "research" / "results" / "cross_platform_e2e"
             / "ane_kirin659_rag_e2e.json",
     ),
+    (
+        "Apple A14",
+        "Firestorm",
+        "v8.4+",
+        "6 GB",
+        "FLAT",
+        REPO / "research" / "results" / "cross_platform_e2e"
+            / "iphone12pro_a14_rag_e2e.json",
+    ),
 ]
 
 

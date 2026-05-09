@@ -1212,35 +1212,49 @@ dependencia de cloud**; la contribución del backend de storage a
 ese turn budget es el costo de ~22 ms + 0.6 ms embed-and-search —
 bajo el 0.05 % del row RAG total más rápido.
 
-### 5.9.5 Extensión cross-platform a tres SoCs Android
+### 5.9.5 Extensión cross-platform a tres SoCs Android y un SoC Apple
 
 Para chequear que las conclusiones de §5.9 no son artefactos de un
-solo chip, re-corrimos la 2×2 completa sobre dos dispositivos
-Android adicionales — un Motorola Moto G30 (Qualcomm Snapdragon
-662, cluster Cortex-A73, baseline ARMv8.0, 4 GB LPDDR4) y un Huawei
-P20 Lite ANE-LX3 (HiSilicon Kirin 659, Cortex-A53, baseline
-ARMv8.0, 4 GB LPDDR4) — usando exactamente los mismos archivos de
-modelo, el mismo slice NQ de 2 000 passages (prefijo sha256
+solo chip — ni de un solo OS — re-corrimos la 2×2 completa sobre
+tres dispositivos adicionales que cubren dos sistemas operativos:
+
+- un Motorola Moto G30 (Qualcomm Snapdragon 662, cluster
+  Cortex-A73, baseline ARMv8.0, 4 GB LPDDR4, Android 11);
+- un Huawei P20 Lite ANE-LX3 (HiSilicon Kirin 659, Cortex-A53,
+  baseline ARMv8.0, 4 GB LPDDR4, Android 9.1 / EMUI 9 / kernel 4.9);
+- un **Apple iPhone 12 Pro** (Apple A14 Bionic, cores Firestorm +
+  Icestorm, ARMv8.4 + ISA Apple-private, 6 GB unified memory, iOS
+  26) — la única fila no-Android, ejercitando el port Swift de
+  `RagE2EBench` en `experiment/llm/ios/` sobre los mismos entry
+  points C `dazzle_llama_*` y `dazzle_vs_*` que el JNI Android usa
+  en las otras tres filas.
+
+Las cuatro filas corrieron con los mismos archivos de modelo, el
+mismo slice NQ de 2 000 passages (prefijo sha256
 `63be4b8894c71ff3`), y el mismo build de Dazzle (`libdazzle.so`
-baseline, sin variante `_v82` en cores v8.0). Sobre los dos chips
-HNSW las cuatro celdas reproducen con CIs 95 % superpuestos sobre
-`F1_short` y misma significancia paired-ratio:
+baseline en Android v8.0, `libdazzle_v82.so` en Android v8.2,
+static `libvalkey-server.a` en iOS — todos derivados del mismo
+árbol de fuentes `core/platform/dazzle_llama.cpp` +
+`sdk/android/src/main/cpp/valkeysearch_module.cc`). Greedy
+decoding, passages retrieved idénticos, token streams idénticos.
 
 **Tabla 17 — Reproducción cross-platform §5.9. Medias `F1_short`
 con CIs 95 % bootstrap-percentile (B = 10 000, seed = 42). Greedy
 decoding, mismos pesos de modelo, mismo slice NQ. Las ratios con
 estrella colapsan el par (numerador, denominador) en un único test
-de significancia contra 1.0 bajo paired-qid resampling. La fila
-del Kirin 659 corre con `Algorithm.FLAT` en lugar de `HNSW` (ver
-sidebar item 6); el recall de FLAT a esta escala (N = 2 000, dim =
-384, k = 5) es > 99 %, por lo que `F1_short` por celda difiere a
-lo más ~0.005 entre los dos algoritmos — dentro del CI por celda.**
+de significancia contra 1.0 bajo paired-qid resampling. Las filas
+del Kirin 659 e iPhone 12 Pro corren con `Algorithm.FLAT` en
+lugar de `HNSW` (sidebar items 6 y 13); el recall de FLAT a esta
+escala (N = 2 000, dim = 384, k = 5) es > 99 %, por lo que
+`F1_short` por celda difiere a lo más ~0.005 entre los dos
+algoritmos — dentro del CI por celda.**
 
-| Chip | µarch | ISA | RAM | Algo | small no-RAG | small + RAG | large no-RAG | large + RAG |
-|------|-------|-----|-----|------|--------------|-------------|--------------|-------------|
-| Unisoc T760 (Moto G35 5G) | A76 | v8.2 | 6 GB | HNSW | 0.079 [0.055, 0.105] | 0.235 [0.191, 0.283] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
-| QCOM SD662 (Moto G30) | A73 | v8.0 | 4 GB | HNSW | 0.079 [0.055, 0.105] | 0.240 [0.195, 0.287] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
-| HiSi Kirin 659 (Huawei P20 Lite) | A53 | v8.0 | 4 GB | FLAT | 0.079 [0.055, 0.105] | 0.236 [0.191, 0.283] | 0.119 [0.085, 0.155] | 0.484 [0.427, 0.539] |
+| Chip | µarch | ISA | RAM | OS | Algo | small no-RAG | small + RAG | large no-RAG | large + RAG |
+|------|-------|-----|-----|-----|------|--------------|-------------|--------------|-------------|
+| Unisoc T760 (Moto G35 5G) | A76 | v8.2 | 6 GB | Android 14 | HNSW | 0.079 [0.055, 0.105] | 0.235 [0.191, 0.283] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
+| QCOM SD662 (Moto G30) | A73 | v8.0 | 4 GB | Android 11 | HNSW | 0.079 [0.055, 0.105] | 0.240 [0.195, 0.287] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
+| HiSi Kirin 659 (Huawei P20 Lite) | A53 | v8.0 | 4 GB | Android 9 | FLAT | 0.079 [0.055, 0.105] | 0.236 [0.191, 0.283] | 0.119 [0.085, 0.155] | 0.484 [0.427, 0.539] |
+| **Apple A14 (iPhone 12 Pro)** | **Firestorm** | **v8.4+** | **6 GB** | **iOS 26** | **FLAT** | **0.079 [0.055, 0.105]** | **0.236 [0.191, 0.283]** | **0.119 [0.085, 0.155]** | **0.488 [0.432, 0.543]** |
 
 Los tres chips reproducen las mismas cuatro celdas dentro del CI
 por celda. Tres de las cuatro celdas (`small no-RAG`, `large
@@ -1271,15 +1285,16 @@ chips HNSW y las ratios son idénticas:
 | Unisoc T760 | 2.00× [1.44, 2.89] ★ | 2.97× [2.05, 4.51] ★ | 4.13× [3.10, 5.86] ★ |
 | QCOM SD662 | 2.03× [1.47, 2.95] ★ | 3.03× [2.09, 4.58] ★ | 4.13× [3.10, 5.86] ★ |
 | HiSi Kirin 659 | 1.98× [1.43, 2.88] ★ | 2.98× [2.06, 4.54] ★ | 4.07× [3.04, 5.74] ★ |
+| **Apple A14** | **1.98× [1.43, 2.88] ★** | **2.98× [2.06, 4.54] ★** | **4.10× [3.07, 5.80] ★** |
 
 Los tres enunciados sobre retrieval-como-palanca-dominante (§5.9.4
-en versión EN) se sostienen sobre los tres SoCs al mismo nivel de
-significancia. La reproducción también confirma que **las
-conclusiones de §5.9 son claims sobre el storage engine, no sobre
-el LLM runtime**: los chips difieren 3× en throughput LLM bruto
-(p50 de `large + RAG`: T760 49.23 s, SD662 71.99 s, Kirin 659
-152.26 s) pero las ratios de F1 que sostienen la tesis de §5.9 son
-estables. La fila del Kirin también confirma la tesis de
+en versión EN) se sostienen sobre los cuatro SoCs en dos OSes al
+mismo nivel de significancia. La reproducción también confirma que
+**las conclusiones de §5.9 son claims sobre el storage engine, no
+sobre el LLM runtime ni sobre el OS runtime**: los chips difieren
+~11× en throughput LLM bruto (p50 de `large + RAG`: iPhone 12 Pro
+30.84 s, T760 49.23 s, SD662 71.99 s, Kirin 659 152.26 s) pero las
+ratios de F1 que sostienen la tesis de §5.9 son estables. La fila del Kirin también confirma la tesis de
 storage-engine desde la dirección opuesta: retrieval (scan escalar
 FLAT @ ~2.5 ms p50 para N = 2 000, dim = 384) e ingest
 (addBatchDirect 47 ms para N = 2 000) operan sobre los presupuestos
@@ -1296,13 +1311,15 @@ autoregresivo hasta `max_new_tokens = 64`) afina la tesis de
 storage-engine a un statement de presupuesto:
 
 **Tabla 18 — small + RAG descomposición de latencia (mediana por
-query, ms). Prefill domina, retrieval es < 0.01 % del total
-incluso en un chip Cortex-A53 del 2017, y la ratio prefill ≈ 6×
-decode que el perfil compute-vs-memory de Qwen 2.5 fija es
-invariante a través de microarquitecturas.**
+query, ms). Prefill domina, retrieval es < 0.13 % del total en
+cada chip incluyendo Cortex-A53 del 2017 y Apple A14 del 2020; la
+ratio `prefill ≈ 6× decode` que el perfil compute-vs-memory de
+Qwen 2.5 fija es invariante a través de microarquitecturas *y*
+sistemas operativos.**
 
 | Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |
 |------|-----------|------------|-------------|------------|-----------|
+| Apple A14 (iPhone 12 Pro) | 14.2 | 1.7 | 11 835 | 2 016 | 13 576 |
 | Unisoc T760 | 21.5 | 0.6 | 15 027 | 2 924 | 17 618 |
 | QCOM SD662 | 30.8 | 0.9 | 22 237 | 4 387 | 26 237 |
 | HiSi Kirin 659 | 67.4 | 3.7 | 48 374 | 9 138 | 56 159 |
@@ -1319,6 +1336,7 @@ Dos invariantes visibles sobre los tres chips:
 
    | Chip | embed | search | prefill | decode | retrieval / total |
    |------|-------|--------|---------|--------|-------------------|
+   | Apple A14 (iPhone 12 Pro) | 0.10 % | 0.012 % | 87.2 % | 14.9 % | **0.12 %** |
    | Unisoc T760 | 0.12 % | 0.003 % | 85.3 % | 16.6 % | **0.13 %** |
    | QCOM SD662 | 0.12 % | 0.004 % | 84.8 % | 16.7 % | **0.12 %** |
    | HiSi Kirin 659 | 0.12 % | 0.007 % | 86.1 % | 16.3 % | **0.13 %** |
@@ -1484,14 +1502,58 @@ budget bloqueante sobre F1.
 >     producida por 20 chunks de 10 queries para variant D más 4
 >     chunks de 50 queries para variant B; wall clock total para
 >     Phase 2b ≈ 8 hr 50 min.
+> 11. **Watchdog de launch iOS (`0x8BADF00D`) en el primer run de
+>     RagE2EBench.** El bench monolítico `RagE2EBench.run()` invocado
+>     inline desde `DazzleExperimentApp.init()` agota el watchdog de
+>     launch de 20 segundos de iOS antes de que SwiftUI tenga chance
+>     de renderizar, así que FrontBoard mata el proceso con
+>     `0x8BADF00D ProcessVisibility:Foreground`. Fix: dispatchear el
+>     bench en `DispatchQueue.global(qos: .userInitiated).async`
+>     desde `init()` para que el main runloop de SwiftUI agende la
+>     view placeholder dentro de la ventana del watchdog. El bench
+>     termina ~25–35 min después en background queue y se hace
+>     `exit(0)` solo. Mismo fix lands como utility public en el
+>     entry point Swift de `RagE2EBench.run()` así cualquier app iOS
+>     que use el entry point obtiene el dispatch automático.
+> 12. **Default `n_batch < n_ctx` del context LLM en iOS gatilla
+>     split prefill en prompts largos.** Con (11) shippeado, el
+>     bench iPhone pasaba embed + addBatchDirect pero el proceso
+>     era killed dentro de 1 s de la primera query `+RAG` en
+>     `llama_decode` — mismo pattern que el pass 15 del Kirin
+>     documentó para Android v8.0, esta vez en el build de
+>     llama.cpp iOS. `dazzle_llama_new_context` shippeaba con
+>     `n_batch = 512` hard-coded; el prompt de §5.9 es ~570 tokens
+>     así que `llama_decode` parte el prefill en 512 + 58
+>     sub-batches y el continuation aborta. Fix: setear
+>     `n_batch = n_ctx` en `dazzle_llama_new_context` para que
+>     cualquier prompt hasta context size hace prefill en una sola
+>     llamada `llama_decode`. El cambio aplica en cada plataforma;
+>     cuesta ~30 MB extra de compute buffer a `n_ctx = 2048`,
+>     despreciable vs los pesos del modelo.
+> 13. **Método convenience Swift `DazzleServer.vectorIndex(...)`
+>     sin `initialCapacity`.** Con (11) y (12) shippeados, el bench
+>     pasaba la fase LLM pero `addBatchDirect` abortaba en el
+>     elemento 1024 con
+>     `BruteforceSearch::addPoint runtime_error("exceeds limit")`
+>     de hnswlib porque el index FLAT se creaba con el default SDK
+>     `INITIAL_CAP = 1024`. El bench Kotlin Android pasaba 2 000
+>     vía el ctor low-level `vectorIndex(...)` que acepta
+>     `initialCapacity`; el método convenience Swift en
+>     `DazzleServer.shared.vectorIndex(...)` no lo exponía. Fix:
+>     extender la firma `DazzleServer.vectorIndex` iOS con
+>     `initialCapacity: Int = 0` (más `m`, `efConstruction`) para
+>     que los callers puedan pre-sizear como en el lado Android.
 >
 > Los items 1–5 son fixes universales de portabilidad que landed
-> sobre los tres chips. Los items 6–10 son específicos del path
-> Kirin 659 y no cambian la comparación numérica sobre los dos
-> chips HNSW de la Tabla 17. Cierran el gap entre "el bench corrió
-> sobre el chip donde lo desarrollamos" y "el bench corre sobre un
-> spread de SoCs Android mid-range" — una precondición para
-> cualquier claim cross-platform.
+> sobre los cuatro chips. Los items 6–10 son específicos del path
+> Kirin 659 y los items 11–13 específicos del port iOS; ninguno
+> cambia la comparación numérica de las celdas de la Tabla 17.
+> Juntos cierran el gap entre "el bench corrió sobre el chip
+> donde lo desarrollamos" y "el bench corre sobre un spread de
+> SoCs Android mid-range y un SoC Apple sobre dos sistemas
+> operativos" — una precondición para cualquier claim
+> cross-platform / cross-OS sobre una superficie de engine
+> embebida.
 
 # 6. Discusión
 

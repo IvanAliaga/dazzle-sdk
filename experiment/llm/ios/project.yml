@@ -36,6 +36,7 @@ targets:
       - path: App
       - path: Inference
       - path: ExperimentPipelineIoT.swift
+      - path: RagE2EBench.swift
       - path: Resources
       # Shared experiment infrastructure (StorageBackend protocol, dataset, exporter)
       - path: ../../backends/ios/StorageBackend.swift
@@ -71,6 +72,7 @@ targets:
       - path: ../../storage/ios/StorageOnlyTestPaper2.swift
       # Include Dazzle Swift + C shim directly (same pattern as demo project)
       - path: ../../../sdk/ios/Sources/DazzleConfig.swift
+      - path: ../../../sdk/ios/Sources/ExecutionPolicy.swift
       - path: ../../../sdk/ios/Sources/DazzleServer.swift
       - path: ../../../sdk/ios/Sources/DazzlePrimitives.swift
       - path: ../../../sdk/ios/Sources/VectorIndex.swift
