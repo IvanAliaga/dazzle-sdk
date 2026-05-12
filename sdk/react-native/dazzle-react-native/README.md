@@ -5,7 +5,7 @@ React Native package for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk)
 embedded Valkey + HNSW vector search + ChatAgent runtime the
 Android / iOS native + Flutter SDKs ship.
 
-Latest: **v1.0.0-beta.5** — see
+Latest: **v1.0.0-beta.6** — see
 [../../../CHANGELOG.md](../../../CHANGELOG.md).
 
 ## Install
@@ -163,7 +163,7 @@ If a sync method isn't available at runtime the TS wrappers fall
 back to the async path automatically, so the same code runs on older
 React Native versions.
 
-## React Native Web (1.0.0-beta.5+)
+## React Native Web (1.0.0-beta.6+)
 
 For RN apps that target web (Expo Web, react-native-web), Dazzle ships a
 WebAssembly runtime that runs HNSW vector search and a hash KV

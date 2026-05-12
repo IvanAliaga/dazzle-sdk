@@ -105,7 +105,7 @@ await DazzleWeb.persist();
 | `useVectorSearch(name, query, opts?)` | `{ hits, refresh }` | Re-runs search when query changes |
 | `useAutoPersist()` | `void` | Snapshot to OPFS on unmount |
 
-## Scope (1.0.0-beta.5)
+## Scope (1.0.0-beta.6)
 
 - ✅ Hash KV (HSET/HGET/HGETALL/HDEL)
 - ✅ Vector index (HNSW): create / add / addBatch / search / drop

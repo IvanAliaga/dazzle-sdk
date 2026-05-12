@@ -4,6 +4,67 @@ All notable changes to the Dazzle SDK. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it hits
 `1.0.0`; pre-release builds use `1.0.0-beta.N` suffixes.
 
+## 1.0.0-beta.6 — 2026-05-12
+
+Paper-driven release. End-to-end RAG reproduction extended from 3
+Android SoCs (post-Kirin) to **5 physical mobile SoCs spanning 2
+operating systems** — the §5.9 retrieval-as-storage-engine claim
+now holds across four Android microarchitecture generations (A53,
+A73, A75, A76) plus Apple Firestorm. A §5.9.6 quantization
+sensitivity sweep adds a bandwidth-vs-compute reading for Q4_K_M
+vs Q5_K_M on the two ARMv8.2 chips. The engineering sidebar
+grew from 10 to 14 portability fixes; items 11–13 ship the iOS
+port, item 14 ships the EMUI 10 / G80 freeze unblock.
+
+### Added
+
+- **§5.9.5 cross-platform reproduction expanded to 5 chips × 2 OSes.**
+  iPhone 12 Pro (Apple A14, iOS 26) is the first non-Android row;
+  Huawei Y9a / FRL-L23 (Helio G80, A75 v8.2, Android 10 / EMUI 10)
+  is the 4th Android microarchitecture generation. Bootstrap CIs
+  (B=10000, paired-qid) star-mark every F1_short ratio at 95%.
+- **§5.9.6 quantization sensitivity sweep.** Q4_K_M vs Q5_K_M on
+  the two v8.2 chips. `em_contains` is flat across quant (deltas
+  ≤ 0.025); latency reveals a bandwidth-vs-compute split (+50%
+  on A76 vs ≤+13% on A75). Disk +6.3% / +15% for 0.5B / 1.5B.
+- **Instrumentation extras** `-e small_llm_file <name>` /
+  `-e large_llm_file <name>` to swap the GGUF per-run without
+  rebuild.
+- **Swift bench port** `experiment/llm/ios/RagE2EBench.swift`
+  over the same `dazzle_llama_*` + `dazzle_vs_*` C entry points
+  the Android JNI calls.
+- **REPRODUCIBILITY §4a + §4b**: chunked instrumentation +
+  GGUF-swap recipes.
+
+### Fixed
+
+- **Android experiment JNI** (sidebar item 14): `n_batch = n_ctx`
+  in `experiment/backends/android/cpp/llamacpp/llamacpp_jni.c`.
+  Missed by the Kirin pass-15 fix that only touched
+  `core/platform/dazzle_llama.cpp`. Without this, Helio G80 /
+  EMUI 10 silently freezes at the first +RAG turn.
+- **iOS llama.cpp path** (sidebar item 12): `n_batch = n_ctx` in
+  `dazzle_llama_new_context`. Same Kirin pass-15 pattern, this
+  time on iOS llama.cpp.
+- **iOS launch watchdog 0x8BADF00D** (sidebar item 11): dispatch
+  on `DispatchQueue.global(qos: .userInitiated).async` so SwiftUI
+  schedules the placeholder body inside the 20-second window.
+- **`DazzleServer.vectorIndex(...)` iOS Swift** (sidebar item 13):
+  expose `initialCapacity: Int = 0` (+ `m`, `efConstruction`) so
+  the FLAT index can be pre-sized past the SDK default
+  `INITIAL_CAP = 1024`.
+
+### Documentation
+
+- Paper PDFs rebuilt: `research/paper/arxiv-build/paper.pdf` +
+  `paper_es.pdf`. Tables 17, 18, retrieval / total split, latency
+  decomposition, and the new §5.9.6 quant cells are in the
+  compiled PDFs.
+- Engineering sidebar grew from 10 to 14 items. Items 1–5
+  universal portability; 6–10 Kirin-specific; 11–13 iOS-specific;
+  14 Helio G80 / EMUI 10 specific. None change the numerical
+  cells of Table 17.
+
 ## 1.0.0-beta.5 — 2026-04-29
 
 ### Added (Android — multi-target build for ARMv8.2 chips)

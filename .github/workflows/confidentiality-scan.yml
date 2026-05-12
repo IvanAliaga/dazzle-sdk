@@ -1,0 +1,105 @@
+# Copyright 2026 Ivan Aliaga <ivan.aliaga@urp.edu.pe>
+# Apache-2.0
+#
+# Confidentiality scan — block any push or PR that introduces strings
+# associated with a confidential customer track that must never appear
+# in this public repository. Required status check on protected
+# branches (main, release/*). If this job fails, the commit cannot be
+# merged.
+#
+# To add a new forbidden term, edit the FORBIDDEN array below.
+
+name: confidentiality-scan
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+    branches: [main, 'release/**']
+  workflow_dispatch:
+
+jobs:
+  forbidden-strings:
+    name: forbidden-strings
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan tracked files for forbidden strings
+        id: scan
+        run: |
+          set -euo pipefail
+
+          # Forbidden case-insensitive strings. Edit this list as the
+          # confidentiality policy evolves. Each line is a separate
+          # extended regex; the script greps each one against every
+          # tracked file in the working tree.
+          #
+          # IMPORTANT: keep this list disjoint from any legitimate
+          # public string. E.g. `\besas\b` would false-positive on the
+          # Spanish demonstrative "esas". Use `esas-api`, `esas_api`,
+          # `ESAS-Prolog`, etc. — the *named* product, not the word.
+          FORBIDDEN=(
+            'esas[-_]api'
+            'ESAS[-_]?Prolog'
+            'hetzner[- _]?cax'
+            '\bCAX11\b'
+            'Ampere Altra'
+            'aarch64-linux-gnu'
+            'linux-aarch64-gnu'
+            'dazzle_runtime_(start|stop|status)'
+            'DAZZLE_STATIC[^_]'
+            # libdazzle.a is the static archive for the customer Linux
+            # server target. libdazzle.so by itself is fine — Android
+            # has shipped that public artifact since beta.3. We only
+            # flag the static archive.
+            'libdazzle\.a\b'
+            '06_linux_main_rename'
+            'apply_patches_linux'
+            'release-aarch64-linux-gnu'
+            'Sprint[- ]?6'
+            '1\.0\.0-rc\.1'
+            'ToolContext cache layer'
+            'replacing OpenAI for cost'
+          )
+
+          fail=0
+          : > /tmp/scan-hits.txt
+          for pat in "${FORBIDDEN[@]}"; do
+            # `git grep` only matches tracked files — untracked working-
+            # tree files (e.g. a dev's local WIP) are not flagged.
+            if git grep -nE -I -- "$pat" -- ':!.github/workflows/confidentiality-scan.yml' ':!scripts/git-hooks/pre-commit-confidentiality.sh' > /tmp/this-pat.txt; then
+              echo "::error::Forbidden pattern matched: $pat"
+              cat /tmp/this-pat.txt
+              echo "----" >> /tmp/scan-hits.txt
+              echo "Pattern: $pat" >> /tmp/scan-hits.txt
+              cat /tmp/this-pat.txt >> /tmp/scan-hits.txt
+              fail=1
+            fi
+          done
+
+          if [ "$fail" -eq 1 ]; then
+            echo
+            echo "FAIL: one or more forbidden strings were found in this"
+            echo "tree. They must be removed (or the policy in"
+            echo ".github/workflows/confidentiality-scan.yml must be"
+            echo "intentionally relaxed) before this commit can land."
+            echo
+            echo "If a string is a legitimate match (e.g. a documented"
+            echo "Valkey internal that happens to share a substring),"
+            echo "add an exclusion via a more specific regex anchor."
+            exit 1
+          fi
+
+          echo "OK — no forbidden strings detected."
+
+      - name: Upload hit log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: confidentiality-scan-hits
+          path: /tmp/scan-hits.txt
+          retention-days: 7
