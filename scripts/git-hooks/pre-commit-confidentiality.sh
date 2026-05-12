@@ -33,7 +33,7 @@ FORBIDDEN=(
     'linux-aarch64-gnu'
     'dazzle_runtime_(start|stop|status)'
     'DAZZLE_STATIC[^_]'
-    'libdazzle\.(a|so)\b'
+    'libdazzle\.a\b'  # only static archive — libdazzle.so is legit Android
     '06_linux_main_rename'
     'apply_patches_linux'
     'release-aarch64-linux-gnu'
