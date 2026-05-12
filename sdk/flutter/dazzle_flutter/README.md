@@ -34,7 +34,7 @@ every platform sees identical behaviour and the same benchmark profile.
 ```yaml
 # pubspec.yaml
 dependencies:
-  dazzle_flutter: ^1.0.0-beta.5
+  dazzle_flutter: ^1.0.0-beta.6
 ```
 
 ```dart
@@ -101,7 +101,7 @@ this template:
 See [`samples/PROVIDERS.md`](../../../samples/PROVIDERS.md) for the
 full debug story behind each invariant.
 
-## Flutter Web (1.0.0-beta.5+)
+## Flutter Web (1.0.0-beta.6+)
 
 Dazzle ships a WebAssembly runtime that runs HNSW vector search and a hash
 KV **in-process inside the browser**, with persistence backed by the
