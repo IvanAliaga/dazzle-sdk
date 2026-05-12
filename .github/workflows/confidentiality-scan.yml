@@ -67,7 +67,7 @@ jobs:
           for pat in "${FORBIDDEN[@]}"; do
             # `git grep` only matches tracked files — untracked working-
             # tree files (e.g. a dev's local WIP) are not flagged.
-            if git grep -nE -I -- "$pat" -- ':!.github/workflows/confidentiality-scan.yml' > /tmp/this-pat.txt; then
+            if git grep -nE -I -- "$pat" -- ':!.github/workflows/confidentiality-scan.yml' ':!scripts/git-hooks/pre-commit-confidentiality.sh' > /tmp/this-pat.txt; then
               echo "::error::Forbidden pattern matched: $pat"
               cat /tmp/this-pat.txt
               echo "----" >> /tmp/scan-hits.txt

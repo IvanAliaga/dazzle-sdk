@@ -50,13 +50,22 @@ if [ ${#STAGED[@]} -eq 0 ]; then
     exit 0
 fi
 
+# Files that legitimately contain the pattern list (the policy
+# itself). These are excluded from the staged-content scan so they
+# can be edited without bypass.
+SELF_EXEMPT=(
+    ':!scripts/git-hooks/pre-commit-confidentiality.sh'
+    ':!.github/workflows/confidentiality-scan.yml'
+    ':!.git/hooks/pre-commit'
+)
+
 fail=0
 for pat in "${FORBIDDEN[@]}"; do
     # `git diff --cached -G` matches if the regex appears in any
     # added or removed line of the staged hunks. Combined with the
-    # file list, we get only the staged content (not the existing
-    # tree).
-    matches=$(git diff --cached -G "$pat" --name-only -- "${STAGED[@]}" 2>/dev/null || true)
+    # file list (minus self-exempt files), we get only the staged
+    # content that isn't the policy file itself.
+    matches=$(git diff --cached -G "$pat" --name-only -- "${STAGED[@]}" "${SELF_EXEMPT[@]}" 2>/dev/null || true)
     if [ -n "$matches" ]; then
         echo "pre-commit: forbidden pattern '$pat' in staged content:"
         echo "$matches" | sed 's/^/  /'
