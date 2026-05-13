@@ -1,7 +1,7 @@
 {
   "name": "dazzle-react",
-  "version": "1.0.0-beta.5",
-  "description": "Dazzle SDK for React (DOM) — embedded in-process database with HNSW vector search inside the browser, with persistence backed by the Origin Private File System (OPFS). Ships the same dazzle.wasm the Flutter Web / RN Web targets use, plus React hooks (useDazzleHash, useVectorIndex). For React Native apps, use the `dazzle-react-native` package instead.",
+  "version": "1.0.0-beta.6",
+  "description": "Dazzle SDK for React (DOM) \u2014 embedded in-process database with HNSW vector search inside the browser, with persistence backed by the Origin Private File System (OPFS). Ships the same dazzle.wasm the Flutter Web / RN Web targets use, plus React hooks (useDazzleHash, useVectorIndex). For React Native apps, use the `dazzle-react-native` package instead.",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
   "types": "lib/index.d.ts",

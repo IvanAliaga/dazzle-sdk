@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Dazzle.NET</AssemblyName>
     <RootNamespace>Dazzle</RootNamespace>
-    <Version>1.0.0-beta.5</Version>
+    <Version>1.0.0-beta.6</Version>
     <Authors>Ivan Aliaga</Authors>
     <Description>Dazzle SDK for .NET — vector search and caching for ASP.NET Core 9 applications. P/Invoke bindings to the Dazzle native library (Valkey fork with HNSW).</Description>
     <PackageProjectUrl>https://github.com/IvanAliaga/dazzle</PackageProjectUrl>
