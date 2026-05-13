@@ -9,7 +9,7 @@ description: >
   SDKs ship — zero behaviour drift across platforms. Includes five
   swappable LLMClient adapters: LlamaCpp (GGUF), LiteRT-LM,
   FoundationModels (iOS 26+), OpenAI-compatible, and Anthropic.
-version:     1.0.0-beta.5
+version:     1.0.0-beta.6
 homepage:    https://github.com/IvanAliaga/dazzle-sdk
 repository:  https://github.com/IvanAliaga/dazzle-sdk
 issue_tracker: https://github.com/IvanAliaga/dazzle-sdk/issues

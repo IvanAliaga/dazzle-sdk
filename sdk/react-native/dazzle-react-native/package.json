@@ -1,7 +1,7 @@
 {
   "name": "dazzle-react-native",
-  "version": "1.0.0-beta.5",
-  "description": "Dazzle SDK for React Native — embedded in-process database with HNSW vector search and a ChatAgent runtime for on-device LLM agents. Includes five swappable LLMClient adapters (LlamaCpp, LiteRT-LM, FoundationModels, OpenAI-compatible, Anthropic). Same libdazzle.so / Dazzle.xcframework the native Android / iOS SDKs ship — zero behaviour drift across platforms.",
+  "version": "1.0.0-beta.6",
+  "description": "Dazzle SDK for React Native \u2014 embedded in-process database with HNSW vector search and a ChatAgent runtime for on-device LLM agents. Includes five swappable LLMClient adapters (LlamaCpp, LiteRT-LM, FoundationModels, OpenAI-compatible, Anthropic). Same libdazzle.so / Dazzle.xcframework the native Android / iOS SDKs ship \u2014 zero behaviour drift across platforms.",
   "main": "src/index.ts",
   "source": "src/index.ts",
   "types": "src/index.ts",

@@ -42,7 +42,7 @@ plugins {
 // (verified via DNS TXT record on Sonatype Central Portal).
 val dazzleGroupId = "com.ivanaliaga"
 val dazzleArtifactId = "dazzle-sdk"
-val dazzleVersion = "1.0.0-beta.5"
+val dazzleVersion = "1.0.0-beta.6"
 
 group = dazzleGroupId
 version = dazzleVersion
