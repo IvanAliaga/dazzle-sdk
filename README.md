@@ -167,7 +167,7 @@ previas con la misma firma de falla.
 
 ## Quick start — SDK usage / Uso del SDK
 
-**Latest release**: `v1.0.0-beta.4` — see
+**Latest release**: `v1.0.0-beta.5` — see
 [CHANGELOG.md](CHANGELOG.md) and the
 [API contract](docs/sdk/API_CONTRACT.md).
 
@@ -189,19 +189,22 @@ PASS — see [`samples/PROVIDERS.md`](samples/PROVIDERS.md).
 
 ### Distribution / Distribución
 
-| Stack        | Registry                                                | Status                              |
-|--------------|---------------------------------------------------------|-------------------------------------|
-| iOS          | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.4` |
-| Flutter      | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.4` |
-| React Native | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.4` |
-| Android      | [Maven Central (`com.ivanaliaga:dazzle-sdk`)](https://central.sonatype.com/artifact/com.ivanaliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.4` |
+| Stack             | Registry                                                | Status                              |
+|-------------------|---------------------------------------------------------|-------------------------------------|
+| iOS               | [SwiftPM (this repo)](https://github.com/IvanAliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
+| Android           | [Maven Central (`com.ivanaliaga:dazzle-sdk`)](https://central.sonatype.com/artifact/com.ivanaliaga/dazzle-sdk) | ✅ available — `1.0.0-beta.5` |
+| Flutter (mobile + web + desktop) | [pub.dev/packages/dazzle_flutter](https://pub.dev/packages/dazzle_flutter) | ✅ available — `1.0.0-beta.5` |
+| React Native (mobile + web)      | [npmjs.com/package/dazzle-react-native](https://www.npmjs.com/package/dazzle-react-native) | ✅ available — `1.0.0-beta.5` |
+| React (DOM)       | [npmjs.com/package/dazzle-react](https://www.npmjs.com/package/dazzle-react) | ✅ available — `1.0.0-beta.5` |
+| .NET (ASP.NET Core 9) | [nuget.org/packages/Dazzle.NET](https://www.nuget.org/packages/Dazzle.NET) | ✅ available — `1.0.0-beta.5` |
+| C++ server (Linux / macOS / Windows) | `libdazzle_lite` shared lib (this repo) | ✅ available — `1.0.0-beta.5` |
 
 ### Android — one-liner agent / Agente en una línea
 
 ```kotlin
 // build.gradle.kts (app)
 dependencies {
-    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.5")
     // Only if you use the bundled LiteRT-LM adapter:
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
 }
@@ -235,7 +238,7 @@ lifecycleScope.launch {
 
 ```swift
 // Package.swift (your app)
-.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.4"),
+.package(url: "https://github.com/IvanAliaga/dazzle-sdk.git", exact: "1.0.0-beta.5"),
 
 // Target dependencies
 .product(name: "Dazzle", package: "dazzle-sdk"),
@@ -265,7 +268,7 @@ agent.send("¿qué temperatura hay ahora?")
 ```yaml
 # pubspec.yaml
 dependencies:
-  dazzle_flutter: ^1.0.0-beta.4
+  dazzle_flutter: ^1.0.0-beta.5
 ```
 
 ```dart
@@ -291,8 +294,8 @@ Future<void> main() async {
 ### React Native — same shape / mismo shape
 
 ```bash
-npm install dazzle-react-native@^1.0.0-beta.4
-# or: yarn add dazzle-react-native@^1.0.0-beta.4
+npm install dazzle-react-native@^1.0.0-beta.5
+# or: yarn add dazzle-react-native@^1.0.0-beta.5
 ```
 
 ```ts

@@ -67,6 +67,45 @@ class StorageActivity : AppCompatActivity() {
                 "force_native_variant override: $forced",
             )
         }
+        // RAG E2E SDK overrides — pass-through from `am start --es ... --ez ...`
+        // so a bench operator can run a Q4_0 / no-flash-attn variant on a
+        // tight-RAM device without rebuilding the APK. Read by RagE2EBench
+        // via System.getProperty(...). Empty / missing extras keep the
+        // paper-config defaults.
+        intent.getStringExtra("kv_cache")?.let {
+            System.setProperty("dazzle.bench.kv_cache", it)
+            android.util.Log.i(TAG, "kv_cache override: $it")
+        }
+        if (intent.hasExtra("flash_attn")) {
+            val v = intent.getBooleanExtra("flash_attn", true).toString()
+            System.setProperty("dazzle.bench.flash_attn", v)
+            android.util.Log.i(TAG, "flash_attn override: $v")
+        }
+        if (intent.hasExtra("use_mlock")) {
+            val v = intent.getBooleanExtra("use_mlock", false).toString()
+            System.setProperty("dazzle.bench.use_mlock", v)
+            android.util.Log.i(TAG, "use_mlock override: $v")
+        }
+        intent.getStringExtra("n_threads")?.toIntOrNull()?.let {
+            System.setProperty("dazzle.bench.n_threads", it.toString())
+            android.util.Log.i(TAG, "n_threads override: $it")
+        }
+        intent.getStringExtra("ef_construction")?.toIntOrNull()?.let {
+            System.setProperty("dazzle.bench.ef_construction", it.toString())
+            android.util.Log.i(TAG, "ef_construction override: $it")
+        }
+        intent.getStringExtra("batch_threads")?.toIntOrNull()?.let {
+            System.setProperty("dazzle.bench.batch_threads", it.toString())
+            android.util.Log.i(TAG, "batch_threads override: $it")
+        }
+        intent.getStringExtra("algo")?.let {
+            System.setProperty("dazzle.bench.algo", it.uppercase())
+            android.util.Log.i(TAG, "algo override: $it")
+        }
+        intent.getStringExtra("max_queries")?.toIntOrNull()?.let {
+            System.setProperty("dazzle.bench.max_queries", it.toString())
+            android.util.Log.i(TAG, "max_queries override: $it")
+        }
         setContentView(R.layout.activity_storage)
         // Keep the screen on while a long-running bench is in flight.
         // On Huawei devices the EMUI iAware daemon will otherwise

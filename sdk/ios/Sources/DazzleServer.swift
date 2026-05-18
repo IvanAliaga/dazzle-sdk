@@ -280,7 +280,10 @@ public final class DazzleServer {
         vectorField: String = "embedding",
         dim: Int,
         algorithm: VectorIndex.Algorithm = .hnsw,
-        metric: VectorIndex.Metric = .cosine
+        metric: VectorIndex.Metric = .cosine,
+        initialCapacity: Int = 0,
+        m: Int = 0,
+        efConstruction: Int = 0
     ) -> VectorIndex {
         VectorIndex(
             server: self,
@@ -289,7 +292,10 @@ public final class DazzleServer {
             vectorField: vectorField,
             dim: dim,
             algorithm: algorithm,
-            metric: metric
+            metric: metric,
+            initialCapacity: initialCapacity,
+            m: m,
+            efConstruction: efConstruction
         )
     }
 

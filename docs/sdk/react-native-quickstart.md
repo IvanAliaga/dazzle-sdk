@@ -4,7 +4,7 @@ Build a Dazzle-powered React Native app end-to-end. Same embedded
 Valkey + HNSW vector search + ChatAgent runtime the Android / iOS
 native + Flutter SDKs ship — one API across the whole stack.
 
-Latest: **v1.0.0-beta.4**.
+Latest: **v1.0.0-beta.5**.
 
 ## What you get
 
@@ -219,6 +219,51 @@ For perf-sensitive users we recommend either:
    (same binary, same API).
 2. Upgrade this plugin to JSI + TurboModule — same codebase, just a
    different bridge. Tracked in docs/ROADMAP.md.
+
+## React Native Web
+
+For Expo Web / `react-native-web` apps, Dazzle ships a WASM runtime
+that runs in-process inside the browser, persisted to OPFS. Same
+on-device promise the iOS / Android targets deliver, with a
+**parallel API** under the `dazzle-react-native/web` sub-path so
+mobile bundles never load the WASM glue.
+
+```ts
+import { DazzleWeb } from 'dazzle-react-native/web';
+
+await DazzleWeb.initialize();          // loads WASM + restores OPFS
+const hash = DazzleWeb.hash('chat:1');
+hash.set('role', 'user');
+
+const vec = DazzleWeb.vectorIndex('catalog');
+vec.create({ dim: 1536 });
+vec.add('product-1', new Float32Array(1536));
+const hits = vec.search(query, { topK: 5 });
+
+await DazzleWeb.persist();             // snapshot → OPFS
+```
+
+**Setup contract** (web/index.html or your bundler's HTML entry):
+
+```html
+<script type="module">
+  import dz from "/path/to/dazzle.js";
+  globalThis.dazzleModule = dz;
+</script>
+```
+
+The `.wasm` (~236 KB) and `.js` (~68 KB) live under
+`node_modules/dazzle-react-native/web/native/` — copy them via
+`copy-webpack-plugin` or your bundler's static-assets pipeline.
+
+**Scope** (this beta): Hash KV + Vector index + OPFS snapshot.
+**Not on web yet**: List / Set / SortedSet / Stream standalone
+primitives, on-device LLM clients (LlamaCpp / LiteRT-LM /
+FoundationModels) — those stay on iOS / Android.
+
+For pure React (DOM, no React Native) apps, see the
+[`dazzle-react`](./react-quickstart.md) package which exposes
+React-idiomatic hooks over the same WASM runtime.
 
 ## Reporting an issue
 

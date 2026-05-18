@@ -4,6 +4,67 @@ All notable changes to the Dazzle SDK. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it hits
 `1.0.0`; pre-release builds use `1.0.0-beta.N` suffixes.
 
+## 1.0.0-beta.6 — 2026-05-12
+
+Paper-driven release. End-to-end RAG reproduction extended from 3
+Android SoCs (post-Kirin) to **5 physical mobile SoCs spanning 2
+operating systems** — the §5.9 retrieval-as-storage-engine claim
+now holds across four Android microarchitecture generations (A53,
+A73, A75, A76) plus Apple Firestorm. A §5.9.6 quantization
+sensitivity sweep adds a bandwidth-vs-compute reading for Q4_K_M
+vs Q5_K_M on the two ARMv8.2 chips. The engineering sidebar
+grew from 10 to 14 portability fixes; items 11–13 ship the iOS
+port, item 14 ships the EMUI 10 / G80 freeze unblock.
+
+### Added
+
+- **§5.9.5 cross-platform reproduction expanded to 5 chips × 2 OSes.**
+  iPhone 12 Pro (Apple A14, iOS 26) is the first non-Android row;
+  Huawei Y9a / FRL-L23 (Helio G80, A75 v8.2, Android 10 / EMUI 10)
+  is the 4th Android microarchitecture generation. Bootstrap CIs
+  (B=10000, paired-qid) star-mark every F1_short ratio at 95%.
+- **§5.9.6 quantization sensitivity sweep.** Q4_K_M vs Q5_K_M on
+  the two v8.2 chips. `em_contains` is flat across quant (deltas
+  ≤ 0.025); latency reveals a bandwidth-vs-compute split (+50%
+  on A76 vs ≤+13% on A75). Disk +6.3% / +15% for 0.5B / 1.5B.
+- **Instrumentation extras** `-e small_llm_file <name>` /
+  `-e large_llm_file <name>` to swap the GGUF per-run without
+  rebuild.
+- **Swift bench port** `experiment/llm/ios/RagE2EBench.swift`
+  over the same `dazzle_llama_*` + `dazzle_vs_*` C entry points
+  the Android JNI calls.
+- **REPRODUCIBILITY §4a + §4b**: chunked instrumentation +
+  GGUF-swap recipes.
+
+### Fixed
+
+- **Android experiment JNI** (sidebar item 14): `n_batch = n_ctx`
+  in `experiment/backends/android/cpp/llamacpp/llamacpp_jni.c`.
+  Missed by the Kirin pass-15 fix that only touched
+  `core/platform/dazzle_llama.cpp`. Without this, Helio G80 /
+  EMUI 10 silently freezes at the first +RAG turn.
+- **iOS llama.cpp path** (sidebar item 12): `n_batch = n_ctx` in
+  `dazzle_llama_new_context`. Same Kirin pass-15 pattern, this
+  time on iOS llama.cpp.
+- **iOS launch watchdog 0x8BADF00D** (sidebar item 11): dispatch
+  on `DispatchQueue.global(qos: .userInitiated).async` so SwiftUI
+  schedules the placeholder body inside the 20-second window.
+- **`DazzleServer.vectorIndex(...)` iOS Swift** (sidebar item 13):
+  expose `initialCapacity: Int = 0` (+ `m`, `efConstruction`) so
+  the FLAT index can be pre-sized past the SDK default
+  `INITIAL_CAP = 1024`.
+
+### Documentation
+
+- Paper PDFs rebuilt: `research/paper/arxiv-build/paper.pdf` +
+  `paper_es.pdf`. Tables 17, 18, retrieval / total split, latency
+  decomposition, and the new §5.9.6 quant cells are in the
+  compiled PDFs.
+- Engineering sidebar grew from 10 to 14 items. Items 1–5
+  universal portability; 6–10 Kirin-specific; 11–13 iOS-specific;
+  14 Helio G80 / EMUI 10 specific. None change the numerical
+  cells of Table 17.
+
 ## 1.0.0-beta.5 — 2026-04-29
 
 ### Added (Android — multi-target build for ARMv8.2 chips)
@@ -134,6 +195,94 @@ All notable changes to the Dazzle SDK. This project follows
   overwritten across revisions; the repository main branch is
   the source of truth, and the commit hash of head of main at
   each arXiv submission is recorded in the paper.
+
+### Added (Web — Flutter Web + RN Web with WebAssembly runtime)
+
+- **`dazzle.wasm` + `dazzle.js` Emscripten build** — HNSW vector search
+  + hash KV running 100% in-process inside the browser, persisted to
+  the Origin Private File System (OPFS).  Same on-device promise the
+  iOS / Android targets deliver, on the web.  Single 236 KB binary
+  built from `core/web/src/dazzle_wasm.cpp` (which is the same TU that
+  feeds the native `libdazzle_lite` build below — zero behavioural
+  drift between web and native targets).
+- **Flutter Web** — `DazzleWeb`, `DazzleWebHash`, `DazzleWebVectorIndex`
+  surfaced from `package:dazzle_flutter`.  Exported by the package's
+  main library; Flutter Web build pulls the WASM as a plugin asset.
+- **React Native Web** — same surface area exposed from
+  `dazzle-react-native/web` sub-path so RN apps targeting web (Expo
+  Web, react-native-web) get a parallel API to Dart's.
+- **`dazzle-react`** (new npm package) — first-class React (DOM)
+  bindings with idiomatic hooks (`useDazzleInit`, `useDazzleHash`,
+  `useVectorIndex`, `useVectorSearch`, `useAutoPersist`).  Re-uses the
+  same `dazzle.wasm` so React, Flutter Web and RN Web all behave
+  identically.
+- **OPFS persistence** — host-side snapshot via `navigator.storage
+  .getDirectory()`.  Multi-user isolation via `opfsFileName`.
+
+### Added (Desktop — Flutter Desktop + C++ servers via libdazzle_lite)
+
+- **`libdazzle_lite`** — native shared library (Linux `.so` / macOS
+  `.dylib` / Windows `.dll`) compiled from the same single
+  translation unit as `dazzle.wasm`.  One CMake target in
+  `core/native-lite/` produces all three host artefacts; the
+  binary snapshot format (`DZWS` magic + version 1) is identical
+  between web and desktop, so a snapshot saved by a Flutter Web app
+  can be loaded by a C++ server and vice-versa.
+- **Flutter Desktop** — `DazzleDesktop`, `DazzleDesktopHash`,
+  `DazzleDesktopVectorIndex` from `package:dazzle_flutter`.  Backed
+  by `dart:ffi` against `libdazzle_lite`; persistence to a file on
+  disk (default `<cwd>/.dazzle/snapshot.bin`, configurable via
+  `snapshotPath:`).  Plugin declares `ffiPlugin: true` for `linux`,
+  `macos`, `windows` so consumers don't need a host C++ toolchain.
+- **C++ Linux / macOS / Windows server SDK** — public C ABI header
+  at `core/native-lite/include/dazzle_lite.h`, shipped together with
+  `libdazzle_lite.{so,dylib,dll}`.  Use this for non-Flutter C++ apps
+  that need the same offline Hash + Vector primitives.  Quickstart
+  and CMake integration snippets live in `sdk/cpp-server/README.md`.
+
+### Added (.NET — first-class ASP.NET Core 9 binding)
+
+- **`Dazzle.NET` NuGet package** — P/Invoke bindings to libdazzle for
+  ASP.NET Core 9 applications. Async wrapper interface
+  `IDazzleClient` covers the same hash + vector-index surface the
+  iOS / Android SDKs expose; `AddDazzle()` DI extension registers a
+  singleton client over the RESP-over-TCP transport.
+  - Cross-platform native: ships `libdazzle.so` / `.dylib` /
+    `dazzle.dll` under `runtimes/{rid}/native/` for `linux-x64`,
+    `linux-arm64`, `osx-arm64` and `win-x64`. The Windows build
+    ports the C transport to Winsock2 with lazy `WSAStartup`
+    initialisation under `InterlockedCompareExchange` so concurrent
+    request handlers sharing the singleton initialise exactly once.
+  - Symbol package (`.snupkg`) ships alongside for source-indexed
+    debug symbols.
+  - Sample at `samples/dotnet-vector-search` — minimal ASP.NET Core
+    app that seeds a small product catalog with mock embeddings and
+    exposes `POST /search`.
+
+### Fixed
+
+- **iOS — `ToolCallParser.swift` accepts stringified-JSON arguments.**
+  Some fine-tuned models (e.g. Qwen 0.5B fine-tuned in the OpenAI
+  tool-call style) emit `arguments` as a JSON-encoded string instead
+  of a JSON object. The previous parser only handled the object
+  shape, so stringified payloads fell through the
+  `extractJsonObject` guard and the whole call surfaced as a
+  `.text` delta — silently swallowing the tool call. `emitCall` now
+  tries `extractJsonObject` first, then falls back to
+  `extractJsonString`; downstream `argsFromJson` decodes both shapes
+  identically.
+
+- **iOS / Android — `dazzle_llama` no longer aborts on prompts
+  longer than `n_batch`.** llama.cpp aborts the entire process
+  (SIGABRT inside `llama_decode`) when a prompt exceeds `n_batch`,
+  and the previous hardcoded 512-token batch crashed the app the
+  first time a user pasted a long message on real devices —
+  reproduced on iPhone 12 Pro / iOS 26.3 with a 590-token prompt.
+  `dazzle_llama_new_context()` now pins `n_batch = n_ubatch = n_ctx`
+  so the context accepts any prompt that fits in the window in a
+  single decode call. The trade-off is documented on the public
+  `dazzle_llama.h` header so consumers across iOS / Android /
+  Flutter / RN see the same memory-footprint guidance.
 
 ### No SDK API changes
 

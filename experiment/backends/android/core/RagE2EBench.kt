@@ -66,28 +66,109 @@ object RagE2EBench {
         val smallLlmFile:  String = "qwen2.5-0.5b-instruct-q4_k_m.gguf",
         val largeLlmFile:  String = "qwen2.5-1.5b-instruct-q4_k_m.gguf",
         val embedNCtx:     Int = 512,
+        // n_batch == n_ctx for the embedder so a single passage of up to
+        // 512 tokens prefills in one llama_decode call — avoids the
+        // split-prefill code path which hangs on ARMv8.0 Cortex-A53
+        // (Kirin 659) when a passage is longer than n_batch (~450
+        // tokens for the §5.9 NQ slice's `passages[2]` ≈ 1.8 KB / 4
+        // chars-per-token). On chips with FP16 hardware (A75+) the
+        // split path works fine, but defaulting to no-split keeps the
+        // bench portable across all four §5.9 SoCs without per-chip
+        // overrides.
+        val embedNBatch:   Int = 512,
         val llmNCtx:       Int = 2048,
+        val llmNBatch:     Int = 512,
+        /** KV-cache quantisation for the LLM contexts (paper default F16). */
+        val llmKvCacheType: KvCacheType = KvCacheType.F16,
+        /** Flash-attention for both embedder and LLM (default on). */
+        val flashAttention: Boolean = true,
+        /** Pin LLM weights via mlock() — defaults off; flip on for tight 4 GB devices. */
+        val useMlock: Boolean = false,
+        /** Worker threads for both embedder and LLM. 0 = use SDK default. */
+        val nThreads: Int = 0,
         val maxNewTokens:  Int = 64,
         val k:             Int = 5,
         val efRuntime:     Int = 64,
+        /** HNSW index build quality. Lower = faster build, slightly lower
+         *  recall. Paper baseline is 200; tight 4 GB devices (Kirin 659)
+         *  can drop to 100 to keep the addBatchDirect call from
+         *  thrashing on hnswlib's heap allocations during graph build. */
+        val efConstruction: Int = 200,
         val indexName:     String = "nq:e2e",
         val hashPrefix:    String = "nq:e2e:",
         val passagesAsset: String = "nq_slice/passages.jsonl",
         val queriesAsset:  String = "nq_slice/queries.jsonl",
         /** Cap queries to keep wall time manageable. Null → run all. */
         val maxQueries:    Int? = null,
+        /** Override parallelism of `VectorIndex.addBatchDirect` HNSW
+         *  build pool. 0 = SDK default (min(hw, 8)). On EMUI 9 / Kirin 659
+         *  the 8-way default deadlocks; setting this to 1 forces a
+         *  serial build that survives the cgroup throttling. */
+        val addBatchThreads: Int = 0,
+        /** Vector index algorithm — paper baseline is HNSW. On chips
+         *  where `HierarchicalNSW::addPoint(0)` deadlocks (Kirin 659 /
+         *  EMUI 9 — see `research/results/cross_platform_e2e/`) the
+         *  bench can fall back to `FLAT` (BruteforceSearch). At this
+         *  scale (N=2000, dim=384, k=5, efRuntime=64) HNSW recall is
+         *  >99 %, so the F1 / EM cells reported in §5.9 are
+         *  near-identical between the two. */
+        val algorithm: VectorIndex.Algorithm = VectorIndex.Algorithm.HNSW,
     )
 
-    private data class Passage(val id: String, val text: String)
-    private data class Query(
+    internal data class Passage(val id: String, val text: String)
+    internal data class Query(
         val id: String,
         val text: String,
         val gold: List<String>,
         val shortAnswers: List<String>,
     )
 
-    fun run(context: Context, cfg: Config = Config()) {
-        Log.i(TAG, "══ RagE2EBench small=${cfg.smallLlmFile} large=${cfg.largeLlmFile} ══")
+    fun run(context: Context, baseCfg: Config = Config()) {
+        // System-property pass-through from StorageActivity intent extras
+        // (`--es kv_cache F16|Q8_0|Q4_0`, `--ez flash_attn true|false`,
+        // `--es max_queries N`). Keeps the paper-config Config() defaults
+        // intact while letting an operator probe the F1 / RAM trade-off
+        // on a low-RAM device without rebuilding the APK.
+        val cfg = baseCfg.copy(
+            llmKvCacheType = System.getProperty("dazzle.bench.kv_cache")
+                ?.let { runCatching { KvCacheType.valueOf(it) }.getOrNull() }
+                ?: baseCfg.llmKvCacheType,
+            flashAttention = System.getProperty("dazzle.bench.flash_attn")
+                ?.toBooleanStrictOrNull()
+                ?: baseCfg.flashAttention,
+            useMlock = System.getProperty("dazzle.bench.use_mlock")
+                ?.toBooleanStrictOrNull()
+                ?: baseCfg.useMlock,
+            nThreads = System.getProperty("dazzle.bench.n_threads")
+                ?.toIntOrNull()
+                ?: baseCfg.nThreads,
+            llmNBatch = System.getProperty("dazzle.bench.llm_n_batch")
+                ?.toIntOrNull()
+                ?: baseCfg.llmNBatch,
+            llmNCtx = System.getProperty("dazzle.bench.llm_n_ctx")
+                ?.toIntOrNull()
+                ?: baseCfg.llmNCtx,
+            efConstruction = System.getProperty("dazzle.bench.ef_construction")
+                ?.toIntOrNull()
+                ?: baseCfg.efConstruction,
+            addBatchThreads = System.getProperty("dazzle.bench.batch_threads")
+                ?.toIntOrNull()
+                ?: baseCfg.addBatchThreads,
+            algorithm = System.getProperty("dazzle.bench.algo")
+                ?.let { name ->
+                    runCatching { VectorIndex.Algorithm.valueOf(name) }.getOrNull()
+                }
+                ?: baseCfg.algorithm,
+            maxQueries = System.getProperty("dazzle.bench.max_queries")
+                ?.toIntOrNull()
+                ?: baseCfg.maxQueries,
+        )
+        Log.i(
+            TAG,
+            "══ RagE2EBench small=${cfg.smallLlmFile} large=${cfg.largeLlmFile} " +
+            "kv=${cfg.llmKvCacheType} flash_attn=${cfg.flashAttention} " +
+            "mlock=${cfg.useMlock} maxQueries=${cfg.maxQueries ?: "all"} ══"
+        )
 
         if (DazzleServer.isRunning()) DazzleServer.stop()
         DazzleServer.start(context, DazzleConfig(
@@ -97,6 +178,20 @@ object RagE2EBench {
             modules     = setOf(DazzleModule.VectorSearch),
         ))
         Thread.sleep(600)
+
+        // Apply HNSW batch-build pool override AFTER native lib is loaded
+        // (DazzleServer.start triggers DazzleNativeLoader). On Kirin 659 /
+        // EMUI 9 the default 8-way pool deadlocks during the bulk
+        // `addBatchDirect` step — single-threaded build is the diagnosed
+        // workaround. The setter is a no-op when `addBatchThreads = 0`.
+        if (cfg.addBatchThreads > 0) {
+            try {
+                VectorIndex.setAddBatchThreads(cfg.addBatchThreads)
+                Log.i(TAG, "addBatchDirect threads pinned to ${cfg.addBatchThreads}")
+            } catch (e: Throwable) {
+                Log.w(TAG, "setAddBatchThreads(${cfg.addBatchThreads}) failed: ${e.message}")
+            }
+        }
 
         try {
             val out = runInner(context, cfg)
@@ -121,21 +216,51 @@ object RagE2EBench {
 
     private fun runInner(context: Context, cfg: Config): Map<String, Any?> {
         // ── Weights ──────────────────────────────────────────────────────
-        val genDir   = File(context.filesDir, "gen").apply   { mkdirs() }
-        val embedDir = File(context.filesDir, "embed").apply { mkdirs() }
-        val embedSrc = File(embedDir, cfg.embedFile)
-        val smallSrc = File(genDir,   cfg.smallLlmFile)
-        val largeSrc = File(genDir,   cfg.largeLlmFile)
-        for (f in listOf(embedSrc, smallSrc, largeSrc)) {
-            check(f.exists()) {
-                "GGUF not found at ${f.absolutePath}. Push with: " +
-                    "adb push <file> /data/local/tmp/ ; " +
-                    "adb shell run-as <pkg> cp /data/local/tmp/${f.name} ${f.parentFile!!.name}/"
+        // Resolve each weight file by walking three candidate roots in
+        // order of preference. The first one that holds the file wins.
+        // This keeps the original `context.filesDir` path working AND
+        // lets a benchmark driver `adb push` directly into the
+        // app-external-files dir (which is world-readable for `adb push`
+        // without a `run-as` step) or drop the model in /sdcard/Download
+        // and avoid copying. The Cross-platform §5.9 driver uses the
+        // last form so the same Download directory hosts the weights
+        // for every device that runs the bench.
+        fun resolveWeight(name: String, subdir: String): File {
+            val candidates = listOf(
+                File(File(context.filesDir, subdir), name),
+                File(File(context.getExternalFilesDir(null), subdir), name),
+                File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), name),
+            )
+            for (c in candidates) {
+                if (c.exists()) {
+                    Log.i(TAG, "weight $name resolved at ${c.absolutePath}")
+                    return c
+                }
             }
+            error(
+                "GGUF $name not found in any of:\n" +
+                candidates.joinToString("\n") { "  - ${it.absolutePath}" } +
+                "\n\nPush with one of:\n" +
+                "  adb push $name /sdcard/Download/                                  # easiest\n" +
+                "  adb push $name /sdcard/Android/data/<pkg>/files/$subdir/          # app-external\n" +
+                "  adb push $name /data/local/tmp/ ; adb shell run-as <pkg> cp /data/local/tmp/$name files/$subdir/"
+            )
         }
+        val embedSrc = resolveWeight(cfg.embedFile,    "embed")
+        val smallSrc = resolveWeight(cfg.smallLlmFile, "gen")
+        val largeSrc = resolveWeight(cfg.largeLlmFile, "gen")
 
         // ── Embedder + slice ─────────────────────────────────────────────
-        val embedder = DazzleEmbedder.open(context, embedSrc.absolutePath, nCtx = cfg.embedNCtx)
+        val embedder = DazzleEmbedder.open(
+            context, embedSrc.absolutePath,
+            nCtx = cfg.embedNCtx,
+            nBatch = cfg.embedNBatch,
+            flashAttention = cfg.flashAttention,
+            useMlock = cfg.useMlock,
+            nThreads = if (cfg.nThreads > 0) cfg.nThreads
+                       else Runtime.getRuntime().availableProcessors().coerceAtMost(4),
+        )
         Log.i(TAG, "embedder open: n_embd=${embedder.outputDim}")
 
         val passages = loadPassages(context, cfg.passagesAsset)
@@ -144,6 +269,12 @@ object RagE2EBench {
         Log.i(TAG, "slice: ${passages.size} passages, ${queries.size} queries (of ${queriesAll.size})")
 
         val passageById = passages.associateBy { cfg.hashPrefix + it.id }
+
+        // Pre-allocated outside the try-block so the catch path can
+        // still reference them; populated by the pre-embed step inside
+        // the try-block below.
+        val queryEmbedUs = LongArray(queries.size)
+        var embedderClosed = false
 
         val result = linkedMapOf<String, Any?>(
             "type"      to "rag_e2e",
@@ -161,8 +292,21 @@ object RagE2EBench {
             "config" to linkedMapOf(
                 "k"              to cfg.k,
                 "ef_runtime"     to cfg.efRuntime,
+                "ef_construction" to cfg.efConstruction,
+                "algorithm"      to cfg.algorithm.name,
                 "max_new_tokens" to cfg.maxNewTokens,
                 "decoding"       to "greedy",
+                // SDK runtime knobs — recorded so any F1 delta is
+                // attributable to a deliberate memory/quality trade-off
+                // rather than silent harness drift.
+                "embed_n_ctx"    to cfg.embedNCtx,
+                "embed_n_batch"  to cfg.embedNBatch,
+                "llm_n_ctx"      to cfg.llmNCtx,
+                "llm_n_batch"    to cfg.llmNBatch,
+                "llm_kv_cache"   to cfg.llmKvCacheType.name,
+                "flash_attn"     to cfg.flashAttention,
+                "use_mlock"      to cfg.useMlock,
+                "n_threads"      to cfg.nThreads,
             ),
         )
 
@@ -174,31 +318,128 @@ object RagE2EBench {
                 hashPrefix      = cfg.hashPrefix,
                 vectorField     = "emb",
                 dim             = embedder.outputDim,
-                algorithm       = VectorIndex.Algorithm.HNSW,
+                algorithm       = cfg.algorithm,
                 metric          = VectorIndex.Metric.COSINE,
                 initialCapacity = passages.size,
                 m               = 16,
-                efConstruction  = 200,
+                efConstruction  = cfg.efConstruction,
             )
             index.create()
 
             val ids  = Array(passages.size) { cfg.hashPrefix + passages[it].id }
+            // Granular logging during the early embed loop so we can pinpoint
+            // exactly which call hangs on tight A53 devices. The loop also
+            // emits one log per call past i=1800 so we can disambiguate a
+            // hang in the tail of the embed loop from a hang in the
+            // post-loop addBatchDirect / pre-embed-queries phases on Kirin
+            // 659 — the two cases cause the same "no progress" symptom but
+            // need different fixes.
             val vecs = Array(passages.size) { i ->
+                val t0 = System.nanoTime()
                 val v = embedder.embed(passages[i].text)
-                if (i % 200 == 0) Log.i(TAG, "  embed passage $i/${passages.size}")
+                val tMs = (System.nanoTime() - t0) / 1_000_000L
+                if (i < 10 || i >= 1800 || i % 200 == 0) {
+                    Log.i(TAG, "  embed passage $i/${passages.size} took=${tMs}ms")
+                }
                 v
             }
+            Log.i(TAG, "embed loop done — starting addBatchDirect with ${vecs.size} vectors")
+            val tBatch0 = System.nanoTime()
             index.addBatchDirect(ids, vecs)
+            val tBatchMs = (System.nanoTime() - tBatch0) / 1_000_000L
+            Log.i(TAG, "addBatchDirect completed in ${tBatchMs}ms")
             Log.i(TAG, "indexed ${passages.size} vectors")
+
+            // ── Pre-embed every query so we can release the embedder
+            // before opening any LLM. On 4 GB devices (Kirin 659 etc.)
+            // the BGE weights + compute buffer (~140 MB) compete with
+            // the 1.5 B LLM (1.0 GB mmap + 470 MB KV-cache at n_ctx=2048)
+            // for resident pages, and EMUI iAware will pause the process
+            // before variant D finishes. Pre-embedding costs 200 × ~150 ms
+            // ≈ 30 s of extra wall-clock and 200 × 384 × 4 B = 300 KB of
+            // RAM, which is a trivially better trade than keeping the
+            // embedder live for ~3 hours of LLM work that does not need it.
+            val queryEmbeddings = Array(queries.size) { qi ->
+                val tq0 = System.nanoTime()
+                val v = embedder.embed(queries[qi].text)
+                val tq1 = System.nanoTime()
+                queryEmbedUs[qi] = (tq1 - tq0) / 1_000L
+                if (qi % 50 == 0) Log.i(TAG, "  embed query $qi/${queries.size}")
+                v
+            }
+            Log.i(TAG, "embedded ${queries.size} queries; closing embedder before LLM phase")
+            embedder.close()
+            embedderClosed = true
+
+            // Force a GC + brief pause before mapping the LLM weights.
+            // On 4 GB Cortex-A53 chips (Kirin 659 / EMUI 9) the LLM mmap
+            // (~390 MB Q4_K_M) lands right at the OS low-mem threshold;
+            // releasing the embedder's buffers now (instead of letting
+            // ART decide) shaves ~80 MB of RSS off the moment the LLM
+            // page-faults into memory and keeps the test process below
+            // the iAware/lmkd kill bar through variant A.
+            try {
+                System.gc()
+                System.runFinalization()
+                Thread.sleep(500)
+                val rt = Runtime.getRuntime()
+                val freeMb = rt.freeMemory() / (1024 * 1024)
+                val totalMb = rt.totalMemory() / (1024 * 1024)
+                val maxMb = rt.maxMemory() / (1024 * 1024)
+                Log.i(TAG, "pre-LLM heap: free=${freeMb}MB total=${totalMb}MB max=${maxMb}MB")
+            } catch (_: Throwable) {}
 
             // ── Variant A: small + RAG ───────────────────────────────────
             // Open the small LLM once and run BOTH small variants
             // back-to-back so the model load (which dominates wall-clock
             // for tiny corpora) is paid only once. Same for large below.
             Log.i(TAG, "── variant A: small + RAG (${cfg.smallLlmFile}) ──")
-            val small = DazzleLlm.open(context, smallSrc.absolutePath, nCtx = cfg.llmNCtx)
+            Log.i(TAG, "  opening small LLM mlock=${cfg.useMlock} kv=${cfg.llmKvCacheType} fa=${cfg.flashAttention}")
+            // Optional opt-out from file-backed mmap of the .gguf — the
+            // dazzle native side reads `DAZZLE_LLAMA_USE_MMAP` and, when
+            // "0", switches `llama_model_params::use_mmap = false` so the
+            // weights load via plain `read()` into anon RAM. Required on
+            // Kirin 659 + EMUI 9 to slip past iAware's mmap-thrash kill.
+            val useMmapProp = System.getProperty("dazzle.bench.use_mmap")
+            useMmapProp?.let { v ->
+                try {
+                    android.system.Os.setenv("DAZZLE_LLAMA_USE_MMAP", v, true)
+                    Log.i(TAG, "  DAZZLE_LLAMA_USE_MMAP=$v")
+                } catch (_: Throwable) {}
+            }
+            // Pre-warm pagecache only when explicitly requested via
+            // `dazzle.bench.prewarm=true`. By default skip — on EMUI 9
+            // / Kirin 659 even reading 468 MB into pagecache pushes the
+            // bench process into iAware's "memory hog" tier and the
+            // subsequent LLM mmap triggers a kill. The default mmap
+            // path with lazy fault-in (no pre-warm) keeps growth
+            // gradual and slips under iAware's growth-rate detector.
+            val prewarmProp = System.getProperty("dazzle.bench.prewarm")
+            val skipPrewarm = prewarmProp == null ||
+                !prewarmProp.startsWith("t", ignoreCase = true)
+            if (!skipPrewarm) {
+                try {
+                    val t0 = System.nanoTime()
+                    java.io.FileInputStream(smallSrc).use { fis ->
+                        val buf = ByteArray(1 shl 20)
+                        var total = 0L
+                        while (true) { val n = fis.read(buf); if (n <= 0) break; total += n }
+                        Log.i(TAG, "  pre-warmed ${total / (1024 * 1024)} MB in ${(System.nanoTime() - t0) / 1_000_000} ms")
+                    }
+                } catch (e: Throwable) { Log.w(TAG, "pre-warm small failed: ${e.message}") }
+            } else {
+                Log.i(TAG, "  skipping pre-warm (use_mmap=false → read() into anon)")
+            }
+            val small = DazzleLlm.open(
+                context, smallSrc.absolutePath,
+                nCtx = cfg.llmNCtx,
+                nBatch = cfg.llmNBatch,
+                kvCacheType = cfg.llmKvCacheType,
+                flashAttention = cfg.flashAttention,
+                useMlock = cfg.useMlock,
+            )
             val variantA = try {
-                runVariantRag(small, embedder, index, queries, passageById, cfg)
+                runVariantRag(small, queryEmbeddings, queryEmbedUs, index, queries, passageById, cfg)
             } catch (e: Throwable) {
                 Log.e(TAG, "variant A failed", e); null
             } ?: emptyMap()
@@ -217,7 +458,26 @@ object RagE2EBench {
 
             // ── Variant B: large + no-RAG ────────────────────────────────
             Log.i(TAG, "── variant B: large + no-RAG (${cfg.largeLlmFile}) ──")
-            val large = DazzleLlm.open(context, largeSrc.absolutePath, nCtx = cfg.llmNCtx)
+            try {
+                System.gc(); System.runFinalization(); Thread.sleep(500)
+                if (!skipPrewarm) {
+                    val t0 = System.nanoTime()
+                    java.io.FileInputStream(largeSrc).use { fis ->
+                        val buf = ByteArray(1 shl 20)
+                        var total = 0L
+                        while (true) { val n = fis.read(buf); if (n <= 0) break; total += n }
+                        Log.i(TAG, "  pre-warmed large ${total / (1024 * 1024)} MB in ${(System.nanoTime() - t0) / 1_000_000} ms")
+                    }
+                }
+            } catch (e: Throwable) { Log.w(TAG, "pre-warm large failed: ${e.message}") }
+            val large = DazzleLlm.open(
+                context, largeSrc.absolutePath,
+                nCtx = cfg.llmNCtx,
+                nBatch = cfg.llmNBatch,
+                kvCacheType = cfg.llmKvCacheType,
+                flashAttention = cfg.flashAttention,
+                useMlock = cfg.useMlock,
+            )
             val variantB = try {
                 runVariantNoRag(large, queries, passageById, cfg)
             } catch (e: Throwable) {
@@ -230,7 +490,7 @@ object RagE2EBench {
             // generating the answer is different.
             Log.i(TAG, "── variant D: large + RAG (${cfg.largeLlmFile}) ──")
             val variantD = try {
-                runVariantRag(large, embedder, index, queries, passageById, cfg)
+                runVariantRag(large, queryEmbeddings, queryEmbedUs, index, queries, passageById, cfg)
             } catch (e: Throwable) {
                 Log.e(TAG, "variant D failed", e); null
             } ?: emptyMap()
@@ -243,22 +503,25 @@ object RagE2EBench {
                 "large_rag"    to variantD,    // D: 1.5B + RAG (new for 2x2)
             )
         } finally {
-            embedder.close()
+            if (!embedderClosed) {
+                try { embedder.close() } catch (_: Throwable) {}
+            }
         }
         return result
     }
 
     // ── Variants ─────────────────────────────────────────────────────────
 
-    private fun runVariantRag(
+    internal fun runVariantRag(
         llm: DazzleLlm,
-        embedder: DazzleEmbedder,
+        queryEmbeddings: Array<FloatArray>,
+        precomputedEmbedUs: LongArray,
         index: VectorIndex,
         queries: List<Query>,
         passageById: Map<String, Passage>,
         cfg: Config,
     ): Map<String, Any?> {
-        val embedUs   = LongArray(queries.size)
+        val embedUs   = precomputedEmbedUs.copyOf()
         val searchUs  = LongArray(queries.size)
         val prefillUs = LongArray(queries.size)
         val decodeUs  = LongArray(queries.size)
@@ -274,12 +537,14 @@ object RagE2EBench {
         for ((qi, q) in queries.withIndex()) {
             val tTotal = System.nanoTime()
 
-            val t0 = System.nanoTime()
-            val qv = embedder.embed(q.text)
+            // Use the pre-computed query embedding so the embedder
+            // can be released before the LLM phase. embedUs is the
+            // measured cost from the precompute step (preserved verbatim
+            // so the JSON metric semantics stay identical to v1).
+            val qv = queryEmbeddings[qi]
             val t1 = System.nanoTime()
             val hits = index.searchDirect(qv, k = cfg.k, efRuntime = cfg.efRuntime)
             val t2 = System.nanoTime()
-            embedUs [qi] = (t1 - t0) / 1_000L
             searchUs[qi] = (t2 - t1) / 1_000L
 
             val retrieved = hits.mapNotNull { passageById[it.first] }
@@ -319,6 +584,17 @@ object RagE2EBench {
                 "em_contains"   to emsCt[qi].takeUnless { it.isNaN() },
                 "f1_short"      to f1sh[qi].takeUnless { it.isNaN() },
                 "f1_passage"    to f1s[qi],
+                // Per-query raw latency / token counts so a chunked run
+                // (Kirin 659 multi-process driver) can reconstruct stats
+                // post-hoc from the union of per-chunk records without
+                // needing chunk-level arrays.
+                "embed_us"      to embedUs[qi],
+                "search_us"     to searchUs[qi],
+                "prefill_us"    to prefillUs[qi],
+                "decode_us"     to decodeUs[qi],
+                "total_us"      to totalUs[qi],
+                "prompt_tokens" to pTokens[qi],
+                "new_tokens"    to nTokens[qi],
             )
         }
 
@@ -338,7 +614,7 @@ object RagE2EBench {
         )
     }
 
-    private fun runVariantNoRag(
+    internal fun runVariantNoRag(
         llm: DazzleLlm,
         queries: List<Query>,
         passageById: Map<String, Passage>,
@@ -393,6 +669,11 @@ object RagE2EBench {
                 "em_contains"   to emsCt[qi].takeUnless { it.isNaN() },
                 "f1_short"      to f1sh[qi].takeUnless { it.isNaN() },
                 "f1_passage"    to f1s[qi],
+                "prefill_us"    to prefillUs[qi],
+                "decode_us"     to decodeUs[qi],
+                "total_us"      to totalUs[qi],
+                "prompt_tokens" to pTokens[qi],
+                "new_tokens"    to nTokens[qi],
             )
         }
 
@@ -439,7 +720,7 @@ object RagE2EBench {
 
     // ── Slice I/O ────────────────────────────────────────────────────────
 
-    private fun loadPassages(context: Context, asset: String): List<Passage> {
+    internal fun loadPassages(context: Context, asset: String): List<Passage> {
         val out = ArrayList<Passage>(4096)
         context.assets.open(asset).use { s ->
             BufferedReader(InputStreamReader(s, Charsets.UTF_8)).useLines { lines ->
@@ -453,7 +734,7 @@ object RagE2EBench {
         return out
     }
 
-    private fun loadQueries(context: Context, asset: String): List<Query> {
+    internal fun loadQueries(context: Context, asset: String): List<Query> {
         val out = ArrayList<Query>(256)
         context.assets.open(asset).use { s ->
             BufferedReader(InputStreamReader(s, Charsets.UTF_8)).useLines { lines ->
@@ -620,14 +901,14 @@ object RagE2EBench {
         )
     }
 
-    private fun fileInfo(f: File, dim: Int?, nCtx: Int): Map<String, Any?> = linkedMapOf(
+    internal fun fileInfo(f: File, dim: Int?, nCtx: Int): Map<String, Any?> = linkedMapOf(
         "file"       to f.name,
         "size_bytes" to f.length(),
         "output_dim" to dim,
         "n_ctx"      to nCtx,
     )
 
-    private fun collectDeviceInfo(): Map<String, Any?> = linkedMapOf(
+    internal fun collectDeviceInfo(): Map<String, Any?> = linkedMapOf(
         "model"           to Build.MODEL,
         "manufacturer"    to Build.MANUFACTURER,
         "board"           to Build.BOARD,

@@ -43,7 +43,9 @@
 #include "llama.h"
 
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -63,6 +65,21 @@ struct dazzle_llama_ctx {
     const ::llama_model *model = nullptr;   // b4120: tokenize / to_piece / is_eog take model*
     int n_ctx                  = 0;
     int n_past                 = 0;         // tokens currently in KV cache
+    // Per-call metrics — populated by `dazzle_llama_generate` so the
+    // language binding can produce the same JSON shape as the Android
+    // bench (Tabla 18 prefill/decode split, Tabla 17 prompt_tokens).
+    // Reset at the start of every generate() call. Read via the
+    // `dazzle_llama_last_*` accessors below.
+    int64_t last_prefill_us    = 0;
+    int64_t last_decode_us     = 0;
+    int     last_prompt_tokens = 0;
+    int     last_new_tokens    = 0;
+    // Embedding-mode flag: a context built with
+    // `dazzle_llama_new_embed_context` has `embeddings = true` set in
+    // its llama_context_params. `dazzle_llama_embed` rejects calls on
+    // non-embedding contexts to keep the prefill/decode counters and
+    // the embed pooling path from sharing state.
+    bool    is_embed_ctx       = false;
 };
 
 // ── Backend init ───────────────────────────────────────────────────────
@@ -88,6 +105,19 @@ extern "C" dazzle_llama_model *dazzle_llama_load_model(const char *path,
     ::llama_model_params mp = ::llama_model_default_params();
     mp.n_gpu_layers = n_gpu_layers;
 
+    // Honour DAZZLE_LLAMA_USE_MMAP={0|false} as an opt-out from file-backed
+    // mmap of the .gguf weights. On EMUI 9 / Kirin 659 the iAware daemon
+    // demotes (and within seconds kills) any process that triggers a large
+    // mmap-fault burst — even an instrumentation-runner process — so the
+    // bench needs to fall back to a plain `read()` into anon RAM. Costs
+    // peak RSS but stays under iAware's "thrash" detector. See
+    // research/results/cross_platform_e2e/ane_lx3_kirin659_investigation.md
+    if (const char *e = std::getenv("DAZZLE_LLAMA_USE_MMAP")) {
+        if (e[0] == '0' || e[0] == 'f' || e[0] == 'F' || e[0] == 'n' || e[0] == 'N') {
+            mp.use_mmap = false;
+        }
+    }
+
     ::llama_model *m = ::llama_load_model_from_file(path, mp);
     if (!m) return nullptr;
 
@@ -111,8 +141,15 @@ extern "C" dazzle_llama_ctx *dazzle_llama_new_context(dazzle_llama_model *model,
 
     ::llama_context_params cp = ::llama_context_default_params();
     cp.n_ctx        = (n_ctx > 0) ? (uint32_t)n_ctx : 2048;
-    cp.n_batch      = 512;
-    cp.n_ubatch     = 512;
+    // n_batch == n_ctx so prompts up to context-size prefill in a single
+    // llama_decode call. Avoids the split-prefill bug pass 15 of the
+    // Kirin investigation pinned: on Cortex-A53 v8.0 the v8.0 ggml fp16
+    // fallback hangs / aborts when the prompt is split across multiple
+    // batches. Same fix the embedder needed (item 2 of the §5.9.5
+    // engineering sidebar). Costs ~30 MB extra compute buffer for n_ctx
+    // = 2048; negligible vs. the model weights themselves.
+    cp.n_batch      = cp.n_ctx;
+    cp.n_ubatch     = cp.n_ctx;
     cp.n_threads    = (n_threads > 0) ? n_threads : 4;
     cp.n_threads_batch = cp.n_threads;
     // Flash attention off — not universally supported on all backends
@@ -189,21 +226,34 @@ extern "C" int dazzle_llama_generate(dazzle_llama_ctx *ctx,
     // weights + sampler state shape; only the token history is reset.
     ::llama_kv_cache_clear(ctx->ctx);
     ctx->n_past = 0;
+    ctx->last_prefill_us    = 0;
+    ctx->last_decode_us     = 0;
+    ctx->last_prompt_tokens = 0;
+    ctx->last_new_tokens    = 0;
+    auto t_us = []() -> int64_t {
+        using clock = std::chrono::steady_clock;
+        return std::chrono::duration_cast<std::chrono::microseconds>(
+            clock::now().time_since_epoch()).count();
+    };
 
     // 1. Tokenise
     auto tokens = tokenise(ctx->model, std::string(prompt), /*add_bos*/ true);
     if (tokens.empty()) return DAZZLE_LLAMA_E_TOKENIZE;
     if ((int)tokens.size() >= ctx->n_ctx) return DAZZLE_LLAMA_E_CONTEXT_FULL;
+    ctx->last_prompt_tokens = (int)tokens.size();
 
     // 2. Prompt decode — batch the entire prompt in one shot.
     {
+        const int64_t t0 = t_us();
         ::llama_batch batch = ::llama_batch_get_one(tokens.data(),
                                                    (int32_t)tokens.size());
         if (::llama_decode(ctx->ctx, batch) != 0) {
             return DAZZLE_LLAMA_E_DECODE;
         }
         ctx->n_past += (int)tokens.size();
+        ctx->last_prefill_us = t_us() - t0;
     }
+    const int64_t t_decode_start = t_us();
 
     // 3. Build sampler chain. We create it per-call so seed / temp /
     //    top_p can change between invocations without teardown.
@@ -252,5 +302,102 @@ extern "C" int dazzle_llama_generate(dazzle_llama_ctx *ctx,
     }
 
     ::llama_sampler_free(smpl);
+    ctx->last_decode_us  = t_us() - t_decode_start;
+    ctx->last_new_tokens = emitted;
     return (rc == DAZZLE_LLAMA_E_CANCELLED) ? DAZZLE_LLAMA_E_CANCELLED : emitted;
+}
+
+// ── Per-call metric accessors ──────────────────────────────────────────
+//
+// Mirror the Android JNI's GenHandle counters so the iOS bench can
+// produce the same JSON shape (embed_us / search_us / prefill_us /
+// decode_us / total_us / prompt_tokens / new_tokens) without bringing
+// the chat-message wrapper overhead. All four read the snapshot left
+// by the most-recent `dazzle_llama_generate` call on `ctx`; calling
+// them on a context that has never generated returns 0.
+extern "C" int64_t dazzle_llama_last_prefill_us(dazzle_llama_ctx *ctx) {
+    return ctx ? ctx->last_prefill_us : 0;
+}
+extern "C" int64_t dazzle_llama_last_decode_us(dazzle_llama_ctx *ctx) {
+    return ctx ? ctx->last_decode_us : 0;
+}
+extern "C" int dazzle_llama_last_prompt_tokens(dazzle_llama_ctx *ctx) {
+    return ctx ? ctx->last_prompt_tokens : 0;
+}
+extern "C" int dazzle_llama_last_new_tokens(dazzle_llama_ctx *ctx) {
+    return ctx ? ctx->last_new_tokens : 0;
+}
+
+// ── Embed context + embed call ─────────────────────────────────────────
+//
+// Mean-pooled mean-token embedding via `embeddings = true` on the
+// llama context, mirroring `DazzleEmbedder.kt`. Two entry points:
+// build a dedicated embedding context with `dazzle_llama_new_embed_context`
+// (no shared state with a generate context — embeddings + KV-cache
+// don't compose cleanly under the b4120 llama API), then `embed()` to
+// produce one fp32 vector per call.
+extern "C" dazzle_llama_ctx *dazzle_llama_new_embed_context(
+        dazzle_llama_model *model, int n_ctx, int n_threads) {
+    if (!model || !model->m) return nullptr;
+
+    ::llama_context_params cp = ::llama_context_default_params();
+    cp.n_ctx           = (n_ctx > 0) ? (uint32_t)n_ctx : 512;
+    // n_batch == n_ctx so a single passage of up to n_ctx tokens
+    // prefills in one llama_decode call, avoiding the ggml fp16 fallback
+    // split-prefill bug that hangs on Cortex-A53 / SD662 v8.0
+    // (see paper §5.9.5 sidebar item 2).
+    cp.n_batch         = cp.n_ctx;
+    cp.n_ubatch        = cp.n_ctx;
+    cp.n_threads       = (n_threads > 0) ? n_threads : 4;
+    cp.n_threads_batch = cp.n_threads;
+    cp.flash_attn      = false;
+    cp.embeddings      = true;
+    cp.pooling_type    = LLAMA_POOLING_TYPE_MEAN;
+
+    ::llama_context *raw = ::llama_new_context_with_model(model->m, cp);
+    if (!raw) return nullptr;
+
+    auto *handle = new dazzle_llama_ctx();
+    handle->ctx           = raw;
+    handle->model         = model->m;
+    handle->n_ctx         = (int)cp.n_ctx;
+    handle->is_embed_ctx  = true;
+    return handle;
+}
+
+extern "C" int dazzle_llama_embed_dim(dazzle_llama_ctx *ctx) {
+    if (!ctx || !ctx->model) return 0;
+    return ::llama_n_embd(ctx->model);
+}
+
+extern "C" int dazzle_llama_embed(dazzle_llama_ctx *ctx,
+                                  const char *prompt,
+                                  float *out, int out_dim) {
+    if (!ctx || !ctx->ctx || !ctx->model || !prompt || !out) {
+        return DAZZLE_LLAMA_E_BAD_CTX;
+    }
+    if (!ctx->is_embed_ctx) return DAZZLE_LLAMA_E_BAD_CTX;
+    const int dim = ::llama_n_embd(ctx->model);
+    if (out_dim < dim) return DAZZLE_LLAMA_E_BAD_CTX;
+
+    ::llama_kv_cache_clear(ctx->ctx);
+
+    auto tokens = tokenise(ctx->model, std::string(prompt), /*add_bos*/ true);
+    if (tokens.empty()) return DAZZLE_LLAMA_E_TOKENIZE;
+    if ((int)tokens.size() > ctx->n_ctx) return DAZZLE_LLAMA_E_CONTEXT_FULL;
+
+    ::llama_batch batch = ::llama_batch_get_one(tokens.data(),
+                                                (int32_t)tokens.size());
+    if (::llama_decode(ctx->ctx, batch) != 0) {
+        return DAZZLE_LLAMA_E_DECODE;
+    }
+
+    // Sequence-pooled embedding (LLAMA_POOLING_TYPE_MEAN at context
+    // creation time). Single-sequence: id 0.
+    const float *src = ::llama_get_embeddings_seq(ctx->ctx, 0);
+    if (!src) src = ::llama_get_embeddings(ctx->ctx);
+    if (!src) return DAZZLE_LLAMA_E_DECODE;
+
+    std::memcpy(out, src, (size_t)dim * sizeof(float));
+    return dim;
 }

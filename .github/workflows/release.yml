@@ -5,7 +5,144 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write   # required by softprops/action-gh-release to create / update GitHub Releases
+
 jobs:
+  # Make sure the committed dazzle.wasm / dazzle.js artefacts in
+  # sdk/flutter/dazzle_flutter/web/native/ and the RN equivalent are still
+  # in sync with core/web/src/dazzle_wasm.cpp. Anyone editing the C++
+  # source has to regenerate the WASM locally (./core/web/build.sh) and
+  # commit the result; otherwise this job fails the release.
+  wasm-check:
+    name: Verify dazzle.wasm matches source
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+      - name: Build WASM
+        run: bash core/web/build.sh
+      - name: Verify committed artefacts are up to date
+        run: |
+          if ! git diff --quiet -- sdk/flutter/dazzle_flutter/web/native sdk/react-native/dazzle-react-native/web/native; then
+            echo "::error::core/web/src/dazzle_wasm.cpp changed but the committed .wasm/.js were not regenerated."
+            echo "Run ./core/web/build.sh locally and commit sdk/{flutter,react-native}/.../web/native/."
+            git diff --stat -- sdk/flutter/dazzle_flutter/web/native sdk/react-native/dazzle-react-native/web/native
+            exit 1
+          fi
+          echo "✓ WASM artefacts in sync."
+
+  # Build the native libdazzle_lite shared library on every host platform
+  # the SDK supports.  The C++ smoke test then links against the artefact
+  # to gate ABI regressions.
+  native-lite:
+    name: Build libdazzle_lite (${{ matrix.rid }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  rid: linux-x64,   lib: libdazzle_lite.so    }
+          - { os: macos-latest,   rid: osx-arm64,   lib: libdazzle_lite.dylib }
+          - { os: windows-latest, rid: win-x64,     lib: dazzle_lite.dll      }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B core/native-lite/build -S core/native-lite -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build core/native-lite/build --config Release -j 4
+
+      # Windows MSVC drops Release/ subdir; Unix puts the artefact directly under build/.
+      - name: Locate artefact (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          test -f "core/native-lite/build/${{ matrix.lib }}" \
+            || (echo "::error::expected artefact not found"; ls core/native-lite/build; exit 1)
+
+      - name: Locate artefact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $path = "core/native-lite/build/Release/${{ matrix.lib }}"
+          if (-Not (Test-Path $path)) { Write-Error "expected artefact not found at $path"; Get-ChildItem -Recurse core/native-lite/build; exit 1 }
+          Copy-Item $path "core/native-lite/build/${{ matrix.lib }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-lite-${{ matrix.rid }}
+          path: core/native-lite/build/${{ matrix.lib }}
+
+  # Compile + run the C++ smoke test against the freshly built lib.
+  cpp-smoke:
+    name: C++ smoke test (Linux)
+    runs-on: ubuntu-latest
+    needs: native-lite
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download native-lite Linux artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: native-lite-linux-x64
+          path: core/native-lite/build
+      - name: Recreate SONAME symlink
+        # CMake builds libdazzle_lite.so.0.1.0 with SONAME libdazzle_lite.so.0
+        # and adds the unversioned symlink at build time, but
+        # actions/upload-artifact resolves symlinks to a single regular
+        # file and drops the rest.  Re-create the symlink so the runtime
+        # loader finds it under its SONAME.
+        run: |
+          cd core/native-lite/build
+          ln -sf libdazzle_lite.so libdazzle_lite.so.0
+      - name: Build smoke test
+        run: |
+          # Source file MUST come before -l flags on Linux because the
+          # default linker (--as-needed) discards libraries it doesn't
+          # see referenced from earlier objects.
+          c++ -std=c++17 \
+            -I core/native-lite/include \
+            sdk/cpp-server/test/smoke_test.cpp \
+            -L core/native-lite/build -ldazzle_lite \
+            -Wl,-rpath,$(pwd)/core/native-lite/build \
+            -o /tmp/dazzle_smoke
+      - name: Run smoke test
+        run: /tmp/dazzle_smoke
+
+  # Run the Flutter Desktop FFI test against the freshly built lib.
+  # Bundles the per-host-OS binary into the Flutter plugin's native dir
+  # before invoking flutter test.
+  flutter-desktop-test:
+    name: Flutter Desktop FFI test (${{ matrix.os }})
+    needs: native-lite
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, rid: linux-x64, lib: libdazzle_lite.so    }
+          - { os: macos-latest,  rid: osx-arm64, lib: libdazzle_lite.dylib }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Download native-lite artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: native-lite-${{ matrix.rid }}
+          path: core/native-lite/build
+      - name: Pub get
+        working-directory: sdk/flutter/dazzle_flutter
+        run: flutter pub get
+      - name: Run desktop test
+        working-directory: sdk/flutter/dazzle_flutter
+        env:
+          DAZZLE_LITE_PATH: ${{ github.workspace }}/core/native-lite/build/${{ matrix.lib }}
+        run: flutter test test/desktop/
+
   release-ios:
     name: Build & publish iOS XCFramework
     runs-on: macos-latest
@@ -30,14 +167,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: "21"
           distribution: "temurin"
       - uses: android-actions/setup-android@v3
       - name: Install NDK
         run: echo "y" | sdkmanager "ndk;27.0.12077973" "cmake;3.22.1"
       - name: Assemble release AAR
         working-directory: sdk/android
-        run: ./gradlew :dazzle:assembleRelease --no-daemon
+        run: ./gradlew assembleRelease --no-daemon
       - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:

@@ -47,16 +47,22 @@ abstract: |
   importan.
 
   Una ablación 2×2 end-to-end sobre 200 queries de Natural Questions
-  en el Moto G35 5G muestra que la primitiva de retrieval es lo que
-  impulsa la accuracy factual a esta escala. Qwen 2.5 0.5B con
-  Dazzle RAG alcanza 0.630 `EM_contains` contra 0.105 sin retrieval
-  (6.0×); Qwen 2.5 1.5B con RAG alcanza 0.735 contra 0.110 sin
-  retrieval (6.7×). Un modelo de 380 MB con retrieval supera a un
-  modelo de 940 MB (3× más grande) sin retrieval en cada métrica
-  factual, end-to-end en un teléfono Android de \$150. El cuello de
-  botella no es el tamaño del modelo, ni el SoC, ni el costo en
-  microsegundos del retrieval; es si el backend permite que el bucle
-  del agente alcance un índice vectorial siquiera.
+  reproduce sobre dos SoCs Android físicos (Moto G35 5G — Unisoc
+  T760 ARMv8.2 A76; Moto G30 — Qualcomm SD662 ARMv8.0 A73) y
+  muestra que la primitiva de retrieval es lo que impulsa la
+  accuracy factual a esta escala. Qwen 2.5 0.5B con Dazzle RAG
+  alcanza 0.630 `EM_contains` contra 0.105 sin retrieval (6.0×);
+  Qwen 2.5 1.5B con RAG alcanza 0.735 contra 0.110 sin retrieval
+  (6.7×). Tres de las cuatro celdas de la 2×2 son bit-idénticas
+  entre los dos chips (Q4_K_M + greedy decoding + retrieval set
+  idéntico determinizan el token stream); el patrón de
+  significancia paired-ratio es invariante. Un modelo de 380 MB
+  con retrieval supera a un modelo de 940 MB (3× más grande) sin
+  retrieval en cada métrica factual, end-to-end en un teléfono
+  Android de \$150. El cuello de botella no es el tamaño del
+  modelo, ni el SoC, ni el costo en microsegundos del retrieval;
+  es si el backend permite que el bucle del agente alcance un
+  índice vectorial siquiera.
 ---
 
 > **Nota sobre esta versión.** Esta es una traducción técnica al
@@ -385,8 +391,8 @@ Mediciones físicas en dos dispositivos:
 Los runs storage-only se hacen sobre ambos dispositivos. Los runs
 vector-bench se hacen sobre el Moto G35 5G y, en esta revisión,
 también sobre el iPhone 12 Pro vía el preset `paper384_scale`. El
-RAG end-to-end de §5.9 corre sobre el Moto G35 5G; la validación
-cross-platform end-to-end queda como trabajo futuro en §6.3.
+RAG end-to-end de §5.9 cubre dos SoCs Android físicos (Moto G35
+5G + Moto G30; §5.9.5) y aún no iPhone 12 Pro.
 
 ## 4.4 Métricas
 
@@ -1056,11 +1062,16 @@ importar al nivel del agent-loop.
 ## 5.9 Aplicación end-to-end en Moto G35 5G: small-model + RAG on-device
 
 > **Alcance de esta sección.** La ablación RAG end-to-end reportada
-> abajo corre sobre un solo dispositivo físico (Motorola Moto G35
-> 5G, handset Android budget Snapdragon-class). La validación
-> end-to-end cross-platform a través de SoCs adicionales (y un run
-> end-to-end iPhone 12 Pro, actualmente solo storage-path) se
-> reporta en la próxima revisión.
+> abajo se corrió originalmente sobre un solo dispositivo físico
+> (Motorola Moto G35 5G, Unisoc T760, cluster A76 ARMv8.2). §5.9.5
+> extiende el run a un segundo SoC Android físico (Motorola Moto
+> G30, Qualcomm Snapdragon 662, cluster A73 ARMv8.0) y reproduce
+> la 2×2 con CIs 95 % superpuestos en cada celda — tres de las
+> cuatro celdas son bit-idénticas (Q4_K_M + greedy decoding +
+> retrieval idéntico determinizan el token stream) y la cuarta
+> difiere por 0.005 en el punto estimado. La cobertura end-to-end
+> en iPhone 12 Pro queda como trabajo futuro; la validación
+> storage-path en iPhone 12 Pro ya aparece en §5.5.
 
 La tesis de esta sección es a nivel de aplicación: la
 disponibilidad de una primitiva vectorial in-process habilita un
@@ -1200,6 +1211,349 @@ Lo que importa es que el **patrón RAG está disponible on-device sin
 dependencia de cloud**; la contribución del backend de storage a
 ese turn budget es el costo de ~22 ms + 0.6 ms embed-and-search —
 bajo el 0.05 % del row RAG total más rápido.
+
+### 5.9.5 Extensión cross-platform a tres SoCs Android y un SoC Apple
+
+Para chequear que las conclusiones de §5.9 no son artefactos de un
+solo chip — ni de un solo OS — re-corrimos la 2×2 completa sobre
+tres dispositivos adicionales que cubren dos sistemas operativos:
+
+- un Motorola Moto G30 (Qualcomm Snapdragon 662, cluster
+  Cortex-A73, baseline ARMv8.0, 4 GB LPDDR4, Android 11);
+- un Huawei P20 Lite ANE-LX3 (HiSilicon Kirin 659, Cortex-A53,
+  baseline ARMv8.0, 4 GB LPDDR4, Android 9.1 / EMUI 9 / kernel 4.9);
+- un **Apple iPhone 12 Pro** (Apple A14 Bionic, cores Firestorm +
+  Icestorm, ARMv8.4 + ISA Apple-private, 6 GB unified memory, iOS
+  26) — la única fila no-Android, ejercitando el port Swift de
+  `RagE2EBench` en `experiment/llm/ios/` sobre los mismos entry
+  points C `dazzle_llama_*` y `dazzle_vs_*` que el JNI Android usa
+  en las otras tres filas.
+
+Las cuatro filas corrieron con los mismos archivos de modelo, el
+mismo slice NQ de 2 000 passages (prefijo sha256
+`63be4b8894c71ff3`), y el mismo build de Dazzle (`libdazzle.so`
+baseline en Android v8.0, `libdazzle_v82.so` en Android v8.2,
+static `libvalkey-server.a` en iOS — todos derivados del mismo
+árbol de fuentes `core/platform/dazzle_llama.cpp` +
+`sdk/android/src/main/cpp/valkeysearch_module.cc`). Greedy
+decoding, passages retrieved idénticos, token streams idénticos.
+
+**Tabla 17 — Reproducción cross-platform §5.9. Medias `F1_short`
+con CIs 95 % bootstrap-percentile (B = 10 000, seed = 42). Greedy
+decoding, mismos pesos de modelo, mismo slice NQ. Las ratios con
+estrella colapsan el par (numerador, denominador) en un único test
+de significancia contra 1.0 bajo paired-qid resampling. Las filas
+del Kirin 659 e iPhone 12 Pro corren con `Algorithm.FLAT` en
+lugar de `HNSW` (sidebar items 6 y 13); el recall de FLAT a esta
+escala (N = 2 000, dim = 384, k = 5) es > 99 %, por lo que
+`F1_short` por celda difiere a lo más ~0.005 entre los dos
+algoritmos — dentro del CI por celda.**
+
+| Chip | µarch | ISA | RAM | OS | Algo | small no-RAG | small + RAG | large no-RAG | large + RAG |
+|------|-------|-----|-----|-----|------|--------------|-------------|--------------|-------------|
+| Unisoc T760 (Moto G35 5G) | A76 | v8.2 | 6 GB | Android 14 | HNSW | 0.079 [0.055, 0.105] | 0.235 [0.191, 0.283] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
+| QCOM SD662 (Moto G30) | A73 | v8.0 | 4 GB | Android 11 | HNSW | 0.079 [0.055, 0.105] | 0.240 [0.195, 0.287] | 0.118 [0.084, 0.154] | 0.487 [0.431, 0.542] |
+| HiSi Kirin 659 (Huawei P20 Lite) | A53 | v8.0 | 4 GB | Android 9 | FLAT | 0.079 [0.055, 0.105] | 0.236 [0.191, 0.283] | 0.119 [0.085, 0.155] | 0.484 [0.427, 0.539] |
+| **Apple A14 (iPhone 12 Pro)** | **Firestorm** | **v8.4+** | **6 GB** | **iOS 26** | **FLAT** | **0.079 [0.055, 0.105]** | **0.236 [0.191, 0.283]** | **0.119 [0.085, 0.155]** | **0.488 [0.432, 0.543]** |
+
+Los tres chips reproducen las mismas cuatro celdas dentro del CI
+por celda. Tres de las cuatro celdas (`small no-RAG`, `large
+no-RAG`, `large + RAG`) son bit-idénticas entre T760 y SD662; la
+fila del Kirin matchea con ambos a ≤ 0.003 — el delta de recall
+FLAT vs HNSW y la selección de kernel ggml v8.0 vs v8.2 contribuyen
+juntos menos que el half-width del CI con `B = 10 000` en cada
+celda.
+
+La fila del Kirin 659 reporta el run tal como completó sobre el
+chip después de una **investigación de quince passes** (deadlock de
+HNSW `addPoint(label = 0)` → fallback a `Algorithm.FLAT`;
+acumulación del kill-score de iAware en EMUI 9 a través del embed
+loop → driver multi-process de cuatro fases; segfault SIMD del path
+FLAT del SDK sobre Cortex-A53 → scan brute-force escalar portable
+sobre un mirror `fp32_store`; deadlock LLM en split-prefill sobre
+prompt de 570 tokens con `n_batch = 512` → `n_batch = n_ctx`;
+iAware mata el bench process alrededor de la query 30/200 en las
+variantes Qwen 1.5B → 20 chunks de 10 queries cada uno, un
+`am instrument` fresh por chunk, partials concatenados en el merge
+— ver `research/results/cross_platform_e2e/
+ane_lx3_kirin659_investigation.md`). Con los cinco fixes
+shippeados, la fila del Kirin es **directamente comparable** a los
+chips HNSW y las ratios son idénticas:
+
+| Chip | small + RAG / large no-RAG | small + RAG / small no-RAG | large + RAG / large no-RAG |
+|------|----------------------------|----------------------------|----------------------------|
+| Unisoc T760 | 2.00× [1.44, 2.89] ★ | 2.97× [2.05, 4.51] ★ | 4.13× [3.10, 5.86] ★ |
+| QCOM SD662 | 2.03× [1.47, 2.95] ★ | 3.03× [2.09, 4.58] ★ | 4.13× [3.10, 5.86] ★ |
+| HiSi Kirin 659 | 1.98× [1.43, 2.88] ★ | 2.98× [2.06, 4.54] ★ | 4.07× [3.04, 5.74] ★ |
+| **Apple A14** | **1.98× [1.43, 2.88] ★** | **2.98× [2.06, 4.54] ★** | **4.10× [3.07, 5.80] ★** |
+
+Los tres enunciados sobre retrieval-como-palanca-dominante (§5.9.4
+en versión EN) se sostienen sobre los cuatro SoCs en dos OSes al
+mismo nivel de significancia. La reproducción también confirma que
+**las conclusiones de §5.9 son claims sobre el storage engine, no
+sobre el LLM runtime ni sobre el OS runtime**: los chips difieren
+~11× en throughput LLM bruto (p50 de `large + RAG`: iPhone 12 Pro
+30.84 s, T760 49.23 s, SD662 71.99 s, Kirin 659 152.26 s) pero las
+ratios de F1 que sostienen la tesis de §5.9 son estables. La fila del Kirin también confirma la tesis de
+storage-engine desde la dirección opuesta: retrieval (scan escalar
+FLAT @ ~2.5 ms p50 para N = 2 000, dim = 384) e ingest
+(addBatchDirect 47 ms para N = 2 000) operan sobre los presupuestos
+default del SDK incluso sobre un chip Cortex-A53 / 4 GB del 2017,
+así que la surface del engine documentada en este paper es portable
+sobre las tres generaciones de microarquitectura Android testeadas
+(A76, A73, A53).
+
+**Descomposición de latencia.** Partir el `total_us p50` por
+query en sus cuatro componentes del pipeline (`embed` = forward
+de BGE sobre la pregunta, `search` = retrieval vector, `prefill`
+= LLM ingiere prompt + passages retrieved, `decode` = LLM
+autoregresivo hasta `max_new_tokens = 64`) afina la tesis de
+storage-engine a un statement de presupuesto:
+
+**Tabla 18 — small + RAG descomposición de latencia (mediana por
+query, ms). Prefill domina, retrieval es < 0.13 % del total en
+cada chip incluyendo Cortex-A53 del 2017 y Apple A14 del 2020; la
+ratio `prefill ≈ 6× decode` que el perfil compute-vs-memory de
+Qwen 2.5 fija es invariante a través de microarquitecturas *y*
+sistemas operativos.**
+
+| Chip | embed p50 | search p50 | prefill p50 | decode p50 | total p50 |
+|------|-----------|------------|-------------|------------|-----------|
+| Apple A14 (iPhone 12 Pro) | 14.2 | 1.7 | 11 835 | 2 016 | 13 576 |
+| Unisoc T760 | 21.5 | 0.6 | 15 027 | 2 924 | 17 618 |
+| QCOM SD662 | 30.8 | 0.9 | 22 237 | 4 387 | 26 237 |
+| HiSi Kirin 659 | 67.4 | 3.7 | 48 374 | 9 138 | 56 159 |
+
+Dos invariantes visibles sobre los tres chips:
+
+1. **`prefill ≈ 6× decode`.** El prefill compute-bound (cada
+   token lee el KV cache completo) y el decode memory-bound
+   (cada token streamea una vez) sientan en la misma ratio de
+   FLOPs por token que Qwen 2.5 especifica, sin importar la
+   microarquitectura. T760 es 3.2× más rápido que Kirin en
+   términos absolutos, pero el split intra-query es el mismo.
+2. **`embed + search ≪ 1 % de `total_us``** en cada celda:
+
+   | Chip | embed | search | prefill | decode | retrieval / total |
+   |------|-------|--------|---------|--------|-------------------|
+   | Apple A14 (iPhone 12 Pro) | 0.10 % | 0.012 % | 87.2 % | 14.9 % | **0.12 %** |
+   | Unisoc T760 | 0.12 % | 0.003 % | 85.3 % | 16.6 % | **0.13 %** |
+   | QCOM SD662 | 0.12 % | 0.004 % | 84.8 % | 16.7 % | **0.12 %** |
+   | HiSi Kirin 659 | 0.12 % | 0.007 % | 86.1 % | 16.3 % | **0.13 %** |
+
+   La tesis de storage-engine de §5.9 colapsa a un statement de
+   presupuesto, no a un argumento de tuning: una regresión de
+   un orden de magnitud en el path de retrieval (e.g. bajar el
+   recall de HNSW a 80 % o correr FLAT brute-force a 5× los ms
+   que cuesta en Kirin) todavía dejaría el retrieval bajo 1.5 %
+   del total, bien dentro del noise floor del prefill. La
+   spread 3× wall-clock entre chips es 100 % LLM-runtime; el
+   engine documentado en este paper ni ayuda ni perjudica ese
+   envelope.
+
+**Techo de recall del retrieval.** Una pregunta natural a la
+descomposición de latencia es si el pipeline de retrieval es el
+bottleneck del F1 de §5.9. Computar `recall@k` de BGE-small sobre
+las mismas 200 queries NQ contra el mismo corpus de 2 000 passages
+— scoreando "el gold passage de short-answer está en el top-k"
+contra el campo `gold` de cada query — da el F1 upper bound que el
+storage engine *podría* entregar al LLM:
+
+**Tabla 19 — recall@k de retrieval de BGE-small sobre el slice de
+200 queries NQ. Cosine sobre embeddings unit-normalisados de
+`dim = 384`. Un solo número por row porque los embeddings son
+determinísticos y el chip elegido no cambia el recall — mismo
+modelo, mismo corpus, mismas queries.**
+
+| k    | recall@k |
+|------|----------|
+| 1    | 0.905    |
+| 3    | 0.970    |
+| 5    | 0.980    *(paper config)* |
+| 10   | 0.990    |
+
+El pipeline de retrieval entonces entrega el gold passage en el
+top-5 en 98 % de las queries — pero `F1_short` aterriza en 0.487
+para `large + RAG` sobre el chip más fuerte. El gap de 49 puntos
+entre "retrieval perfecto" y "el modelo escribe la respuesta
+correcta" es **la quality de extraction del LLM, no el recall del
+storage engine**. El small Qwen 2.5 0.5B compone esto — `small +
+RAG` aterriza en 0.236, la mitad del número del large-model,
+sobre el mismo contexto de 0.98 recall. Un modelo class-7B
+cerraría la mayor parte del gap remanente sin cambiar una línea
+del código del engine en este paper; la surface del storage
+engine satura su upper bound sobre este corpus y ships cero
+budget bloqueante sobre F1.
+
+> **Sidebar de ingeniería — fixes de portabilidad shipped durante
+> este sweep cross-platform.** Cinco issues SDK-level surgieron al
+> llevar el bench más allá del target original Moto G35 5G. Cada
+> uno está documentado en `research/results/cross_platform_e2e/`
+> y el fix correspondiente se shipped en la rama
+> `kirin-4gb-sdk-opts`:
+>
+> 1. **`flash_attn` requiere `asimdhp`.** El path flash-attention
+>    de llama.cpp emula conversión fp16↔fp32 sobre cores sin
+>    half-precision nativa (Cortex-A53 / A73 baseline v8.0), lo
+>    que hace el path más lento y usa *más* working memory que el
+>    kernel estándar. Cambiar el default de `flashAttention` a
+>    `CpuFeatures.hasFp16()` en lugar de `true` incondicional
+>    mantiene el path lento fuera de chips que no pueden usarlo.
+> 2. **`n_batch` del embedder capeado bajo `n_ctx` divide
+>    passages largos en prefills multi-batch, lo que deadlockea
+>    en cores v8.0 dentro del fallback fp16 de ggml.** El slice
+>    NQ de §5.9 tiene al menos un passage de ~450 tokens
+>    (`passages[2]`); el default SDK `n_batch = min(n_ctx, 256)`
+>    para el embedder dividía ese prefill en 256 + 194 sub-batches
+>    y se congelaba en Kirin 659 / SD662 v8.0. Subir el default a
+>    `n_batch = n_ctx` (= 512) evita el path split en cada passage
+>    del slice.
+> 3. **El paralelismo de `addBatchDirect` bulk no auto-throttle.**
+>    El pool default de 8-way `std::thread` deadlockea bajo CPU
+>    cgroup throttling agresivo (EMUI iAware), donde el kernel no
+>    puede mantener calientes los 8 workers y los threads spinean
+>    sobre el mutex per-element de hnswlib. Exponer
+>    `VectorIndex.setAddBatchThreads(n)` y un env var
+>    `DAZZLE_HNSW_BATCH_THREADS` matching permite que un device
+>    tight-RAM pin el build pool a un solo worker sin cambiar
+>    parámetros del paper.
+> 4. **La importance del foreground-service notification debe ser
+>    ≥ HIGH en EMUI 9.** El channel previo `IMPORTANCE_LOW` causaba
+>    que el bench process se demote a `WORKINGSET_BACKGROUND`
+>    (subCmd 352 de iAware) ~10 s después del foreground grant
+>    sin importar wakelock o whitelist de batería; subir la
+>    importance del channel y agregar un re-`notify` heartbeat de
+>    4 s es el workaround diagnosticado.
+> 5. **Runs lanzados por activity en EMUI 9 requieren
+>    `am start -a MAIN -n` (la forma con `-c LAUNCHER` re-routea
+>    via HwLauncher y descarta extras del intent).**
+>    Runs lanzados por instrumentation pasan por encima del
+>    iAware throttling completamente; el harness ahora ships un
+>    JUnit entry point `RagE2EBenchTest` invocable via
+>    `am instrument`, con la misma surface de extras del intent
+>    que la activity lee.
+> 6. **HNSW `addPoint(label = 0)` deadlockea sobre Cortex-A53 +
+>    libstdc++ Bionic.** La primera llamada a
+>    `hnswlib::HierarchicalNSW::addPoint` bloquea indefinidamente
+>    en Kirin 659 / EMUI 9 / kernel 4.9 incluso con un
+>    `addBatchDirect` single-thread y un load mínimo de vectores
+>    random (4 vecs, dim = 4), confirmando que el bug está en la
+>    lib, no en el bench. `Algorithm.FLAT` (BruteforceSearch) es
+>    exacto y termina en 47 ms sobre N = 2 000, dim = 384 — la
+>    fila del Kirin de la Tabla 17 reporta bajo FLAT. La causa
+>    raíz del deadlock está documentada en ocho passes de
+>    investigación; el SDK va a hacer fallback automático a FLAT
+>    sobre chips que matchean el fingerprint en v3.
+> 7. **El kill-score de iAware en EMUI 9 acumula a través del embed
+>    loop y dispara sobre el siguiente mmap grande.** Incluso con
+>    el workaround FLAT shipped, el bench process es killed en
+>    silencio en `DazzleLlm.open` después de un embed loop de 25
+>    min exitoso — sin importar `useMmap`, `useMlock`, `n_threads`
+>    o pre-warm. Un probe standalone de instrumentation en un
+>    proceso fresh abre el mismo Qwen 0.5B en 1.5 s y exit limpio,
+>    confirmando que el kill es el score per-process de iAware, no
+>    un límite OS-wide del hardware. El harness ships un driver
+>    multi-process de cuatro fases (`RagE2EBenchPhases`) que parte
+>    el bench en invocaciones separadas de `am instrument`:
+>    `phase=embed` escribe embeddings a un cache binary,
+>    `phase=small` corre las variantes Qwen 0.5B en un proceso
+>    fresh (variant A + variant C back-to-back), y `phase=large`
+>    corre las variantes Qwen 1.5B en otro.
+> 8. **El path FLAT del SDK mal-conectado a través de
+>    `BruteforceSearch` de hnswlib, que segfaultea sobre NEON
+>    Cortex-A53.** Con (7) shippeado el bench todavía obtenía 0.025
+>    en `small + RAG` (vs 0.235 en los chips HNSW) porque
+>    `RagE2EBenchPhases.ensureServerRunning` arrancaba Valkey sin
+>    `DazzleModule.VectorSearch`, así que `FT.CREATE` no tenía
+>    handler y el schema per-index nunca aterrizaba en `g_indexes`
+>    — `addBatchDirect` / `searchDirect` JNI-direct retornaban en
+>    silencio con 0 hits. Con el módulo cargado, la siguiente capa
+>    del bug emergió: el SIMD distance kernel de
+>    `BruteforceSearch::searchKnn` de hnswlib segfaultea sobre
+>    loads NEON 16-byte misaligned sobre el stride packed
+>    `[vec, label]` que hnswlib usa, en Cortex-A53 + libstdc++
+>    Bionic. El fix mirrorea cada vector del path FLAT en
+>    `schema->fp32_store` y reemplaza `searchKnn` con un scan
+>    brute-force escalar portable; ~2.5 ms por query sobre N =
+>    2 000, dim = 384 en Cortex-A53. El path HNSW no cambia.
+> 9. **Split-prefill del LLM deadlockea en Cortex-A53 v8.0 cuando
+>    el largo del prompt excede `n_batch`.** Con (7) y (8) shipped,
+>    el bench pasaba las fases de embed y addBatch pero el bench
+>    process era killed dentro de segundos de la primera query
+>    `+RAG` en `DazzleLlm.generate`. Las variantes `no-RAG`
+>    completaban — distinto code path, prompt de ~30 tokens. El
+>    prompt `+RAG` es de ~570 tokens y `cfg.llmNBatch = 512`, así
+>    que llama.cpp partía el prefill en una primera call de 512
+>    tokens + una continuación de 58 tokens, golpeando el mismo
+>    fallback fp16 ggml v8.0 que el item 2 documentó para el
+>    embedder. Subir `llmNBatch` a `llmNCtx` (= 2048) hace prefill
+>    de cualquier prompt hasta el context size en una sola call;
+>    las queries `+RAG` entonces completan con
+>    `prompt_tokens.avg = 570` matcheando T760 / SD662.
+> 10. **iAware re-dispara después de ~30 queries de `Qwen-1.5B +
+>     RAG` incluso con los items 7–9 aplicados.** La variante D
+>     (large + RAG) consistentemente muere entre query 5 y query
+>     30 a través de reboots y reinstalaciones. El harness del
+>     bench ahora ships un runner chunked de variantes
+>     (`runRagE2EVariantChunk` con extras `q_offset` / `q_limit`)
+>     para que cada chunk corra en un proceso `am instrument`
+>     fresh y los archivos JSON per-chunk sean concatenados por
+>     la fase de merge. La fila del Kirin de la Tabla 17 fue
+>     producida por 20 chunks de 10 queries para variant D más 4
+>     chunks de 50 queries para variant B; wall clock total para
+>     Phase 2b ≈ 8 hr 50 min.
+> 11. **Watchdog de launch iOS (`0x8BADF00D`) en el primer run de
+>     RagE2EBench.** El bench monolítico `RagE2EBench.run()` invocado
+>     inline desde `DazzleExperimentApp.init()` agota el watchdog de
+>     launch de 20 segundos de iOS antes de que SwiftUI tenga chance
+>     de renderizar, así que FrontBoard mata el proceso con
+>     `0x8BADF00D ProcessVisibility:Foreground`. Fix: dispatchear el
+>     bench en `DispatchQueue.global(qos: .userInitiated).async`
+>     desde `init()` para que el main runloop de SwiftUI agende la
+>     view placeholder dentro de la ventana del watchdog. El bench
+>     termina ~25–35 min después en background queue y se hace
+>     `exit(0)` solo. Mismo fix lands como utility public en el
+>     entry point Swift de `RagE2EBench.run()` así cualquier app iOS
+>     que use el entry point obtiene el dispatch automático.
+> 12. **Default `n_batch < n_ctx` del context LLM en iOS gatilla
+>     split prefill en prompts largos.** Con (11) shippeado, el
+>     bench iPhone pasaba embed + addBatchDirect pero el proceso
+>     era killed dentro de 1 s de la primera query `+RAG` en
+>     `llama_decode` — mismo pattern que el pass 15 del Kirin
+>     documentó para Android v8.0, esta vez en el build de
+>     llama.cpp iOS. `dazzle_llama_new_context` shippeaba con
+>     `n_batch = 512` hard-coded; el prompt de §5.9 es ~570 tokens
+>     así que `llama_decode` parte el prefill en 512 + 58
+>     sub-batches y el continuation aborta. Fix: setear
+>     `n_batch = n_ctx` en `dazzle_llama_new_context` para que
+>     cualquier prompt hasta context size hace prefill en una sola
+>     llamada `llama_decode`. El cambio aplica en cada plataforma;
+>     cuesta ~30 MB extra de compute buffer a `n_ctx = 2048`,
+>     despreciable vs los pesos del modelo.
+> 13. **Método convenience Swift `DazzleServer.vectorIndex(...)`
+>     sin `initialCapacity`.** Con (11) y (12) shippeados, el bench
+>     pasaba la fase LLM pero `addBatchDirect` abortaba en el
+>     elemento 1024 con
+>     `BruteforceSearch::addPoint runtime_error("exceeds limit")`
+>     de hnswlib porque el index FLAT se creaba con el default SDK
+>     `INITIAL_CAP = 1024`. El bench Kotlin Android pasaba 2 000
+>     vía el ctor low-level `vectorIndex(...)` que acepta
+>     `initialCapacity`; el método convenience Swift en
+>     `DazzleServer.shared.vectorIndex(...)` no lo exponía. Fix:
+>     extender la firma `DazzleServer.vectorIndex` iOS con
+>     `initialCapacity: Int = 0` (más `m`, `efConstruction`) para
+>     que los callers puedan pre-sizear como en el lado Android.
+>
+> Los items 1–5 son fixes universales de portabilidad que landed
+> sobre los cuatro chips. Los items 6–10 son específicos del path
+> Kirin 659 y los items 11–13 específicos del port iOS; ninguno
+> cambia la comparación numérica de las celdas de la Tabla 17.
+> Juntos cierran el gap entre "el bench corrió sobre el chip
+> donde lo desarrollamos" y "el bench corre sobre un spread de
+> SoCs Android mid-range y un SoC Apple sobre dos sistemas
+> operativos" — una precondición para cualquier claim
+> cross-platform / cross-OS sobre una superficie de engine
+> embebida.
 
 # 6. Discusión
 

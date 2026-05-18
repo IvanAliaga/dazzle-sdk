@@ -285,12 +285,69 @@ let agent = server.client().chatAgent(threadId: "user-42", llm: llm) {
 
 ---
 
+## Per-stack quickstarts
+
+Every supported stack has its own quickstart with install snippet,
+hello world and the platform-specific gotchas:
+
+| Stack | Quickstart |
+|---|---|
+| **Android** (Kotlin) | this README — section above |
+| **iOS** (Swift) | this README — section above |
+| **Flutter** (mobile + Web + Desktop) | [flutter-quickstart.md](./flutter-quickstart.md) |
+| **React Native** (mobile + Web) | [react-native-quickstart.md](./react-native-quickstart.md) |
+| **React** (DOM) | [react-quickstart.md](./react-quickstart.md) |
+| **.NET** (ASP.NET Core 9) | [dotnet-quickstart.md](./dotnet-quickstart.md) |
+| **C++ servers** (Linux / macOS / Windows) | [cpp-server-quickstart.md](./cpp-server-quickstart.md) |
+
+### Web (Flutter Web / RN Web / React DOM)
+
+All three web targets load the **same `dazzle.wasm`** Emscripten
+build (~236 KB) and persist to the Origin Private File System
+(OPFS). Hash KV + HNSW vector search runs 100% in the browser, no
+remote server.
+
+The setup is the same in all three: add a `<script type="module">`
+tag to your HTML entry that imports `dazzle.js` and assigns it to
+`globalThis.dazzleModule`. Then call `DazzleWeb.initialize()` from
+Dart/TS/React. See the per-stack quickstarts above for the exact
+snippet.
+
+**Scope on web**: Hash KV + Vector index + OPFS snapshot. List /
+Set / SortedSet / Stream standalone primitives and on-device LLM
+clients are not yet on web (they stay on iOS / Android / Desktop).
+
+### Desktop (Flutter Desktop / C++ servers)
+
+Native desktop targets use **`libdazzle_lite`** — the same C++
+translation unit as `dazzle.wasm`, compiled natively to:
+
+| Platform | Output |
+|---|---|
+| Linux x64 / arm64 | `libdazzle_lite.so` |
+| macOS arm64 / x64 | `libdazzle_lite.dylib` |
+| Windows x64 | `dazzle_lite.dll` |
+
+Flutter Desktop apps consume it via `dart:ffi` (`DazzleDesktop`),
+C++ apps link it directly. **The binary snapshot format is identical
+across all targets** — a snapshot saved by a Flutter Web app loads
+byte-for-byte on Flutter Desktop and on a C++ server linking the
+same `libdazzle_lite`.
+
+### .NET (ASP.NET Core 9)
+
+The .NET target is for ASP.NET Core servers that already run a
+Valkey or Dazzle sidecar (Docker, k8s). Single NuGet package
+`Dazzle.NET` ships native binaries for `linux-x64`, `linux-arm64`,
+`osx-arm64` and `win-x64`. See [dotnet-quickstart.md](./dotnet-quickstart.md).
+
 ## What's next
 
-- [Samples](../../samples/) — three ready-to-run chat apps (iOS + Android)
-  demonstrating the three retrieval patterns (`chat-memory`,
-  `chat-iot`, `chat-kb`) with all four LLM adapters swappable via a
-  single file.
+- [Samples](../../samples/) — chat apps demonstrating the three
+  retrieval patterns (`chat-memory`, `chat-iot`, `chat-kb`) with
+  multiple LLM adapters swappable via a single file. Available for
+  iOS / Android / Flutter / React Native; the `dotnet-vector-search/`
+  sample covers ASP.NET Core 9.
 - [CHANGELOG](../../CHANGELOG.md) — latest tag is `1.0.0-beta.5`
   (5th LLM adapter — `AnthropicClient` — across all four stacks,
   three EventChannel bridge fixes applied preventively to every

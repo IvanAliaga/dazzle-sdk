@@ -96,6 +96,20 @@ class VectorIndex internal constructor(
         @JvmStatic external fun nAddBatchDirect(
             indexName: String, ids: Array<String>, vecs: java.nio.ByteBuffer, nVecs: Int,
         )
+        /**
+         * Pin the parallelism of the bulk `addBatchDirect` build-pool. Pass
+         * `n >= 1` to force exactly that many workers; `n <= 0` restores
+         * the auto-detected default (`min(hardware_concurrency, 8)`).
+         *
+         * The default 8-way pool deadlocks on chips where the kernel
+         * scheduler can't keep all 8 threads warm (Kirin 659 under EMUI 9
+         * iAware cgroup throttling): the workers stall on hnswlib's
+         * per-element mutex while only a fraction of them are scheduled.
+         * Calling `setAddBatchThreads(1)` before the first batch on
+         * tight ARMv8.0 devices is the diagnosed escape hatch.
+         */
+        @JvmStatic external fun nSetAddBatchThreads(n: Int)
+        fun setAddBatchThreads(n: Int) = nSetAddBatchThreads(n)
         @JvmStatic external fun nSearchDirect(
             indexName: String, query: java.nio.ByteBuffer, k: Int, efRuntime: Int,
         ): Array<String>

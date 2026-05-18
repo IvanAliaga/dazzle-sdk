@@ -34,7 +34,7 @@ every platform sees identical behaviour and the same benchmark profile.
 ```yaml
 # pubspec.yaml
 dependencies:
-  dazzle_flutter: ^1.0.0-beta.4
+  dazzle_flutter: ^1.0.0-beta.6
 ```
 
 ```dart
@@ -100,6 +100,58 @@ this template:
 
 See [`samples/PROVIDERS.md`](../../../samples/PROVIDERS.md) for the
 full debug story behind each invariant.
+
+## Flutter Web (1.0.0-beta.6+)
+
+Dazzle ships a WebAssembly runtime that runs HNSW vector search and a hash
+KV **in-process inside the browser**, with persistence backed by the
+Origin Private File System (OPFS). No remote server, no proxy — same
+on-device promise the iOS / Android targets deliver, on the web.
+
+**Scope** (this beta): Hash KV + Vector index + OPFS snapshot.
+**Not yet on web**: List / Set / SortedSet / Stream standalone primitives,
+on-device LLM clients (LlamaCpp / LiteRT-LM / FoundationModels) — those
+stay on iOS / Android / Desktop.
+
+### Setup
+
+1. The package ships `web/native/dazzle.wasm` (~236 KB) +
+   `web/native/dazzle.js` (~68 KB) as Flutter assets. They are referenced
+   from `pubspec.yaml` and copied into the build automatically.
+
+2. Add the loader script to your app's `web/index.html`, **before** the
+   `<script src="flutter_bootstrap.js">` line:
+
+   ```html
+   <script type="module">
+     import dz from "assets/packages/dazzle_flutter/web/native/dazzle.js";
+     globalThis.dazzleModule = dz;
+   </script>
+   ```
+
+3. In your Dart code:
+
+   ```dart
+   import 'package:dazzle_flutter/dazzle_flutter.dart';
+
+   await DazzleWeb.initialize();          // loads WASM + restores OPFS
+   final hash = DazzleWeb.hash('chat:1');
+   hash.set('role', 'user');
+   hash.set('text', 'hello');
+
+   final vec = DazzleWeb.vectorIndex('catalog');
+   vec.create(dim: 1536);
+   vec.add('product-1', embedding);        // Float32List
+   final hits = vec.search(query, topK: 5);
+
+   await DazzleWeb.persist();              // snapshot → OPFS
+   ```
+
+### OPFS quota
+
+OPFS is per-origin and persistent across reloads. Quota is browser-managed
+(typically tens of GiB). For multi-user apps, pass `opfsFileName:` to
+`initialize()` so each user's snapshot lands in a separate file.
 
 ## Documentation
 

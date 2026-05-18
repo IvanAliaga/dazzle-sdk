@@ -1,0 +1,10 @@
+# .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+
+# Local copies of the native library (CI stages them under runtimes/)
+**/libdazzle.dylib
+**/libdazzle.so
+**/dazzle.dll

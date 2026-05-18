@@ -5,7 +5,7 @@ React Native package for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk)
 embedded Valkey + HNSW vector search + ChatAgent runtime the
 Android / iOS native + Flutter SDKs ship.
 
-Latest: **v1.0.0-beta.4** — see
+Latest: **v1.0.0-beta.6** — see
 [../../../CHANGELOG.md](../../../CHANGELOG.md).
 
 ## Install
@@ -162,6 +162,57 @@ on Moto G35 5G + iPhone 12 Pro.
 If a sync method isn't available at runtime the TS wrappers fall
 back to the async path automatically, so the same code runs on older
 React Native versions.
+
+## React Native Web (1.0.0-beta.6+)
+
+For RN apps that target web (Expo Web, react-native-web), Dazzle ships a
+WebAssembly runtime that runs HNSW vector search and a hash KV
+**in-process inside the browser**, with persistence backed by the Origin
+Private File System (OPFS). No remote server, no proxy — same offline
+promise the iOS / Android targets deliver, on the web.
+
+**Scope** (this beta): Hash KV + Vector index + OPFS snapshot.
+**Not yet on web**: List / Set / SortedSet / Stream standalone primitives,
+on-device LLM clients — those stay on iOS / Android.
+
+### Setup
+
+1. The package ships `web/native/dazzle.wasm` (~236 KB) +
+   `web/native/dazzle.js` (~68 KB). Configure your bundler to serve them
+   as static assets (Webpack: `copy-webpack-plugin`; Metro web: place
+   under `public/`).
+
+2. Add the loader script to your bundler's HTML entry, **before** your
+   app bundle loads:
+
+   ```html
+   <script type="module">
+     import dz from "/path/to/dazzle.js";
+     globalThis.dazzleModule = dz;
+   </script>
+   ```
+
+3. In your TypeScript / JavaScript:
+
+   ```ts
+   import { DazzleWeb } from 'dazzle-react-native/web';
+
+   await DazzleWeb.initialize();          // loads WASM + restores OPFS
+   const hash = DazzleWeb.hash('chat:1');
+   hash.set('role', 'user');
+   hash.set('text', 'hello');
+
+   const vec = DazzleWeb.vectorIndex('catalog');
+   vec.create({ dim: 1536 });
+   vec.add('product-1', new Float32Array(1536));
+   const hits = vec.search(query, { topK: 5 });
+
+   await DazzleWeb.persist();             // snapshot → OPFS
+   ```
+
+The `dazzle-react-native/web` sub-path is a separate entry point — your
+mobile bundles never load the WASM glue, so iOS / Android binary size is
+unchanged.
 
 ## Documentation
 

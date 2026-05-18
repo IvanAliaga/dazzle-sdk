@@ -26,6 +26,15 @@ import java.io.File
  * context is NOT thread-safe. Use one embedder per worker if you fan out,
  * or synchronise on [embed].
  */
+/**
+ * Quantisation choice for the runtime KV cache. Listed in the order the
+ * JNI side expects (the ordinal is what crosses the boundary). F16 is
+ * the published-paper default; Q8_0 / Q4_0 are opt-in for low-RAM
+ * targets where shrinking the KV cache is the difference between a run
+ * fitting in device memory or being killed by EMUI iAware.
+ */
+enum class KvCacheType { F16, Q8_0, Q4_0 }
+
 class DazzleEmbedder private constructor(
     private val handle: Long,
     val modelPath: String,
@@ -51,7 +60,11 @@ class DazzleEmbedder private constructor(
     companion object {
         init { System.loadLibrary("llamacpp-jni") }
 
-        @JvmStatic private external fun nInit(modelPath: String, nCtx: Int, nThreads: Int): Long
+        @JvmStatic private external fun nInit(
+            modelPath: String,
+            nCtx: Int, nBatch: Int, nThreads: Int,
+            kvCacheTypeOrdinal: Int, flashAttn: Boolean, useMlock: Boolean,
+        ): Long
         @JvmStatic private external fun nEmbed(handle: Long, text: String): FloatArray?
         @JvmStatic private external fun nOutputDim(handle: Long): Int
         @JvmStatic private external fun nFree(handle: Long)
@@ -60,15 +73,56 @@ class DazzleEmbedder private constructor(
          * Open a GGUF embedder from [modelPath]. If the file isn't already
          * in [Context.getFilesDir], it is copied there once (matches the
          * pattern GemmaInference uses for its .litertlm model).
+         *
+         * @param nCtx          context window, in tokens. Default 512 keeps
+         *                      BGE-small / E5-small style passages well under
+         *                      truncation.
+         * @param nBatch        logical batch size for prefill. Defaults to
+         *                      `min(nCtx, 256)`. Lower values shrink the
+         *                      compute scratch (helpful on 4 GB devices).
+         * @param nThreads      worker threads (capped at 4 by default).
+         * @param kvCacheType   KV quantisation. [KvCacheType.F16] is the
+         *                      paper default. The KV cache is reset on
+         *                      every embed call so the choice is mostly
+         *                      cosmetic for embedders, but the knob is
+         *                      kept symmetric with [DazzleLlm].
+         * @param flashAttention enables llama.cpp's flash-attention path.
+         *                      Defaults to `CpuFeatures.hasFp16()`: ON for
+         *                      ARMv8.2 chips (A75/A76+), OFF for v8.0
+         *                      cores (A53/A73). Without native fp16 the
+         *                      flash-attn path emulates via fp16↔fp32
+         *                      conversion which is slower AND uses more
+         *                      working memory than the standard path —
+         *                      exactly the case that froze Kirin 659 at
+         *                      `embed passage 0/2000`.
+         * @param useMlock      pins the model weights into resident RAM
+         *                      via `mlock()`. Off by default — most
+         *                      devices don't need it and the lock is a
+         *                      hard failure mode on locked-down systems.
+         *                      The JNI raises RLIMIT_MEMLOCK to
+         *                      RLIM_INFINITY at first init so the lock
+         *                      can succeed on multi-GB models when the
+         *                      caller opts in. Numerically a no-op —
+         *                      same weights via the same code path,
+         *                      they just don't get evicted by EMUI
+         *                      iAware mid-decode.
          */
         fun open(
             context: Context,
             modelPath: String,
             nCtx: Int = 512,
+            nBatch: Int = nCtx.coerceAtMost(256),
             nThreads: Int = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
+            kvCacheType: KvCacheType = KvCacheType.F16,
+            flashAttention: Boolean = CpuFeatures.hasFp16(),
+            useMlock: Boolean = false,
         ): DazzleEmbedder {
             val resolved = ensureInternalCopy(context, modelPath)
-            val handle   = nInit(resolved, nCtx, nThreads)
+            val handle   = nInit(
+                resolved,
+                nCtx, nBatch, nThreads,
+                kvCacheType.ordinal, flashAttention, useMlock,
+            )
             return DazzleEmbedder(handle, resolved)
         }
 

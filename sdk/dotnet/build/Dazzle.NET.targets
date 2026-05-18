@@ -1,0 +1,36 @@
+<Project>
+  <!--
+    Copies the correct native libdazzle into the consuming project's output directory
+    so P/Invoke can find it at runtime regardless of whether the app is self-contained
+    (RID-specific) or framework-dependent (OS-based fallback).
+  -->
+  <PropertyGroup>
+    <_DazzleNativeDir>$(MSBuildThisFileDirectory)..\runtimes</_DazzleNativeDir>
+  </PropertyGroup>
+
+  <!-- Self-contained publish: RID is known, copy the exact match -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <None Include="$(_DazzleNativeDir)\$(RuntimeIdentifier)\native\*"
+          Condition="Exists('$(_DazzleNativeDir)\$(RuntimeIdentifier)\native\')"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Framework-dependent: infer from OS at build time -->
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('Linux'))">
+    <None Include="$(_DazzleNativeDir)\linux-x64\native\libdazzle.so"
+          Condition="Exists('$(_DazzleNativeDir)\linux-x64\native\libdazzle.so')"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('OSX'))">
+    <None Include="$(_DazzleNativeDir)\osx-arm64\native\libdazzle.dylib"
+          Condition="Exists('$(_DazzleNativeDir)\osx-arm64\native\libdazzle.dylib')"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">
+    <None Include="$(_DazzleNativeDir)\win-x64\native\dazzle.dll"
+          Condition="Exists('$(_DazzleNativeDir)\win-x64\native\dazzle.dll')"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

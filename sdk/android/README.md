@@ -3,7 +3,7 @@
 Native Kotlin SDK for [Dazzle](https://github.com/IvanAliaga/dazzle-sdk) —
 the embedded, in-process database for on-device LLM agents.
 
-Latest: **v1.0.0-beta.4** — see
+Latest: **v1.0.0-beta.6** — see
 [../../CHANGELOG.md](../../CHANGELOG.md).
 
 ## Install
@@ -13,7 +13,7 @@ Latest: **v1.0.0-beta.4** — see
 ```kotlin
 // build.gradle.kts (app)
 dependencies {
-    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.6")
     // Only if you use the bundled LiteRT-LM adapter:
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
 }
@@ -33,7 +33,7 @@ repositories {
     maven { url = uri("$rootDir/path/to/sdk/android/build/maven-repo") }
 }
 dependencies {
-    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.4")
+    implementation("com.ivanaliaga:dazzle-sdk:1.0.0-beta.6")
     // Only if you use the bundled LiteRT-LM adapter:
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.10.0")
 }

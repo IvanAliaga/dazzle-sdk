@@ -493,14 +493,23 @@ enum StorageOnlyTest {
         case "sqlite":            return SqliteContextManager()
         case "sqlite-optimized":  return SqliteOptimizedContextManager()
         case "sqlite-precompute": return SqlitePrecomputeContextManager()
-        case "lmdb":              return LmdbContextManager()
-        case "rocksdb":           return RocksDbContextManager()
-        case "objectbox":
-            do { return try ObjectBoxContextManager() }
-            catch {
-                print("[StorageTest] ObjectBox init failed: \(error) — falling back to InMemory")
-                return InMemoryContextManager()
-            }
+        // LMDB / RocksDB / ObjectBox backends are gated to the storage-only
+        // target; the LLM-experiment target ships only the in-memory + Dazzle
+        // + SQLite + Valkey backends to keep IPA size sane. Enabling these
+        // here would require wiring three xcframeworks (ObjectBox alone is
+        // ~80 MB) and patching three CMake targets — out of scope for the
+        // §5.9 RAG E2E bench, which only needs Dazzle.
+        // case "lmdb":              return LmdbContextManager()
+        // case "rocksdb":           return RocksDbContextManager()
+        // case "objectbox":
+        //     do { return try ObjectBoxContextManager() }
+        //     catch {
+        //         print("[StorageTest] ObjectBox init failed: \(error) — falling back to InMemory")
+        //         return InMemoryContextManager()
+        //     }
+        case "lmdb", "rocksdb", "objectbox":
+            print("[StorageTest] Backend '\(name)' not in LLM target, falling back to InMemory")
+            return InMemoryContextManager()
         case "inmemory":          return InMemoryContextManager()
         default:
             print("[StorageTest] Unknown backend '\(name)', falling back to Dazzle")

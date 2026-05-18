@@ -30,6 +30,15 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
+        // Instrumentation runner for `am instrument` invocation. Tests
+        // run with INSTRUMENTATION_PROCESS uid context which EMUI iAware
+        // does not throttle the same way it does plain foreground apps.
+        // This is the only viable launch path for the §5.9 RAG bench on
+        // Kirin 659 / EMUI 9.1.0, where activity-launched runs get
+        // demoted to WORKINGSET_BACKGROUND ~10 s after foreground grant
+        // regardless of notification importance, app-ops whitelist, or
+        // battery whitelist.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -48,4 +57,11 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    // androidTest dependencies for the iAware-bypassing instrumentation
+    // entry point (RagE2EBenchTest). Pinned to the same versions as
+    // the rest of the SDK demo / sample tree so the test APK stays
+    // reproducible across CI / physical-device runs.
+    androidTestImplementation("androidx.test:runner:1.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("junit:junit:4.13.2")
 }
